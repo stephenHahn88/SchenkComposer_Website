@@ -1,13 +1,13 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from '@/App.vue'
-import Game from '@/views/Game.vue'
-import Config from '@/views/Config.vue';
+import Home from "@/views/Home.vue"
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+
 
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
@@ -18,7 +18,7 @@ const router = new VueRouter({
   routes: [
     {
       path: "/",
-      component: Config
+      component: Home
     },
   ],
 })
