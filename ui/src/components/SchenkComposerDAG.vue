@@ -42,7 +42,7 @@
           <b-button class="rhythm" id="fgmr">Foreground Melodic Rhythm</b-button>
         </b-col>
         <b-col>
-          <b-button class="melody" id="fgm">Result:<br>Foreground Melody</b-button>
+          <b-button class="melody" id="fgm"><b>RESULT:</b><br>Foreground Melody</b-button>
         </b-col>
       </b-row>
     </b-container>
@@ -54,9 +54,23 @@ import LeaderLine from "leader-line-vue"
 
 export default {
   name: "SchenkComposerDAG",
+  props: {
+    psMh: Boolean,
+    psMghr: Boolean,
+    psMghp: Boolean,
+    mhMghr: Boolean,
+    mhFgmr: Boolean,
+    mghrFgmr: Boolean,
+    mghrMghp: Boolean,
+    mghrMgm: Boolean,
+    mghpMgm: Boolean,
+    mgmFgm: Boolean,
+    fgmrFgm: Boolean,
+
+  },
   mounted() {
     //From phrase structure
-    let ps_mh = LeaderLine.setLine(
+    this.ps_mh = LeaderLine.setLine(
         document.getElementById("ps"),
         document.getElementById("mh"),
         {
@@ -64,11 +78,12 @@ export default {
           startSocket: 'left',
           endSocket: 'top',
           startSocketGravity: [-170, 0],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.psMh},
+          size: 3,
+          color: this.psMh ? 'green': 'red'
         }
     )
-    let ps_mghr = LeaderLine.setLine(
+    this.ps_mghr = LeaderLine.setLine(
         document.getElementById("ps"),
         document.getElementById("mghr"),
         {
@@ -76,11 +91,12 @@ export default {
           startSocket: 'bottom',
           endSocket: 'top',
           startSocketGravity: [0, 0],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.psMghr},
+          size: 3,
+          color: this.psMghr ? 'green': 'red'
         }
     )
-    let ps_mghp = LeaderLine.setLine(
+    this.ps_mghp = LeaderLine.setLine(
         document.getElementById("ps"),
         document.getElementById("mghp"),
         {
@@ -88,12 +104,13 @@ export default {
           startSocket: 'right',
           endSocket: 'top',
           startSocketGravity: [170, 0],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.psMghp},
+          size: 3,
+          color: this.psMghp ? 'green': 'red'
         }
     )
     //From Meter and Hypermeter
-    let mh_mghr = LeaderLine.setLine(
+    this.mh_mghr = LeaderLine.setLine(
         document.getElementById("mh"),
         document.getElementById("mghr"),
         {
@@ -101,11 +118,12 @@ export default {
           startSocket: 'right',
           endSocket: 'left',
           startSocketGravity: [0, 0],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.mhMghr},
+          size: 3,
+          color: this.mhMghr ? 'green': 'red'
         }
     )
-    let mh_fgmr = LeaderLine.setLine(
+    this.mh_fgmr = LeaderLine.setLine(
         document.getElementById("mh"),
         document.getElementById("fgmr"),
         {
@@ -113,12 +131,13 @@ export default {
           startSocket: 'bottom',
           endSocket: 'left',
           startSocketGravity: [0, 130],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.mhFgmr},
+          size: 3,
+          color: this.mhFgmr ? 'green': 'red'
         }
     )
     //From Middleground Harmonic Rhythm
-    let mghr_fgmr = LeaderLine.setLine(
+    this.mghr_fgmr = LeaderLine.setLine(
         document.getElementById("mghr"),
         document.getElementById("fgmr"),
         {
@@ -126,11 +145,12 @@ export default {
           startSocket: 'bottom',
           endSocket: 'top',
           startSocketGravity: [0, 0],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.mghrFgmr},
+          size: 3,
+          color: this.mghrFgmr ? 'green': 'red'
         }
     )
-    let mghr_mghp = LeaderLine.setLine(
+    this.mghr_mghp = LeaderLine.setLine(
         document.getElementById("mghr"),
         document.getElementById("mghp"),
         {
@@ -138,11 +158,12 @@ export default {
           startSocket: 'right',
           endSocket: 'left',
           startSocketGravity: [0, 0],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.mghrMghp},
+          size: 3,
+          color: this.mghrMghp ? 'green': 'red'
         }
     )
-    let mghr_mgm = LeaderLine.setLine(
+    this.mghr_mgm = LeaderLine.setLine(
         document.getElementById("mghr"),
         document.getElementById("mgm"),
         {
@@ -150,12 +171,13 @@ export default {
           startSocket: 'bottom',
           endSocket: 'left',
           startSocketGravity: [50, 50],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.mghrMgm},
+          size: 3,
+          color: this.mghrMgm ? 'green': 'red'
         }
     )
     //From Middleground Harmonic Progression
-    let mghp_mgm = LeaderLine.setLine(
+    this.mghp_mgm = LeaderLine.setLine(
         document.getElementById("mghp"),
         document.getElementById("mgm"),
         {
@@ -163,12 +185,13 @@ export default {
           startSocket: 'bottom',
           endSocket: 'top',
           startSocketGravity: [0, 0],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.mghpMgm},
+          size: 3,
+          color: this.mghpMgm ? 'green': 'red'
         }
     )
     //From Middleground Melody
-    let mgm_fgm = LeaderLine.setLine(
+    this.mgm_fgm = LeaderLine.setLine(
         document.getElementById("mgm"),
         document.getElementById("fgm"),
         {
@@ -176,12 +199,13 @@ export default {
           startSocket: 'bottom',
           endSocket: 'top',
           startSocketGravity: [0, 0],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.mgmFgm},
+          size: 3,
+          color: this.mgmFgm ? 'green': 'red'
         }
     )
     //From Foreground Melodic Rhythm
-    let fgmr_fgm = LeaderLine.setLine(
+    this.fgmr_fgm = LeaderLine.setLine(
         document.getElementById("fgmr"),
         document.getElementById("fgm"),
         {
@@ -189,8 +213,9 @@ export default {
           startSocket: 'right',
           endSocket: 'left',
           startSocketGravity: [0, 0],
-          dash: {animation: true},
-          size: 3
+          dash: {animation: this.fgmrFgm},
+          size: 3,
+          color: this.fgmrFgm ? 'green': 'red'
         }
     )
   }
@@ -201,17 +226,30 @@ export default {
 .phrase {
   background-color: rgb(100, 150, 100)
 }
+.phrase:hover, .phrase:active, .phrase:focus {
+  background-color: rgb(80, 130, 80)
+}
+
 
 .rhythm {
   background-color: rgb(150, 100, 100)
+}
+.rhythm:hover, .rhythm:active, .rhythm:focus {
+  background-color: rgb(130, 80, 80)
 }
 
 .harmony {
   background-color: rgb(50, 100, 150)
 }
+.harmony:hover, .harmony:active, .harmony:focus {
+  background-color: rgb(30, 80, 130);
+}
 
 .melody {
   background-color: rgb(200, 180, 50)
+}
+.melody:hover, .melody:active, .melody:focus {
+  background-color: rgb(180, 160, 30)
 }
 
 .btn {

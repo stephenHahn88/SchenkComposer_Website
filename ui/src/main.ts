@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from '@/App.vue'
 import Home from "@/views/Home.vue"
+import PhraseStructure from "@/views/PhraseStructure.vue"
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -20,6 +21,10 @@ const router = new VueRouter({
       path: "/",
       component: Home
     },
+    {
+      path: "/phrase-structure",
+      component: PhraseStructure
+    }
   ],
 })
 

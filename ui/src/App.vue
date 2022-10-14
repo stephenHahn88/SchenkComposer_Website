@@ -16,14 +16,33 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <div style="width: 750px;">
-      <SchenkComposerDAG></SchenkComposerDAG>
-    </div>
-    <router-view />
+    <b-row>
+      <b-col>
+        <div style="width: 750px; border: red">
+          <SchenkComposerDAG
+          ></SchenkComposerDAG>
+        </div>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col>
+        <router-view />
+      </b-col>
+    </b-row>
+
   </div>
 </template>
 
 <script setup lang="ts">
 import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
+import {ref, Ref, watch} from 'vue'
+
+let phrase_anim = ref(false)
+let meter_anim = ref(false)
+let mgrhythm_anim = ref(false)
+let mgharmony_anim = ref(false)
+let mgmelody_anim = ref(false)
+let fgrhythm_anim = ref(false)
+
 </script>
 
