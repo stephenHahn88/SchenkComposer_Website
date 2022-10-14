@@ -1,12 +1,12 @@
 <template>
   <div>
-    <b-container fluid class="text-center align-middle">
-      <b-row class="m-4 center-text">
+    <b-container class="text-center">
+      <b-row class="mb-4 center-text">
         <b-col>
 
         </b-col>
         <b-col>
-          <b-button class="phrase" id="ps">Phrase Structure</b-button>
+          <b-button class="phrase" id="ps" href="/phrase-structure">Phrase Structure</b-button>
         </b-col>
         <b-col>
 
@@ -14,7 +14,7 @@
       </b-row>
       <b-row class="m-4">
         <b-col>
-          <b-button class="rhythm" id="mh">Meter and <br>Hypermeter</b-button>
+          <b-button class="rhythm" id="mh" href="/meter-hypermeter">Meter and <br>Hypermeter</b-button>
         </b-col>
         <b-col>
           <b-button class="rhythm" id="mghr">Middleground Harmonic Rhythm</b-button>

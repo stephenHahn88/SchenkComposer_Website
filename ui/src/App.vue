@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-navbar toggleable="lg" type="light" variant="light">
-      <b-navbar-brand href="#">
+      <b-navbar-brand href="/">
         <img
             src="@/static/schenkcomposer_logo.svg"
             alt="SchenkComposer"
@@ -12,24 +12,24 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item>yo</b-nav-item>
+          <b-nav-item></b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
     <b-row>
-      <b-col>
-        <div style="width: 750px; border: red">
+      <b-col class="mt-5">
+        <div style="width: 750px">
           <SchenkComposerDAG
           ></SchenkComposerDAG>
         </div>
       </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
+      <b-col class="mr-5 mt-5">
         <router-view />
       </b-col>
     </b-row>
+    <b-row>
 
+    </b-row>
   </div>
 </template>
 
@@ -46,3 +46,11 @@ let fgrhythm_anim = ref(false)
 
 </script>
 
+<style scoped>
+.center-content {
+  justify-content: space-evenly;
+  justify-items: center;
+  align-content: space-evenly;
+  align-items: center;
+}
+</style>

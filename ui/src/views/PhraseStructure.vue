@@ -98,9 +98,9 @@ import {BButton} from "bootstrap-vue";
 
 let letters = ['a', 'b', 'c', 'd']
 
-type PhraseUnit = 'a' | 'b' | 'c' | 'd' | `a'` | `b'` | `c'` | `d'`
-type Cadence = '[AC]' | '[HC]'
-type Phrase = (PhraseUnit | Cadence)[]
+export type PhraseUnit = 'a' | 'b' | 'c' | 'd' | `a'` | `b'` | `c'` | `d'`
+export type Cadence = '[AC]' | '[HC]'
+export type Phrase = (PhraseUnit | Cadence)[]
 
 let phrase: Ref<Phrase> = ref([])
 let letter_disabled: Ref<boolean[]> = ref([
@@ -113,6 +113,7 @@ let backspace_disabled = ref(true)
 function erasePhrase() {
   phrase.value = []
   letter_disabled.value = [false, true, true, true, true, true, true, true]
+  cadence_disabled.value = [true, true]
 }
 
 function checkButtonDisability() {
@@ -215,18 +216,18 @@ function backspace() {
 }
 
 #AC {
-  background-color: rgb(230,230,230);
+  background-color: rgb(230, 0,230);
   color: black;
 }
 #AC:hover, #AC:disabled {
-  background-color: rgb(200, 200, 200);
+  background-color: rgb(200, 0, 200);
 }
 
 #HC {
-  background-color: rgb(50, 50, 50);
+  background-color: rgb(50, 0, 50);
 }
 #HC:hover, #HC:disabled {
-  background-color: rgb(100, 100, 100);
+  background-color: rgb(100, 0, 100);
 }
 
 #backspace {

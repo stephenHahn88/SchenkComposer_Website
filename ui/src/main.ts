@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import App from '@/App.vue'
 import Home from "@/views/Home.vue"
 import PhraseStructure from "@/views/PhraseStructure.vue"
+import MeterAndHypermeter from "@/views/MeterAndHypermeter.vue"
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -24,6 +25,10 @@ const router = new VueRouter({
     {
       path: "/phrase-structure",
       component: PhraseStructure
+    },
+    {
+      path: "/meter-hypermeter",
+      component: MeterAndHypermeter
     }
   ],
 })
