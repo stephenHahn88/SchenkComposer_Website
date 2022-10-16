@@ -18,6 +18,7 @@
     "socket.io-client": "^4.5.2",
     "swaralipi-core": "^0.1.0",
     "tone": "^14.7.77",
+    "vexflow": "^4.0.3",
     "vue": "^2.7.8",
     "vue-router": "^3.6.5"
   },

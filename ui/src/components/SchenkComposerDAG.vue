@@ -17,7 +17,7 @@
           <b-button class="rhythm" id="mh" href="/meter-hypermeter">Meter and <br>Hypermeter</b-button>
         </b-col>
         <b-col>
-          <b-button class="rhythm" id="mghr">Middleground Harmonic Rhythm</b-button>
+          <b-button class="rhythm" id="mghr" href="/mg-harmonic-rhythm">Middleground Harmonic Rhythm</b-button>
         </b-col>
         <b-col>
           <b-button class="harmony" id="mghp">Middleground Harmonic Progression</b-button>

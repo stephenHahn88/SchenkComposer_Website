@@ -1,19 +1,21 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+
 import App from '@/App.vue'
 import Home from "@/views/Home.vue"
 import PhraseStructure from "@/views/PhraseStructure.vue"
 import MeterAndHypermeter from "@/views/MeterAndHypermeter.vue"
+import MiddlegroundHarmonicRhythm from "@/views/MiddlegroundHarmonicRhythm.vue"
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.use(VueRouter)
+
 
 const router = new VueRouter({
   mode: "history",
@@ -29,6 +31,10 @@ const router = new VueRouter({
     {
       path: "/meter-hypermeter",
       component: MeterAndHypermeter
+    },
+    {
+      path: "/mg-harmonic-rhythm",
+      component: MiddlegroundHarmonicRhythm
     }
   ],
 })
