@@ -7,8 +7,8 @@
       <b-col
           v-for="subphrase in phraseStructure"
       >
-        <b-row>{{ subphrase.at(0) === '[' ? subphrase: '&nbsp;'}}</b-row>
-        <b-row class="mb-3 pl-4">{{ subphrase.at(0) !== '[' ? subphrase: '&nbsp;'}}</b-row>
+        <b-row class="text">{{ subphrase.at(0) === '[' ? subphrase: '&nbsp;'}}</b-row>
+        <b-row class="mb-3 pl-4 text">{{ subphrase.at(0) !== '[' ? subphrase: '&nbsp;'}}</b-row>
       </b-col>
     </b-row>
 <!--    METER AND HYPERMETER-->
@@ -35,7 +35,10 @@
         v-for="subphrase in phraseStructure"
         class="mt-3"
       >
-        <b-form-input v-if="subphrase.at(0) !== '['"></b-form-input>
+        <b-form-input
+            v-if="subphrase.at(0) !== '['"
+            :class="subphrase.at(0)"
+        ></b-form-input>
       </b-col>
     </b-row>
   </div>
@@ -48,11 +51,12 @@ import { Phrase, PhraseUnit } from '@/views/PhraseStructure.vue'
 let phraseStructure = ref(['a', "a'", 'b', '[HC]', 'c', "c'", 'd', '[AC]'])
 let numerator = ref(4)
 let denominator = ref(4)
+
+//TODO: Match input fields with same letter
 </script>
 
 <style scoped>
-.transparent-background {
-  background-color: rgba(255, 0, 255, 0.5);
-
+.text {
+  font-size: 32px;
 }
 </style>

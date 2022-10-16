@@ -6,7 +6,7 @@
 
         </b-col>
         <b-col>
-          <b-button class="phrase" id="ps" href="/phrase-structure">Phrase Structure</b-button>
+          <b-button class="phrase" id="ps" href="/phrase-structure">Phrase<br>Structure</b-button>
         </b-col>
         <b-col>
 
@@ -17,10 +17,10 @@
           <b-button class="rhythm" id="mh" href="/meter-hypermeter">Meter and <br>Hypermeter</b-button>
         </b-col>
         <b-col>
-          <b-button class="rhythm" id="mghr" href="/mg-harmonic-rhythm">Middleground Harmonic Rhythm</b-button>
+          <b-button class="rhythm" id="mghr" href="/mg-harmonic-rhythm">Harmonic<br>Rhythm</b-button>
         </b-col>
         <b-col>
-          <b-button class="harmony" id="mghp">Middleground Harmonic Progression</b-button>
+          <b-button class="harmony" id="mghp">Harmonic Progression</b-button>
         </b-col>
       </b-row>
       <b-row class="m-4">
@@ -39,10 +39,10 @@
 
         </b-col>
         <b-col>
-          <b-button class="rhythm" id="fgmr">Foreground Melodic Rhythm</b-button>
+          <b-button class="rhythm" id="fgmr">Melodic<br>Rhythm</b-button>
         </b-col>
         <b-col>
-          <b-button class="melody" id="fgm"><b>RESULT:</b><br>Foreground Melody</b-button>
+          <b-button class="melody" id="fgm">Foreground Melody</b-button>
         </b-col>
       </b-row>
     </b-container>
@@ -254,5 +254,6 @@ export default {
 
 .btn {
   border-color: rgba(0,0,0,0);
+  font-size: 24px;
 }
 </style>
