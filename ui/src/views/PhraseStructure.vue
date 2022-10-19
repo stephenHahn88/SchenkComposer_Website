@@ -85,7 +85,13 @@
           <b-button id="generate" style="height:100px;">Get SchenkComposer To Help</b-button>
         </b-col>
         <b-col>
-          <b-button id="confirm" style="height:100px;">Confirm</b-button>
+          <b-button
+              id="confirm"
+              style="height:100px;"
+              @click="handleConfirm"
+          >
+            Confirm
+          </b-button>
         </b-col>
       </b-row>
     </b-container>
@@ -93,8 +99,14 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, Ref} from 'vue';
+import {computed, defineEmits, ref, Ref} from 'vue';
 import {BButton} from "bootstrap-vue";
+
+const emit = defineEmits(['psanimate'])
+
+const handleConfirm = () => {
+  emit('psanimate')
+}
 
 let letters = ['a', 'b', 'c', 'd']
 
@@ -209,14 +221,14 @@ function backspace() {
 }
 
 .a, a:enabled {
-  background-color: rgb(255, 0, 255);
+  background-color: rgb(200, 0, 200);
 }
 .a:hover, .a:disabled, .a:active, .a:focus {
-  background-color: rgb(200, 0, 200);
+  background-color: rgb(150, 0, 150);
 }
 
 #AC {
-  background-color: rgb(230, 0,230);
+  background-color: rgb(255, 0, 255);
   color: black;
 }
 #AC:hover, #AC:disabled {
@@ -239,6 +251,7 @@ function backspace() {
 
 #generate {
   background-color: rgb(250, 0, 250);
+  color: black;
 }
 #generate:hover {
   background-color: rgb(200, 0, 200);
@@ -249,5 +262,8 @@ function backspace() {
 }
 #confirm:hover, #confirm:disabled {
   background-color: rgb(0, 100, 0);
+}
+.btn {
+  font-size: 18px;
 }
 </style>

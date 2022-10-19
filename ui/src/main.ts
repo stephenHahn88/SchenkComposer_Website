@@ -6,6 +6,7 @@ import Home from "@/views/Home.vue"
 import PhraseStructure from "@/views/PhraseStructure.vue"
 import MeterAndHypermeter from "@/views/MeterAndHypermeter.vue"
 import MiddlegroundHarmonicRhythm from "@/views/MiddlegroundHarmonicRhythm.vue"
+import HarmonicProgression from "@/views/HarmonicProgression.vue"
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -17,7 +18,7 @@ Vue.use(BootstrapVueIcons)
 Vue.use(VueRouter)
 
 
-const router = new VueRouter({
+export const router = new VueRouter({
   mode: "history",
   routes: [
     {
@@ -35,6 +36,10 @@ const router = new VueRouter({
     {
       path: "/mg-harmonic-rhythm",
       component: MiddlegroundHarmonicRhythm
+    },
+    {
+      path: "/harmonic-progression",
+      component: HarmonicProgression
     }
   ],
 })

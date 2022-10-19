@@ -2,7 +2,7 @@
   <div class="m-5">
     <h1>Harmonic Rhythm</h1>
 <!--      A-->
-    <div class="container m-2">
+    <b-row class="container m-2">
       <div id="boo_a"></div>
       <div>
         <h2>A</h2>
@@ -14,9 +14,9 @@
           {{ rhythm }}
         </b-button>
       </div>
-    </div>
+    </b-row>
 <!--      B-->
-    <div class="container m-2">
+    <b-row class="container m-2">
       <div id="boo_b"></div>
       <div>
         <h2>B</h2>
@@ -28,9 +28,9 @@
           {{ rhythm }}
         </b-button>
       </div>
-    </div>
+    </b-row>
 <!--      C-->
-    <div class="container m-2">
+    <b-row class="container m-2">
       <div id="boo_c"></div>
       <div>
         <h2>C</h2>
@@ -42,9 +42,9 @@
           {{ rhythm }}
         </b-button>
       </div>
-    </div>
+    </b-row>
 <!--      D-->
-    <div class="container m-2">
+    <b-row class="container m-2">
       <div id="boo_d"></div>
       <div>
         <h2>D</h2>
@@ -56,7 +56,19 @@
           {{ rhythm }}
         </b-button>
       </div>
-    </div>
+    </b-row>
+    <b-row>
+      <b-col></b-col>
+      <b-col></b-col>
+      <b-col>
+        <b-button
+          @click="handleConfirm"
+          style="width: 100%; background-color: green"
+        >
+          Confirm
+        </b-button>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
@@ -65,6 +77,12 @@ import {onMounted, defineProps} from 'vue'
 import Vex from 'vexflow'
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
+
+const emit = defineEmits(['mgrhythmanimate'])
+
+const handleConfirm = () => {
+  emit('mgrhythmanimate')
+}
 
 let possibleRhythms = ['♩ ♩ ♩ ♩', '𝅝', '𝅗𝅥 𝅗𝅥', '𝅗𝅥. ♩']
 

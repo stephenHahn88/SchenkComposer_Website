@@ -18,14 +18,14 @@
         <b-row class="mb-1">
           <b-col>
             <b-dropdown :text="numerator" variant="primary">
-              <b-dropdown-item v-for="num in [2, 3, 4, 6, 9, 12]" v-on:click="numerator=num"> {{ num }} </b-dropdown-item>
+              <b-dropdown-item v-for="num in [2, 3, 4, 6, 9, 12]" v-on:click="numerator=num.toString()"> {{ num }} </b-dropdown-item>
             </b-dropdown>
           </b-col>
         </b-row>
         <b-row>
           <b-col>
             <b-dropdown :text="denominator" variant="primary">
-              <b-dropdown-item v-for="num in [2, 4, 8]" v-on:click="denominator=num"> {{ num }} </b-dropdown-item>
+              <b-dropdown-item v-for="num in [2, 4, 8]" v-on:click="denominator=num.toString()"> {{ num }} </b-dropdown-item>
             </b-dropdown>
           </b-col>
         </b-row>
@@ -41,16 +41,34 @@
         ></b-form-input>
       </b-col>
     </b-row>
+    <b-row>
+      <b-col></b-col>
+      <b-col></b-col>
+      <b-col>
+        <b-button
+            style="width: 100%; background-color: green"
+            @click="handleConfirm"
+        >
+          Confirm
+        </b-button>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref, Ref} from 'vue'
+import {defineEmits, ref, Ref} from 'vue'
 import { Phrase, PhraseUnit } from '@/views/PhraseStructure.vue'
 
 let phraseStructure = ref(['a', "a'", 'b', '[HC]', 'c', "c'", 'd', '[AC]'])
-let numerator = ref(4)
-let denominator = ref(4)
+let numerator = ref("4")
+let denominator = ref("4")
+
+const emit = defineEmits(['meteranimate'])
+
+const handleConfirm = () => {
+  emit('meteranimate')
+}
 
 //TODO: Match input fields with same letter
 </script>
