@@ -17,14 +17,14 @@
       <b-col>
         <b-row class="mb-1">
           <b-col>
-            <b-dropdown :text="numerator" variant="primary">
+            <b-dropdown :text="numerator" variant="outline-primary">
               <b-dropdown-item v-for="num in [2, 3, 4, 6, 9, 12]" v-on:click="numerator=num.toString()"> {{ num }} </b-dropdown-item>
             </b-dropdown>
           </b-col>
         </b-row>
         <b-row>
           <b-col>
-            <b-dropdown :text="denominator" variant="primary">
+            <b-dropdown :text="denominator" variant="outline-primary">
               <b-dropdown-item v-for="num in [2, 4, 8]" v-on:click="denominator=num.toString()"> {{ num }} </b-dropdown-item>
             </b-dropdown>
           </b-col>
@@ -80,5 +80,9 @@ const handleConfirm = () => {
 
 h1, p {
   color: white;
+}
+
+.btn {
+  font-size: 32px;
 }
 </style>

@@ -33,7 +33,7 @@
     </b-row>
     <!--      ROUTER VIEW-->
     <b-row>
-      <b-col class="ml-4 mr-4 mt-5 p-3" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px">
+      <b-col class="m-4 p-3" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px">
         <router-view
             @psanimate="phraseStructureAnimate($event)"
             @meteranimate="meterAnimate($event)"

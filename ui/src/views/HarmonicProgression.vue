@@ -53,7 +53,12 @@
           style="border-radius: 10px; background-color: rgba(0, 0, 0, 0.3); overflow: auto"
       >
         <h2>Generation</h2>
-        <b-row v-for="letter in Object.keys(sequences)">
+        <b-row
+            v-for="letter in Object.keys(sequences)"
+            @click="selectRow(letter)"
+            class="hoverable p-1 mb-1"
+            :class="sequences[letter]['selected']"
+        >
           <b-col>
             <p style="font-size: 32px;">{{letter}}:</p>
           </b-col>
@@ -67,6 +72,14 @@
               v-else
               style="font-size: 32px;"
           >
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col
+            v-for="(color, harmony, i) in harmonies"
+            :key="i"
+          >
+            <b-button :style="{ backgroundColor: color}">{{harmony}}</b-button>
           </b-col>
         </b-row>
         <b-row class="mt-3 mr-3" style="justify-content: end">
@@ -119,11 +132,21 @@ let simulation;
 
 let max = 6 //Maximum of maxLen
 let sequences = ref({
-  "a": ref({"sequenceReverse": ['I', 'V'], "maxLen": 6}),
-  "b": ref({"sequenceReverse": ['I', 'V', 'ii', 'IV'], "maxLen": 4}),
-  "c": ref({"sequenceReverse": [], "maxLen": 5}),
-  "d": ref({"sequenceReverse": [], "maxLen": 3}),
+  "a": ref({"sequenceReverse": ['I', 'V'], "maxLen": 6, 'selected': 'inactive'}),
+  "b": ref({"sequenceReverse": ['I', 'V', 'ii', 'IV'], "maxLen": 4, 'selected': 'inactive'}),
+  "c": ref({"sequenceReverse": [], "maxLen": 5, 'selected': 'inactive'}),
+  "d": ref({"sequenceReverse": [], "maxLen": 3, 'selected': 'inactive'}),
 })
+
+function selectRow(letter) {
+  for (let l in sequences.value) {
+    if (l === letter) {
+      sequences.value[l]['selected'] = 'active'
+    } else {
+      sequences.value[l]['selected'] = 'inactive'
+    }
+  }
+}
 
 
 onMounted(() => {
@@ -261,6 +284,15 @@ p {
 
 p, h1, h2, col {
   color: white;
+}
+
+.hoverable:hover, .active {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+.hoverable:active {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 </style>
