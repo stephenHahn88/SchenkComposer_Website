@@ -77,7 +77,9 @@
           </b-button>
         </b-col>
       </b-row>
-      <b-row class="mb-5 mt-2 mx-1 p-2" style="border: 1px solid; border-radius: 5px;">
+      <b-row
+          class="mb-5 mt-2 mx-1 p-2"
+          style="height: 75px; border: 1px solid; border-radius: 5px; background-color: rgba(255, 255, 255, 0.5)">
         <p>{{ phrase.join(" ") }}</p>
       </b-row>
       <b-row class="mb-5">

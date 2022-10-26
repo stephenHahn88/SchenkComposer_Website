@@ -1,7 +1,7 @@
 <template>
   <div class="background">
 <!--    NAVBAR-->
-    <b-navbar toggleable="lg" type="light" variant="light">
+    <b-navbar toggleable="lg" style="background-color: rgba(255, 255, 255, 0.2)">
       <b-navbar-brand href="/">
 <!--        NAVBAR IMAGE-->
         <img
