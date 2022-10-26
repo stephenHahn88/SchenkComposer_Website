@@ -2,21 +2,23 @@
   <div>
     <h1>Harmonic Rhythm</h1>
 <!--      A-->
-    <b-row class="container mb-3 mx-3 letter-group">
-      <div id="boo_a"></div>
-      <div>
-        <h2>A</h2>
-        <b-button
-            v-for="rhythm in possibleRhythms"
-            v-on:click="placeNotes(rhythm, 'a')"
-            class="mx-3"
-        >
-          {{ rhythm }}
-        </b-button>
-      </div>
+    <b-row class="mb-3 mx-3 pb-3 pl-3 letter-group">
+      <b-col>
+        <div id="boo_a"></div>
+        <div>
+          <h2>A</h2>
+          <b-button
+              v-for="rhythm in possibleRhythms"
+              v-on:click="placeNotes(rhythm, 'a')"
+              class="mx-3"
+          >
+            {{ rhythm }}
+          </b-button>
+        </div>
+      </b-col>
     </b-row>
 <!--      B-->
-    <b-row class="container mb-3 mx-3 letter-group">
+    <b-row class="mb-3 mx-3 pb-3 pl-3 letter-group">
       <div id="boo_b"></div>
       <div>
         <h2>B</h2>
@@ -30,7 +32,7 @@
       </div>
     </b-row>
 <!--      C-->
-    <b-row class="container mb-3 mx-3 letter-group">
+    <b-row class="mb-3 mx-3 pb-3 pl-3 letter-group">
       <div id="boo_c"></div>
       <div>
         <h2>C</h2>
@@ -44,7 +46,7 @@
       </div>
     </b-row>
 <!--      D-->
-    <b-row class="container mb-3 mx-3 letter-group">
+    <b-row class="mb-3 mx-3 pb-3 pl-3 letter-group">
       <div id="boo_d"></div>
       <div>
         <h2>D</h2>
@@ -114,7 +116,7 @@ let windowWidth;
 onMounted(() => {
   phrase = ['a', "a'", 'b', '[HC]', 'c', "c'", 'd', '[AC]']
   phraseMeasures = { a: 2, b: 4, c: 2, d: 4 }
-  windowWidth = window.innerWidth
+  windowWidth = window.innerWidth - 200
 
   // A
   totalMeasures = phraseMeasures['a']
@@ -257,10 +259,6 @@ h1 {
 .letter-group {
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: 10px;
-}
-
-.container {
-  padding-bottom: 20px;
 }
 
 </style>

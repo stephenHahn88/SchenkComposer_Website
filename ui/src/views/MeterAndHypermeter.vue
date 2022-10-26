@@ -14,17 +14,17 @@
 <!--    METER AND HYPERMETER-->
     <b-row>
 <!--      METER-->
-      <b-col>
+      <b-col class="p-3" style="background-color: rgba(255, 255, 255, 0.3); border-radius: 10px;">
         <b-row class="mb-1">
-          <b-col>
-            <b-dropdown :text="numerator" variant="outline-primary">
+          <b-col style="text-align: center">
+            <b-dropdown :text="numerator" variant="danger">
               <b-dropdown-item v-for="num in [2, 3, 4, 6, 9, 12]" v-on:click="numerator=num.toString()"> {{ num }} </b-dropdown-item>
             </b-dropdown>
           </b-col>
         </b-row>
         <b-row>
-          <b-col>
-            <b-dropdown :text="denominator" variant="outline-primary">
+          <b-col style="text-align: center">
+            <b-dropdown :text="denominator" variant="danger">
               <b-dropdown-item v-for="num in [2, 4, 8]" v-on:click="denominator=num.toString()"> {{ num }} </b-dropdown-item>
             </b-dropdown>
           </b-col>
