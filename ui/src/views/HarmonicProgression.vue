@@ -1,10 +1,14 @@
 <template>
   <div>
-    <h1 class="m-5">Harmonic Progression</h1>
-    <b-row>
+    <h1>Harmonic Progression</h1>
+    <b-row class="ml-2">
 <!--      TRANSITION MATRIX-->
-      <b-col class="ml-5">
-        <b-container style="width: 650px; background-color: rgba(200, 200, 200, 0.8)">
+      <b-col
+          class="p-2"
+          cols="6"
+          style="background-color: rgba(0, 0, 0, 0.3); border-radius: 10px; overflow: auto">
+        <h2>Backwards Transition Matrix</h2>
+        <b-container style="width: 640px; border-radius: 10px;">
           <b-row>
             <b-col class="mt-3">
               <b-button variant="danger" @click="clear">X</b-button>
@@ -15,7 +19,7 @@
                 class="mt-3"
             >
               <p
-                  :style='{ backgroundColor: harmonies[harmony_label], color: "white"}'
+                  :style='{ backgroundColor: harmonies[harmony_label], color: "white", borderRadius: "30px"}'
               >{{harmony_label}}</p>
             </b-col>
           </b-row>
@@ -28,7 +32,7 @@
               style="text-align: center"
             >
               <p
-                  :style='{ backgroundColor: harmonies[harmony_from], color: "white"}'
+                  :style='{ backgroundColor: harmonies[harmony_from], color: "white", borderRadius: "30px"}'
               >{{harmony_from}}</p>
             </b-col>
             <b-col
@@ -36,7 +40,7 @@
             >
               <b-form-input
                   class="my-2"
-                  style="width:50px;"
+                  style="width:48px;"
                   v-model="transitions[harmony_from][harmony_to]"
               ></b-form-input>
             </b-col>
@@ -44,16 +48,40 @@
         </b-container>
       </b-col>
 <!--      SEQUENCE GENERATION-->
-      <b-col>
-        
+      <b-col
+          class="mx-4 p-4"
+          style="border-radius: 10px; background-color: rgba(0, 0, 0, 0.3); overflow: auto"
+      >
+        <h2>Generation</h2>
+        <b-row v-for="letter in Object.keys(sequences)">
+          <b-col>
+            <p style="font-size: 32px;">{{letter}}:</p>
+          </b-col>
+          <b-col
+            v-for="i in max"
+            v-if="max - i < sequences[letter]['sequenceReverse'].length"
+          >
+            <p style="font-size: 32px;">{{sequences[letter]['sequenceReverse'][max - i]}}</p>
+          </b-col>
+          <b-col
+              v-else
+              style="font-size: 32px;"
+          >
+          </b-col>
+        </b-row>
+        <b-row class="mt-3 mr-3" style="justify-content: end">
+          <b-button variant="success">Generate</b-button>
+        </b-row>
       </b-col>
     </b-row>
 <!--      MARKOV CHAIN GRAPH-->
-    <b-row class="ml-5 mt-5 mb-2">
+    <b-row class="ml-2 mt-5 mb-2">
       <b-button @click="redraw" style="background-color: purple">Refresh</b-button>
     </b-row>
-    <b-row class="mx-5" style="border: solid purple;">
-      <svg id="mySVG" width="2000px" height="600px"></svg>
+    <b-row
+        class="mx-2 mb-2"
+        style="border-radius: 10px; background-color: rgba(255, 255, 255, 0.8)">
+      <svg id="mySVG" width="100%" height="600px"></svg>
     </b-row>
   </div>
 </template>
@@ -86,14 +114,17 @@ let transitions = ref({
   'vii': ref({'I': 1.0, 'ii': 0, 'iii': 0, 'IV': 0, "V": 0, "vi": 0, "vii": 0})
 })
 
-
 let mySVG;
 let simulation;
 
-// watch(() => JSON.parse(JSON.stringify(transitions.value)), () => {
-//   console.log(transitions)
-//   redraw()
-// })
+let max = 6 //Maximum of maxLen
+let sequences = ref({
+  "a": ref({"sequenceReverse": ['I', 'V'], "maxLen": 6}),
+  "b": ref({"sequenceReverse": ['I', 'V', 'ii', 'IV'], "maxLen": 4}),
+  "c": ref({"sequenceReverse": [], "maxLen": 5}),
+  "d": ref({"sequenceReverse": [], "maxLen": 3}),
+})
+
 
 onMounted(() => {
   harmonies = {
@@ -225,7 +256,11 @@ svg {
 }
 
 p {
-  font-size: 32px;
+  font-size: 24px;
+}
+
+p, h1, h2, col {
+  color: white;
 }
 
 </style>

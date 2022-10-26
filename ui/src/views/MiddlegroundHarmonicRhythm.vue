@@ -1,8 +1,8 @@
 <template>
-  <div class="m-5">
+  <div>
     <h1>Harmonic Rhythm</h1>
 <!--      A-->
-    <b-row class="container m-2">
+    <b-row class="container mb-3 mx-3 letter-group">
       <div id="boo_a"></div>
       <div>
         <h2>A</h2>
@@ -16,7 +16,7 @@
       </div>
     </b-row>
 <!--      B-->
-    <b-row class="container m-2">
+    <b-row class="container mb-3 mx-3 letter-group">
       <div id="boo_b"></div>
       <div>
         <h2>B</h2>
@@ -30,7 +30,7 @@
       </div>
     </b-row>
 <!--      C-->
-    <b-row class="container m-2">
+    <b-row class="container mb-3 mx-3 letter-group">
       <div id="boo_c"></div>
       <div>
         <h2>C</h2>
@@ -44,7 +44,7 @@
       </div>
     </b-row>
 <!--      D-->
-    <b-row class="container m-2">
+    <b-row class="container mb-3 mx-3 letter-group">
       <div id="boo_d"></div>
       <div>
         <h2>D</h2>
@@ -245,9 +245,22 @@ function _dotted(staveNote, noteIndex = -1) {
 
 
 <style scoped>
+h1 {
+  color: white;
+}
+
 .btn {
   background-color: rgb(150, 100, 100);
   font-size: 32px;
+}
+
+.letter-group {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+}
+
+.container {
+  padding-bottom: 20px;
 }
 
 </style>

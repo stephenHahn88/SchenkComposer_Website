@@ -46,7 +46,7 @@
       <b-row>
         <b-col>
           <b-button
-              id="AC"
+              class="a"
               :disabled="cadence_disabled[0]"
               v-on:click="cadencePress('[AC]')"
           >
@@ -55,7 +55,7 @@
         </b-col>
         <b-col>
           <b-button
-              id="HC"
+              class="a"
               :disabled="cadence_disabled[1]"
               v-on:click="cadencePress('[HC]')"
           >
@@ -188,6 +188,14 @@ function backspace() {
 </script>
 
 <style scoped>
+h1, h2, p {
+  color: white;
+}
+
+p {
+  font-size: 32px;
+}
+
 #erase {
   background-color: red;
 }
@@ -197,27 +205,7 @@ function backspace() {
 
 .btn {
   width: 100%;
-}
-
-.d {
-  background-color: rgb(50, 0, 50);
-}
-.d:hover, .d:disabled, .d:active, .d:focus {
-  background-color: rgb(100, 0, 100);
-}
-
-.c {
-  background-color: rgb(100, 0, 100);
-}
-.c:hover, .c:disabled, .c:active, .c:focus {
-  background-color: rgb(150, 0, 150);
-}
-
-.b {
-  background-color: rgb(200, 0, 200);
-}
-.b:hover, .b:disabled, .b:active, .b:focus {
-  background-color: rgb(150, 0, 150);
+  font-size: 28px;
 }
 
 .a, a:enabled {
@@ -262,8 +250,5 @@ function backspace() {
 }
 #confirm:hover, #confirm:disabled {
   background-color: rgb(0, 100, 0);
-}
-.btn {
-  font-size: 18px;
 }
 </style>

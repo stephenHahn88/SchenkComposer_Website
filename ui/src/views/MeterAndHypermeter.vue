@@ -7,8 +7,8 @@
       <b-col
           v-for="subphrase in phraseStructure"
       >
-        <b-row class="text">{{ subphrase.at(0) === '[' ? subphrase: '&nbsp;'}}</b-row>
-        <b-row class="mb-3 pl-4 text">{{ subphrase.at(0) !== '[' ? subphrase: '&nbsp;'}}</b-row>
+        <b-row class="text"><p>{{ subphrase.at(0) === '[' ? subphrase: '&nbsp;'}}</p></b-row>
+        <b-row class="mb-3 pl-4 text"><p>{{ subphrase.at(0) !== '[' ? subphrase: '&nbsp;'}}</p></b-row>
       </b-col>
     </b-row>
 <!--    METER AND HYPERMETER-->
@@ -76,5 +76,9 @@ const handleConfirm = () => {
 <style scoped>
 .text {
   font-size: 32px;
+}
+
+h1, p {
+  color: white;
 }
 </style>

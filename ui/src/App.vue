@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="background">
 <!--    NAVBAR-->
     <b-navbar toggleable="lg" type="light" variant="light">
       <b-navbar-brand href="/">
@@ -21,7 +21,7 @@
     <b-row>
       <b-col class="mt-5">
 <!--        DAG-->
-        <div style="width: 750px">
+        <div class="p-2 ml-3" style="width: 700px; background-color: rgba(0, 0, 0, 0.6); border-radius: 30px;">
           <SchenkComposerDAG
               :phraseAnim="phrase_anim"
               :meter-anim="meter_anim"
@@ -30,8 +30,10 @@
           ></SchenkComposerDAG>
         </div>
       </b-col>
-<!--      ROUTER VIEW-->
-      <b-col class="mr-5 mt-5">
+    </b-row>
+    <!--      ROUTER VIEW-->
+    <b-row>
+      <b-col class="ml-4 mr-4 mt-5 p-3" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px">
         <router-view
             @psanimate="phraseStructureAnimate($event)"
             @meteranimate="meterAnimate($event)"
@@ -41,9 +43,6 @@
             @fgrhythmanimate="fgrhythmAnimate($event)"
         />
       </b-col>
-    </b-row>
-    <b-row>
-
     </b-row>
   </div>
 </template>
@@ -87,5 +86,28 @@ function fgrhythmAnimate() {
   justify-items: center;
   align-content: space-evenly;
   align-items: center;
+}
+
+.background {
+  position: relative;
+}
+
+.background::before {
+  background-image: url("static/background_blue.jpg");
+  margin: 0;
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
+
+  display: block;
+  background-size:cover;
+  width: 100%;
+  height: 100%;
+
+  -webkit-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
 }
 </style>

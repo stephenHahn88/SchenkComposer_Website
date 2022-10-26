@@ -2,9 +2,7 @@
   <div>
     <b-container class="text-center">
       <b-row class="mb-4 center-text">
-        <b-col>
-
-        </b-col>
+        <b-col></b-col>
         <b-col>
           <b-button
               class="phrase"
