@@ -9,9 +9,10 @@
           <b-button
               id="erase"
               style="text-align: center;"
-              v-on:click="erasePhrase()"
+              @click="erasePhrase()"
+              variant="danger"
           >
-            Erase
+            X
           </b-button>
         </b-col>
       </b-row>
@@ -23,7 +24,7 @@
               class="a"
               :id="letter"
               :disabled="letter_disabled[i]"
-              v-on:click="letterPress(letter)"
+              @click="letterPress(letter)"
           >
             {{letter}}
           </b-button>
@@ -35,7 +36,7 @@
               class="a"
               :id="`${letter}'`"
               :disabled='letter_disabled[i+4]'
-              v-on:click="letterPress(`${letter}'`)"
+              @click="letterPress(`${letter}'`)"
           >
             {{letter}}'
           </b-button>
@@ -48,7 +49,7 @@
           <b-button
               class="a"
               :disabled="cadence_disabled[0]"
-              v-on:click="cadencePress('[AC]')"
+              @click="cadencePress('[AC]')"
           >
             Authentic Cadence
           </b-button>
@@ -57,7 +58,7 @@
           <b-button
               class="a"
               :disabled="cadence_disabled[1]"
-              v-on:click="cadencePress('[HC]')"
+              @click="cadencePress('[HC]')"
           >
             Half Cadence
           </b-button>
@@ -70,8 +71,9 @@
         <b-col>
           <b-button
             id="backspace"
-            v-on:click="backspace()"
+            @click="backspace()"
             :disabled="backspace_disabled"
+            variant="warning"
           >
             &#8592
           </b-button>
@@ -198,13 +200,6 @@ p {
   font-size: 32px;
 }
 
-#erase {
-  background-color: red;
-}
-#erase:hover {
-  background-color: rgb(200, 0, 0);
-}
-
 .btn {
   width: 100%;
   font-size: 28px;
@@ -230,13 +225,6 @@ p {
 }
 #HC:hover, #HC:disabled {
   background-color: rgb(100, 0, 100);
-}
-
-#backspace {
-  background-color: rgb(150, 150, 0);
-}
-#backspace:hover {
-  background-color: rgb(120, 120, 0);
 }
 
 #generate {

@@ -7,7 +7,7 @@
           class="p-2"
           cols="6"
           style="background-color: rgba(0, 0, 0, 0.3); border-radius: 10px; overflow: auto">
-        <h2>Backwards Transition Matrix</h2>
+        <h2>Transition Matrix</h2>
         <b-container style="width: 640px; border-radius: 10px;">
           <b-row>
             <b-col class="mt-3">
@@ -52,7 +52,26 @@
           class="mx-4 p-4"
           style="border-radius: 10px; background-color: rgba(0, 0, 0, 0.3); overflow: auto"
       >
-        <h2>Generation</h2>
+        <b-row class="mb-2">
+          <b-col>
+            <h2>Generation</h2>
+          </b-col>
+          <b-col></b-col>
+          <b-col>
+            <b-button
+                variant="warning"
+                @click="backspace()"
+                style="width: 100%; font-size: 20px"
+            >&#8592</b-button>
+          </b-col>
+          <b-col>
+            <b-button
+                variant="danger"
+                @click="erase()"
+                style="font-size: 20px"
+            >X</b-button>
+          </b-col>
+        </b-row>
         <b-row
             v-for="letter in Object.keys(sequences)"
             @click="selectRow(letter)"
@@ -79,7 +98,10 @@
             v-for="(color, harmony, i) in harmonies"
             :key="i"
           >
-            <b-button :style="{ backgroundColor: color}">{{harmony}}</b-button>
+            <b-button
+                :style="{ backgroundColor: color}"
+                @click="addHarmony(harmony)"
+            >{{harmony}}</b-button>
           </b-col>
         </b-row>
         <b-row class="mt-3 mr-3" style="justify-content: end">
@@ -148,6 +170,28 @@ function selectRow(letter) {
   }
 }
 
+function _findActiveLetter() {
+  for (let l in sequences.value) {
+    if (sequences.value[l]['selected'] === 'active') {
+      return l
+    }
+  }
+}
+
+function addHarmony(harmony) {
+  let letter = _findActiveLetter()
+  sequences.value[letter]['sequenceReverse'].push(harmony)
+}
+
+function backspace() {
+  let letter = _findActiveLetter()
+  sequences.value[letter]['sequenceReverse'].pop()
+}
+
+function erase() {
+  let letter = _findActiveLetter()
+  sequences.value[letter]['sequenceReverse'] = []
+}
 
 onMounted(() => {
   harmonies = {
@@ -173,49 +217,7 @@ onMounted(() => {
   simulation = new ForceSimulation(mySVG);
   simulation.templateStore.add("hexagon", Hexagon)
 
-  let nodes = []
-  for (let harmony in harmonies) {
-    nodes.push({
-      id: harmony,
-      shape: {
-        type: "hexagon",
-        scale: 0.5
-      },
-      payload: {
-        title: harmony,
-        color: harmonies[harmony]
-      }
-    })
-  }
-
-  let links = []
-  for (let from in transitions.value) {
-    for (let to in transitions.value[from]) {
-      if (from === to || transitions.value[from][to] === 0) {
-        continue
-      }
-      let distribution = {...transitions.value[from]}
-      distribution = _.mapValues(distribution, parseFloat)
-      let total = _.sum(Object.values(distribution))
-      links.push({
-        source: from,
-        target: to,
-        type: "solid",
-        directed: true,
-        label: `${_.round(_.round(
-            parseFloat(transitions.value[from][to]) / total, 3
-        ) * 100, 1)}%`,
-        strength: "weak",
-        width: 5
-      })
-    }
-  }
-
-  const graph = {
-    nodes: nodes,
-    links: links
-  }
-  simulation.render(graph)
+  redraw()
 })
 
 function redraw() {
@@ -243,16 +245,17 @@ function redraw() {
       let distribution = {...transitions.value[from]}
       distribution = _.mapValues(distribution, parseFloat)
       let total = _.sum(Object.values(distribution))
+      let percent = _.round(_.round(
+          parseFloat(transitions.value[from][to]) / total, 3
+      ) * 100, 1)
       links.push({
         source: from,
         target: to,
         type: "solid",
         directed: true,
-        label: `${_.round(_.round(
-            parseFloat(transitions.value[from][to]) / total, 3
-        ) * 100, 1)}%`,
+        label: `${percent}%`,
         strength: "weak",
-        width: 5
+        width: 0.15 * percent
       })
     }
   }
