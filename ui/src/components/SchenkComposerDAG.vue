@@ -64,7 +64,11 @@
           <b-button class="rhythm" id="fgmr">Melodic<br>Rhythm</b-button>
         </b-col>
         <b-col>
-          <b-button class="melody" id="fgm">Foreground Melody</b-button>
+          <b-button
+              class="melody"
+              id="fgm"
+              @click="redirect('/foreground-melody')"
+          >Foreground Melody</b-button>
         </b-col>
       </b-row>
     </b-container>

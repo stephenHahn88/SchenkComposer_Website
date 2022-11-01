@@ -2,7 +2,7 @@
   <div class="background">
 <!--    NAVBAR-->
     <b-navbar toggleable="lg" style="background-color: rgba(255, 255, 255, 0.2)">
-      <b-navbar-brand href="/">
+      <b-navbar-brand @click="router.push({path: '/'})">
 <!--        NAVBAR IMAGE-->
         <img
             src="@/static/schenkcomposer_logo.svg"
@@ -14,14 +14,14 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-          <b-nav-item></b-nav-item>
+          <b-nav-item @click="router.push({path: '/login'})">Login</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
     <b-row>
       <b-col class="mt-5">
 <!--        DAG-->
-        <div class="p-2 ml-3" style="width: 700px; background-color: rgba(0, 0, 0, 0.6); border-radius: 30px;">
+        <div class="p-2 ml-3" style="width: 700px; background-color: rgba(0, 0, 0, 0.6); border-radius: 30px; overflow: auto">
           <SchenkComposerDAG
               :phraseAnim="phrase_anim"
               :meter-anim="meter_anim"
@@ -50,6 +50,7 @@
 <script setup lang="ts">
 import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
 import {ref, Ref, watch} from 'vue'
+import {router} from '@/main'
 
 let phrase_anim = ref(false)
 let meter_anim = ref(false)

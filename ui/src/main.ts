@@ -3,10 +3,12 @@ import VueRouter from 'vue-router'
 
 import App from '@/App.vue'
 import Home from "@/views/Home.vue"
+import Login from "@/views/Login.vue"
 import PhraseStructure from "@/views/PhraseStructure.vue"
 import MeterAndHypermeter from "@/views/MeterAndHypermeter.vue"
 import MiddlegroundHarmonicRhythm from "@/views/MiddlegroundHarmonicRhythm.vue"
 import HarmonicProgression from "@/views/HarmonicProgression.vue"
+import ForegroundMelody from "@/views/ForegroundMelody.vue"
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -26,6 +28,10 @@ export const router = new VueRouter({
       component: Home
     },
     {
+      path: "/login",
+      component: Login
+    },
+    {
       path: "/phrase-structure",
       component: PhraseStructure
     },
@@ -40,6 +46,10 @@ export const router = new VueRouter({
     {
       path: "/harmonic-progression",
       component: HarmonicProgression
+    },
+    {
+      path: "/foreground-melody",
+      component: ForegroundMelody
     }
   ],
 })
