@@ -10,7 +10,7 @@
         ></b-table>
       </b-col>
 <!--      PRODUCTION RULE KEYBOARD-->
-      <b-col class="m-3" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 10px; overflow: scroll">
+      <b-col class="m-3" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 10px; overflow-x: scroll">
 <!--        OUTPUT GOES HERE-->
         <b-row class="m-1" style="width: 400px; height: 50px; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
           <b-col
@@ -62,12 +62,12 @@
               <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[9])">9</b-button></b-col>
             </b-row>
             <b-row>
+              <b-col class="m-1"><b-button variant="warning" @click="backspace()">&#8592</b-button></b-col>
               <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[0])">0</b-button></b-col>
-              <b-col class="m-1"><b-button variant="warning" @click="backspace()"><-</b-button></b-col>
               <b-col class="m-1"><b-button variant="danger" @click="erase()">X</b-button></b-col>
             </b-row>
             <b-row>
-              <b-col class="m-1"><b-button variant="success" @click="confirm()">Add</b-button></b-col>
+              <b-col class="m-1"><b-button variant="success" @click="addToTable()">Add</b-button></b-col>
             </b-row>
           </b-col>
         </b-row>
@@ -93,7 +93,7 @@ const down = "\u2198"+"\uFE0E"
 const straight = "\u2192"+"\uFE0E"
 const sub = ["₀", "₁", "₂", "₃", "₄", "₅", "₆", "₇", "₈", "₉"]
 
-let productionRules = [
+let productionRules = ref([
   {from: down+sub[4], to: up+sub[2]+down+sub[2], count: 3},
   {from: down+sub[5], to: up+sub[3]+down+sub[2], count: 4},
   {from: down+sub[3], to: up+sub[2]+down+sub[1], count: 2},
@@ -105,10 +105,10 @@ let productionRules = [
   {from: down+sub[4], to: up+sub[2]+down+sub[2], count: 3},
   {from: down+sub[5], to: up+sub[3]+down+sub[2], count: 4},
   {from: down+sub[3], to: up+sub[2]+down+sub[1], count: 2}
-]
+])
 
 let newRule: Ref = ref({
-  "from": ref({value: [], selected: "false"}),
+  "from": ref({value: [], selected: "true"}),
   "to": ref({value: [], selected: "false"}),
   "count": ref({value: [], selected: "false"})
 })
@@ -125,11 +125,13 @@ function _findActivePart(): string {
       return l
     }
   }
+  return 'from'
 }
 
 function subToNum(subscript: string): string {
   return sub.indexOf(subscript).toString()
 }
+
 function addSymbol(symbol: string) {
   let part = _findActivePart()
   if (part === 'count') {
@@ -149,7 +151,15 @@ function erase() {
   newRule.value[part]['value'] = []
 }
 
-let strokeColor = "#FFFFFF"
+function addToTable() {
+  productionRules.value.push({
+    from: newRule.value["from"]["value"].join(""),
+    to: newRule.value["to"]["value"].join(""),
+    count: newRule.value["count"]["value"].join("")
+  })
+}
+
+let strokeColor = "#000000"
 let terminalColor = "#8888FF"
 let variableColor = "#FF00FF"
 let realizationColor = "#FFFFFF"
