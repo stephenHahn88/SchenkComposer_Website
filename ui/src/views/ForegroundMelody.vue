@@ -1,15 +1,99 @@
 <template>
   <div>
-    <div id="myDiagramDiv" style="width:100%; height: 500px;"></div>
+    <b-row>
+<!--      PRODUCTION RULES-->
+      <b-col class="m-3" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 10px; overflow-y: scroll; height: 400px;">
+        <b-table
+            class="mt-3"
+            :items="productionRules"
+            sort-by="from"
+            :sort-desc="true"
+            hover
+        ></b-table>
+      </b-col>
+<!--      PRODUCTION RULE KEYBOARD-->
+      <b-col class="m-3" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 10px; overflow: scroll">
+<!--        OUTPUT GOES HERE-->
+        <b-row class="m-1" style="width: 500px; height: 50px; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
+          <b-col>From</b-col>
+          <b-col>To</b-col>
+          <b-col>Count</b-col>
+        </b-row>
+<!--        BEGIN GRID OF KEYBOARD-->
+        <b-row class="m-1" style="width: 500px; background-color: rgba(255, 255, 255, 0.6); border-radius:  10px;">
+          <b-col>
+            <b-row>
+              <b-col class="m-2"><b-button variant="primary">{{up}}</b-button></b-col>
+              <b-col class="m-2"><b-button variant="primary">{{straight}}</b-button></b-col>
+              <b-col class="m-2"><b-button variant="primary">{{down}}</b-button></b-col>
+            </b-row>
+            <b-row>
+              <b-col class="m-2"><b-button variant="dark">1</b-button></b-col>
+              <b-col class="m-2"><b-button variant="dark">2</b-button></b-col>
+              <b-col class="m-2"><b-button variant="dark">3</b-button></b-col>
+            </b-row>
+            <b-row>
+              <b-col class="m-2"><b-button variant="dark">4</b-button></b-col>
+              <b-col class="m-2"><b-button variant="dark">5</b-button></b-col>
+              <b-col class="m-2"><b-button variant="dark">6</b-button></b-col>
+            </b-row>
+            <b-row>
+              <b-col class="m-2"><b-button variant="dark">7</b-button></b-col>
+              <b-col class="m-2"><b-button variant="dark">8</b-button></b-col>
+              <b-col class="m-2"><b-button variant="dark">9</b-button></b-col>
+            </b-row>
+          </b-col>
+        </b-row>
+      </b-col>
+    </b-row>
+    <b-row>
+<!--      RESULT VISUALIZATION-->
+      <b-col class="m-3" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
+        <div id="myDiagramDiv" style="width:100%; height: 500px;"></div>
+      </b-col>
+    </b-row>
+    <b-button @click="test">test</b-button>
   </div>
 </template>
 
 <script setup lang="ts">
 //THE FOLLOWING IS BASED ON https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/parseTree.html
 import go from 'gojs'
-import {onMounted} from "vue";
+import {onMounted, ref, Ref} from "vue";
 
-let nodeDataArray;
+const up = "\u2197"+"\uFE0E"
+const down = "\u2198"+"\uFE0E"
+const straight = "\u2192"+"\uFE0E"
+const sub = ["₀", "₁", "₂", "₃", "₄", "₅", "₆", "₇", "₈", "₉"]
+
+let productionRules = [
+  {from: down+sub[4], to: up+sub[2]+down+sub[2], count: 3},
+  {from: down+sub[5], to: up+sub[3]+down+sub[2], count: 4},
+  {from: down+sub[3], to: up+sub[2]+down+sub[1], count: 2},
+  {from: down+sub[4], to: up+sub[2]+down+sub[2], count: 3},
+  {from: down+sub[5], to: up+sub[3]+down+sub[2], count: 4},
+  {from: down+sub[3], to: up+sub[2]+down+sub[1], count: 2},
+  {from: down+sub[5], to: up+sub[3]+down+sub[2], count: 4},
+  {from: down+sub[3], to: up+sub[2]+down+sub[1], count: 2},
+  {from: down+sub[4], to: up+sub[2]+down+sub[2], count: 3},
+  {from: down+sub[5], to: up+sub[3]+down+sub[2], count: 4},
+  {from: down+sub[3], to: up+sub[2]+down+sub[1], count: 2}
+]
+
+let strokeColor = "#FFFFFF"
+let terminalColor = "#8888FF"
+let variableColor = "#FF00FF"
+let realizationColor = "#FFFFFF"
+let nodeDataArray = ref([
+  { key: 1, text: up + sub[4], fill: variableColor, stroke: strokeColor },
+  { key: 2, text: up + sub[2], fill: variableColor, stroke: strokeColor, parent: 1 },
+  { key: 3, text: down + sub[2], fill: variableColor, stroke: strokeColor, parent: 1 },
+  { key: 4, text: up + sub[1], fill: terminalColor, stroke: strokeColor, parent: 2 },
+  { key: 5, text: up + sub[1], fill: terminalColor, stroke: strokeColor, parent: 2 },
+  { key: 6, text: up + sub[1], fill: terminalColor, stroke: strokeColor, parent: 3 },
+  { key: 7, text: down + sub[1], fill: terminalColor, stroke: strokeColor, parent: 3 },
+])
+let myDiagram: go.Diagram;
 
 class FlatTreeLayout extends go.TreeLayout {
   commitLayout() {
@@ -27,9 +111,9 @@ class FlatTreeLayout extends go.TreeLayout {
   }
 }
 
-function init() {
+function drawTree() {
   const $ = go.GraphObject.make;
-  let myDiagram = $(go.Diagram, "myDiagramDiv", {
+  myDiagram = $(go.Diagram, "myDiagramDiv", {
     allowCopy: false,
     allowDelete: false,
     allowMove: false,
@@ -59,7 +143,7 @@ function init() {
           ),
           $(
               go.TextBlock,
-              { font: "bold 12pt Arial, sans-serif", margin: new go.Margin(4, 2, 2, 2) },
+              { font: "bold 32pt Arial, sans-serif", margin: new go.Margin(10, 10, 5, 10) },
               new go.Binding("text")
           )
       ),
@@ -70,59 +154,40 @@ function init() {
       )
   )
 
-  myDiagram.linkTemplate = $(go.Link, $(go.Shape, {strokeWidth: 1.5}))
+  myDiagram.linkTemplate = $(
+      go.Link,
+      $(
+          go.Shape,
+          {strokeWidth: 5}
+      )
+  )
 
-  let strokeColor = "#FFFFFF"
-  let terminalColor = "#8888FF"
-  let variableColor = "#FF00FF"
-  let realizationColor = "#FFFFFF"
-  nodeDataArray = [
-    { key: 1, text: "Sentence", fill: variableColor, stroke: strokeColor },
-    { key: 2, text: "NP", fill: variableColor, stroke: strokeColor, parent: 1 },
-    { key: 3, text: "DT", fill: terminalColor, stroke: strokeColor, parent: 2 },
-    { key: 4, text: "A", fill: realizationColor, stroke: strokeColor, parent: 3 },
-    { key: 5, text: "JJ", fill: terminalColor, stroke: strokeColor, parent: 2 },
-    { key: 6, text: "rare", fill: realizationColor, stroke: strokeColor, parent: 5 },
-    { key: 7, text: "JJ", fill: terminalColor, stroke: strokeColor, parent: 2 },
-    { key: 8, text: "black", fill: realizationColor, stroke: strokeColor, parent: 7 },
-    { key: 9, text: "NN", fill: terminalColor, stroke: strokeColor, parent: 2 },
-    { key: 10, text: "squirrel", fill: realizationColor, stroke: strokeColor, parent: 9 },
-    { key: 11, text: "VP", fill: variableColor, stroke: strokeColor, parent: 1 },
-    { key: 12, text: "VBZ", fill: terminalColor, stroke: strokeColor, parent: 11 },
-    { key: 13, text: "has", fill: realizationColor, stroke: strokeColor, parent: 12 },
-    { key: 14, text: "VP", fill: variableColor, stroke: strokeColor, parent: 11 },
-    { key: 15, text: "VBN", fill: terminalColor, stroke: strokeColor, parent: 14 },
-    { key: 16, text: "become", fill: realizationColor, stroke: strokeColor, parent: 15 },
-    { key: 17, text: "NP", fill: variableColor, stroke: strokeColor, parent: 14 },
-    { key: 18, text: "NP", fill: variableColor, stroke: strokeColor, parent: 17 },
-    { key: 19, text: "DT", fill: terminalColor, stroke: strokeColor, parent: 18 },
-    { key: 20, text: "a", fill: realizationColor, stroke: strokeColor, parent: 19 },
-    { key: 21, text: "JJ", fill: terminalColor, stroke: strokeColor, parent: 18 },
-    { key: 22, text: "regular", fill: realizationColor, stroke: strokeColor, parent: 21 },
-    { key: 23, text: "NN", fill: terminalColor, stroke: strokeColor, parent: 18 },
-    { key: 24, text: "visitor", fill: realizationColor, stroke: strokeColor, parent: 23 },
-    { key: 25, text: "PP", fill: variableColor, stroke: strokeColor, parent: 17 },
-    { key: 26, text: "TO", fill: terminalColor, stroke: strokeColor, parent: 25 },
-    { key: 27, text: "to", fill: realizationColor, stroke: strokeColor, parent: 26 },
-    { key: 28, text: "NP", fill: variableColor, stroke: strokeColor, parent: 25 },
-    { key: 29, text: "DT", fill: terminalColor, stroke: strokeColor, parent: 28 },
-    { key: 30, text: "a", fill: realizationColor, stroke: strokeColor, parent: 29 },
-    { key: 31, text: "JJ", fill: terminalColor, stroke: strokeColor, parent: 28 },
-    { key: 32, text: "suburban", fill: realizationColor, stroke: strokeColor, parent: 31 },
-    { key: 33, text: "NN", fill: terminalColor, stroke: strokeColor, parent: 28 },
-    { key: 34, text: "garden", fill: realizationColor, stroke: strokeColor, parent: 33 },
-    { key: 35, text: ".", fill: terminalColor, stroke: strokeColor, parent: 1 },
-    { key: 36, text: ".", fill: realizationColor, stroke: strokeColor, parent: 35 }
-  ]
+  nodeDataArray = ref([
+    { key: 1, text: up + sub[4], fill: variableColor, stroke: strokeColor },
+    { key: 2, text: up + sub[2], fill: variableColor, stroke: strokeColor, parent: 1 },
+    { key: 3, text: down + sub[2], fill: variableColor, stroke: strokeColor, parent: 1 },
+    { key: 4, text: up + sub[1], fill: terminalColor, stroke: strokeColor, parent: 2 },
+    { key: 5, text: up + sub[1], fill: terminalColor, stroke: strokeColor, parent: 2 },
+    { key: 6, text: up + sub[1], fill: terminalColor, stroke: strokeColor, parent: 3 },
+    { key: 7, text: down + sub[1], fill: terminalColor, stroke: strokeColor, parent: 3 },
+  ])
 
   myDiagram.model = new go.TreeModel({
-    nodeDataArray: nodeDataArray
+    nodeDataArray: nodeDataArray.value
   })
 }
 
 onMounted(() => {
-  init()
+  drawTree()
 })
+
+function test() {
+  console.log(nodeDataArray.value)
+  nodeDataArray.value.pop()
+  myDiagram.model = new go.TreeModel({
+    nodeDataArray: nodeDataArray.value
+  })
+}
 </script>
 
 <style scoped>
@@ -130,5 +195,11 @@ onMounted(() => {
   position: absolute;
   width: 1000px;
   height: 1000px;
+}
+
+.btn {
+  width: 100%;
+  height: 100%;
+  font-size: 32px;
 }
 </style>
