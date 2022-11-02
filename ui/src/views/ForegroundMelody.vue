@@ -6,41 +6,68 @@
         <b-table
             class="mt-3"
             :items="productionRules"
-            sort-by="from"
-            :sort-desc="true"
             hover
         ></b-table>
       </b-col>
 <!--      PRODUCTION RULE KEYBOARD-->
       <b-col class="m-3" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 10px; overflow: scroll">
 <!--        OUTPUT GOES HERE-->
-        <b-row class="m-1" style="width: 500px; height: 50px; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
-          <b-col>From</b-col>
-          <b-col>To</b-col>
-          <b-col>Count</b-col>
+        <b-row class="m-1" style="width: 400px; height: 50px; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
+          <b-col
+              @click="selectPart('from')"
+              :class="newRule['from']['selected']"
+              class="hoverable"
+          >
+            From:<br/>
+            {{newRule['from']['value'].join("")}}
+          </b-col>
+          <b-col
+              @click="selectPart('to')"
+              :class="newRule['to']['selected']"
+              class="hoverable"
+          >
+            To:<br/>
+            {{newRule['to']['value'].join("")}}
+          </b-col>
+          <b-col
+              @click="selectPart('count')"
+              :class="newRule['count']['selected']"
+              class="hoverable"
+          >
+            Count:<br/>
+            {{newRule['count']['value'].join("")}}
+          </b-col>
         </b-row>
 <!--        BEGIN GRID OF KEYBOARD-->
-        <b-row class="m-1" style="width: 500px; background-color: rgba(255, 255, 255, 0.6); border-radius:  10px;">
+        <b-row class="m-1 p-2" style="width: 400px; background-color: rgba(255, 255, 255, 0.6); border-radius:  10px;">
           <b-col>
             <b-row>
-              <b-col class="m-2"><b-button variant="primary">{{up}}</b-button></b-col>
-              <b-col class="m-2"><b-button variant="primary">{{straight}}</b-button></b-col>
-              <b-col class="m-2"><b-button variant="primary">{{down}}</b-button></b-col>
+              <b-col class="m-1"><b-button variant="primary" @click="addSymbol(up)">{{up}}</b-button></b-col>
+              <b-col class="m-1"><b-button variant="primary" @click="addSymbol(straight)">{{straight}}</b-button></b-col>
+              <b-col class="m-1"><b-button variant="primary" @click="addSymbol(down)">{{down}}</b-button></b-col>
             </b-row>
             <b-row>
-              <b-col class="m-2"><b-button variant="dark">1</b-button></b-col>
-              <b-col class="m-2"><b-button variant="dark">2</b-button></b-col>
-              <b-col class="m-2"><b-button variant="dark">3</b-button></b-col>
+              <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[1])">1</b-button></b-col>
+              <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[2])">2</b-button></b-col>
+              <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[3])">3</b-button></b-col>
             </b-row>
             <b-row>
-              <b-col class="m-2"><b-button variant="dark">4</b-button></b-col>
-              <b-col class="m-2"><b-button variant="dark">5</b-button></b-col>
-              <b-col class="m-2"><b-button variant="dark">6</b-button></b-col>
+              <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[4])">4</b-button></b-col>
+              <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[5])">5</b-button></b-col>
+              <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[6])">6</b-button></b-col>
             </b-row>
             <b-row>
-              <b-col class="m-2"><b-button variant="dark">7</b-button></b-col>
-              <b-col class="m-2"><b-button variant="dark">8</b-button></b-col>
-              <b-col class="m-2"><b-button variant="dark">9</b-button></b-col>
+              <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[7])">7</b-button></b-col>
+              <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[8])">8</b-button></b-col>
+              <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[9])">9</b-button></b-col>
+            </b-row>
+            <b-row>
+              <b-col class="m-1"><b-button variant="dark" @click="addSymbol(sub[0])">0</b-button></b-col>
+              <b-col class="m-1"><b-button variant="warning" @click="backspace()"><-</b-button></b-col>
+              <b-col class="m-1"><b-button variant="danger" @click="erase()">X</b-button></b-col>
+            </b-row>
+            <b-row>
+              <b-col class="m-1"><b-button variant="success" @click="confirm()">Add</b-button></b-col>
             </b-row>
           </b-col>
         </b-row>
@@ -79,6 +106,48 @@ let productionRules = [
   {from: down+sub[5], to: up+sub[3]+down+sub[2], count: 4},
   {from: down+sub[3], to: up+sub[2]+down+sub[1], count: 2}
 ]
+
+let newRule: Ref = ref({
+  "from": ref({value: [], selected: "false"}),
+  "to": ref({value: [], selected: "false"}),
+  "count": ref({value: [], selected: "false"})
+})
+
+function selectPart(part: "from" | "to" | "count") {
+  for (let p in newRule.value) {
+    newRule.value[p]["selected"] = (p === part).toString();
+  }
+}
+
+function _findActivePart(): string {
+  for (let l in newRule.value) {
+    if (newRule.value[l]['selected'] === 'true') {
+      return l
+    }
+  }
+}
+
+function subToNum(subscript: string): string {
+  return sub.indexOf(subscript).toString()
+}
+function addSymbol(symbol: string) {
+  let part = _findActivePart()
+  if (part === 'count') {
+    newRule.value[part]['value'].push(subToNum(symbol))
+  } else {
+    newRule.value[part]['value'].push(symbol)
+  }
+}
+
+function backspace() {
+  let part = _findActivePart()
+  newRule.value[part]['value'].pop()
+}
+
+function erase() {
+  let part = _findActivePart()
+  newRule.value[part]['value'] = []
+}
 
 let strokeColor = "#FFFFFF"
 let terminalColor = "#8888FF"
@@ -200,6 +269,12 @@ function test() {
 .btn {
   width: 100%;
   height: 100%;
-  font-size: 32px;
+  font-size: 18px;
+}
+
+
+.hoverable:hover, .true {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
 }
 </style>
