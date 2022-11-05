@@ -58,7 +58,7 @@
 
 <script setup lang="ts">
 import {defineEmits, ref, Ref} from 'vue'
-import { Phrase, PhraseUnit } from '@/views/PhraseStructure.vue'
+import { Phrase, PhraseUnit } from '@/views/dagOther/PhraseStructure.vue'
 
 let phraseStructure = ref(['a', "a'", 'b', '[HC]', 'c', "c'", 'd', '[AC]'])
 let numerator = ref("4")

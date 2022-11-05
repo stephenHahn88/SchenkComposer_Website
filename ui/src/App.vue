@@ -15,6 +15,7 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item @click="router.push({path: '/login'})">Login</b-nav-item>
+          <b-nav-item @click="router.push({path: '/my-melodies'})">My Melodies</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>

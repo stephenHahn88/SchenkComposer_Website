@@ -8,9 +8,7 @@ import { Collection, Db, MongoClient, ObjectId } from 'mongodb'
 const url = 'mongodb://127.0.0.1:27017'
 const client = new MongoClient(url)
 let db: Db
-let customers: Collection
-let orders: Collection
-let operators: Collection
+let melodies: Collection
 
 // set up Express
 const app = express()
@@ -26,18 +24,27 @@ const logger = pino({
 app.use(expressPinoLogger({ logger }))
 
 // app routes
-
+app.get("/api/composer", async (req, res) => {
+  // const id = req.params.composerId.toString()
+  // console.log(`hello ${id}`)
+  // const mels = await melodies.find()
+  // console.log(mels)
+  // if (mels == null) {
+  //   res.status(404).json({id})
+  //   return
+  // }
+  console.log("hola!")
+  res.status(200).json({m: "hi"})
+})
 
 // connect to Mongo
 client.connect().then(() => {
   console.log('Connected successfully to MongoDB')
   db = client.db("test")
-  operators = db.collection('operators')
-  orders = db.collection('orders')
-  customers = db.collection('customers')
+  melodies = db.collection('melodies')
 
   // start server
   app.listen(port, () => {
-    console.log(`Smoothie server listening on port ${port}`)
+    console.log(`Server listening on port ${port}`)
   })
 })

@@ -127,7 +127,7 @@ import _ from "lodash";
 import { ForceSimulation } from "@livereader/graphly-d3";
 import "@livereader/graphly-d3/style.css";
 
-import Hexagon from "../static/hexagon"
+import Hexagon from "../../static/hexagon"
 
 let harmonies = {
   'I': 'green',
@@ -154,8 +154,8 @@ let simulation;
 
 let max = 6 //Maximum of maxLen
 let sequences = ref({
-  "a": ref({"sequenceReverse": ['I', 'V'], "maxLen": 6, 'selected': 'inactive'}),
-  "b": ref({"sequenceReverse": ['I', 'V', 'ii', 'IV'], "maxLen": 4, 'selected': 'inactive'}),
+  "a": ref({"sequenceReverse": [], "maxLen": 6, 'selected': 'inactive'}),
+  "b": ref({"sequenceReverse": [], "maxLen": 4, 'selected': 'inactive'}),
   "c": ref({"sequenceReverse": [], "maxLen": 5, 'selected': 'inactive'}),
   "d": ref({"sequenceReverse": [], "maxLen": 3, 'selected': 'inactive'}),
 })

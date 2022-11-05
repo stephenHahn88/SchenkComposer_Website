@@ -21,7 +21,7 @@
       <b-row>
         <b-col v-for="(letter, i) in letters" class="m-1">
           <b-button
-              class="a"
+              variant="dark"
               :id="letter"
               :disabled="letter_disabled[i]"
               @click="letterPress(letter)"
@@ -33,7 +33,7 @@
       <b-row>
         <b-col v-for="(letter, i) in letters" class="m-1">
           <b-button
-              class="a"
+              variant="dark"
               :id="`${letter}'`"
               :disabled='letter_disabled[i+4]'
               @click="letterPress(`${letter}'`)"
@@ -47,7 +47,7 @@
       <b-row>
         <b-col>
           <b-button
-              class="a"
+              variant="dark"
               :disabled="cadence_disabled[0]"
               @click="cadencePress('[AC]')"
           >
@@ -56,7 +56,7 @@
         </b-col>
         <b-col>
           <b-button
-              class="a"
+              variant="dark"
               :disabled="cadence_disabled[1]"
               @click="cadencePress('[HC]')"
           >
@@ -86,7 +86,7 @@
       </b-row>
       <b-row class="mb-5">
         <b-col>
-          <b-button id="generate" style="height:100px;">Get SchenkComposer To Help</b-button>
+          <b-button variant="info" style="height:100px;">Generate</b-button>
         </b-col>
         <b-col>
           <b-button
@@ -203,36 +203,6 @@ p {
 .btn {
   width: 100%;
   font-size: 28px;
-}
-
-.a, a:enabled {
-  background-color: rgb(200, 0, 200);
-}
-.a:hover, .a:disabled, .a:active, .a:focus {
-  background-color: rgb(150, 0, 150);
-}
-
-#AC {
-  background-color: rgb(255, 0, 255);
-  color: black;
-}
-#AC:hover, #AC:disabled {
-  background-color: rgb(200, 0, 200);
-}
-
-#HC {
-  background-color: rgb(50, 0, 50);
-}
-#HC:hover, #HC:disabled {
-  background-color: rgb(100, 0, 100);
-}
-
-#generate {
-  background-color: rgb(250, 0, 250);
-  color: black;
-}
-#generate:hover {
-  background-color: rgb(200, 0, 200);
 }
 
 #confirm {

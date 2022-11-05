@@ -1,64 +1,70 @@
 <template>
   <div>
     <h1>Harmonic Rhythm</h1>
-<!--      A-->
-    <b-row class="mb-3 mx-3 pb-3 pl-3 letter-group">
-      <b-col>
-        <div id="boo_a"></div>
-        <div>
-          <h2>A</h2>
-          <b-button
-              v-for="rhythm in possibleRhythms"
-              v-on:click="placeNotes(rhythm, 'a')"
-              class="mx-3"
-          >
-            {{ rhythm }}
-          </b-button>
-        </div>
-      </b-col>
-    </b-row>
-<!--      B-->
-    <b-row class="mb-3 mx-3 pb-3 pl-3 letter-group">
-      <div id="boo_b"></div>
-      <div>
-        <h2>B</h2>
-        <b-button
-            v-for="rhythm in possibleRhythms"
-            v-on:click="placeNotes(rhythm, 'b')"
-            class="mx-3"
-        >
-          {{ rhythm }}
-        </b-button>
-      </div>
-    </b-row>
-<!--      C-->
-    <b-row class="mb-3 mx-3 pb-3 pl-3 letter-group">
-      <div id="boo_c"></div>
-      <div>
-        <h2>C</h2>
-        <b-button
-            v-for="rhythm in possibleRhythms"
-            v-on:click="placeNotes(rhythm, 'c')"
-            class="mx-3"
-        >
-          {{ rhythm }}
-        </b-button>
-      </div>
-    </b-row>
-<!--      D-->
-    <b-row class="mb-3 mx-3 pb-3 pl-3 letter-group">
-      <div id="boo_d"></div>
-      <div>
-        <h2>D</h2>
-        <b-button
-            v-for="rhythm in possibleRhythms"
-            v-on:click="placeNotes(rhythm, 'd')"
-            class="mx-3"
-        >
-          {{ rhythm }}
-        </b-button>
-      </div>
-    </b-row>
+    <b-tabs
+        content-class="mt-3"
+        fill
+        pills
+        no-fade
+        style="font-size: 32px"
+    >
+      <b-tab active title="A">
+        <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
+          <div id="boo_a" style="overflow: auto;"></div>
+          <div class="mt-3">
+            <b-button
+                v-for="rhythm in possibleRhythms"
+                v-on:click="placeNotes(rhythm, 'a')"
+                class="mx-3"
+            >
+              {{ rhythm }}
+            </b-button>
+          </div>
+        </b-row>
+      </b-tab>
+      <b-tab title="B" title-item-class="mytab">
+        <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
+          <div id="boo_b" style="overflow: auto;"></div>
+          <div class="mt-3">
+            <b-button
+                v-for="rhythm in possibleRhythms"
+                v-on:click="placeNotes(rhythm, 'b')"
+                class="mx-3"
+            >
+              {{ rhythm }}
+            </b-button>
+          </div>
+        </b-row>
+      </b-tab>
+      <b-tab title="C" title-item-class="mytab">
+        <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
+          <div id="boo_c" style="overflow: auto;"></div>
+          <div class="mt-3">
+            <b-button
+                v-for="rhythm in possibleRhythms"
+                v-on:click="placeNotes(rhythm, 'c')"
+                class="mx-3"
+            >
+              {{ rhythm }}
+            </b-button>
+          </div>
+        </b-row>
+      </b-tab>
+      <b-tab title="D" title-item-class="mytab">
+        <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
+          <div id="boo_d" style="overflow: auto;"></div>
+          <div class="mt-3">
+            <b-button
+                v-for="rhythm in possibleRhythms"
+                v-on:click="placeNotes(rhythm, 'd')"
+                class="mx-3"
+            >
+              {{ rhythm }}
+            </b-button>
+          </div>
+        </b-row>
+      </b-tab>
+    </b-tabs>
     <b-row>
       <b-col></b-col>
       <b-col></b-col>
@@ -86,7 +92,7 @@ const handleConfirm = () => {
   emit('mgrhythmanimate')
 }
 
-let possibleRhythms = ['♩ ♩ ♩ ♩', '𝅝', '𝅗𝅥 𝅗𝅥', '𝅗𝅥. ♩']
+let possibleRhythms = ['♩ ♩ ♩ ♩', '𝅝', '𝅗𝅥 𝅗𝅥', '𝅗𝅥. ♩', '𝅗𝅥 ♩ ♩']
 
 let renderer_a;
 let context_a;
@@ -111,29 +117,37 @@ let curr_measure_d = 0;
 let totalMeasures;
 let phrase;
 let phraseMeasures;
-let windowWidth;
+let defaultWidth;
 
 onMounted(() => {
+  drawStaves()
+})
+
+function drawStaves() {
   phrase = ['a', "a'", 'b', '[HC]', 'c', "c'", 'd', '[AC]']
   phraseMeasures = { a: 2, b: 4, c: 2, d: 4 }
-  windowWidth = window.innerWidth - 200
+  defaultWidth = 800
+  let rendererSize = defaultWidth * 2
+  let xPart = defaultWidth / 4
+  let height = 10
 
   // A
   totalMeasures = phraseMeasures['a']
   const div_a = document.getElementById('boo_a')
   renderer_a = new Renderer(div_a, Renderer.Backends.SVG)
 
-  renderer_a.resize(windowWidth, 150)
+  renderer_a.resize(rendererSize, 150)
   context_a = renderer_a.getContext()
   context_a.setFont('Arial', 18)
 
   measures_a = []
   for (let i = 0; i < totalMeasures; i++) {
     if (i === 0) {
-      measures_a[i] = new Stave((windowWidth / (totalMeasures + 1)) * i, 40, windowWidth / (totalMeasures + 1) + 40)
+      measures_a[i] = new Stave(xPart * i, height, xPart + 40)
       measures_a[i].addClef('treble').addTimeSignature('4/4')
     } else {
-      measures_a[i] = new Stave(40 + (windowWidth / (totalMeasures + 1)) * i, 40, windowWidth / (totalMeasures + 1))
+      measures_a[i] = new Stave(40 + xPart * i, height, xPart)
+      measures_a[i].measure = i + 1
     }
     measures_a[i].setContext(context_a).draw()
   }
@@ -143,17 +157,18 @@ onMounted(() => {
   const div_b = document.getElementById('boo_b')
   renderer_b = new Renderer(div_b, Renderer.Backends.SVG)
 
-  renderer_b.resize(windowWidth, 150)
+  renderer_b.resize(rendererSize, 150)
   context_b = renderer_b.getContext()
   context_b.setFont('Arial', 18)
 
   measures_b = []
   for (let i = 0; i < totalMeasures; i++) {
     if (i === 0) {
-      measures_b[i] = new Stave((windowWidth / (totalMeasures + 1)) * i, 40, windowWidth / (totalMeasures + 1) + 40)
+      measures_b[i] = new Stave(xPart * i, height, xPart + 40)
       measures_b[i].addClef('treble').addTimeSignature('4/4')
     } else {
-      measures_b[i] = new Stave(40 + (windowWidth / (totalMeasures + 1)) * i, 40, windowWidth / (totalMeasures + 1))
+      measures_b[i] = new Stave(40 + xPart * i, height, xPart)
+      measures_b[i].measure = i + 1
     }
     measures_b[i].setContext(context_b).draw()
   }
@@ -163,17 +178,18 @@ onMounted(() => {
   const div_c = document.getElementById('boo_c')
   renderer_c = new Renderer(div_c, Renderer.Backends.SVG)
 
-  renderer_c.resize(windowWidth, 150)
+  renderer_c.resize(rendererSize, 150)
   context_c = renderer_c.getContext()
   context_c.setFont('Arial', 18)
 
   measures_c = []
   for (let i = 0; i < totalMeasures; i++) {
     if (i === 0) {
-      measures_c[i] = new Stave((windowWidth / (totalMeasures + 1)) * i, 40, windowWidth / (totalMeasures + 1) + 40)
+      measures_c[i] = new Stave(xPart * i, height, xPart + 40)
       measures_c[i].addClef('treble').addTimeSignature('4/4')
     } else {
-      measures_c[i] = new Stave(40 + (windowWidth / (totalMeasures + 1)) * i, 40, windowWidth / (totalMeasures + 1))
+      measures_c[i] = new Stave(40 + xPart * i, height, xPart)
+      measures_c[i].measure = i + 1
     }
     measures_c[i].setContext(context_c).draw()
   }
@@ -183,21 +199,22 @@ onMounted(() => {
   const div_d = document.getElementById('boo_d')
   renderer_d = new Renderer(div_d, Renderer.Backends.SVG)
 
-  renderer_d.resize(windowWidth, 150)
+  renderer_d.resize(rendererSize, 150)
   context_d = renderer_d.getContext()
   context_d.setFont('Arial', 18)
 
   measures_d = []
   for (let i = 0; i < totalMeasures; i++) {
     if (i === 0) {
-      measures_d[i] = new Stave((windowWidth / (totalMeasures + 1)) * i, 40, windowWidth / (totalMeasures + 1) + 40)
+      measures_d[i] = new Stave(xPart * i, height, xPart + 40)
       measures_d[i].addClef('treble').addTimeSignature('4/4')
     } else {
-      measures_d[i] = new Stave(40 + (windowWidth / (totalMeasures + 1)) * i, 40, windowWidth / (totalMeasures + 1))
+      measures_d[i] = new Stave(40 + xPart * i, height, xPart)
+      measures_d[i].measure = i + 1
     }
     measures_d[i].setContext(context_d).draw()
   }
-})
+}
 
 function placeNotes(rhythms, letter) {
   let notes = _parseRhythms(rhythms)

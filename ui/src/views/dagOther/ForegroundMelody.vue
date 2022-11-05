@@ -84,7 +84,6 @@
 </template>
 
 <script setup lang="ts">
-//THE FOLLOWING IS BASED ON https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/parseTree.html
 import go from 'gojs'
 import {onMounted, ref, Ref} from "vue";
 
@@ -159,6 +158,7 @@ function addToTable() {
   })
 }
 
+//THE FOLLOWING IS BASED ON https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/parseTree.html
 let strokeColor = "#000000"
 let terminalColor = "#8888FF"
 let variableColor = "#FF00FF"
@@ -174,16 +174,22 @@ let nodeDataArray = ref([
 ])
 let myDiagram: go.Diagram;
 
+
 class FlatTreeLayout extends go.TreeLayout {
   commitLayout() {
     super.commitLayout();
     let y = -Infinity
+    // @ts-ignore
     this.network.vertexes.each(v => y = Math.max(y, v.node.position.y));
+    // @ts-ignore
     this.network.vertexes.each(v => {
       if (v.destinationEdges.count === 0) {
+        // @ts-ignore
         v.node.moveTo(v.node.position.x, y);
+        // @ts-ignore
         v.node.toEndSegmentLength = Math.abs(v.centerY - y)
       } else {
+        // @ts-ignore
         v.node.toEndSegmentLength = 10;
       }
     })

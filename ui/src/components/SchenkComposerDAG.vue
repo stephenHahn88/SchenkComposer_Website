@@ -5,7 +5,7 @@
         <b-col></b-col>
         <b-col>
           <b-button
-              class="phrase"
+              variant="success"
               id="ps"
               @click="redirect('/phrase-structure')"
           >
@@ -19,7 +19,7 @@
       <b-row class="m-4">
         <b-col>
           <b-button
-              class="rhythm"
+              variant="danger"
               id="mh"
               @click="redirect('/meter-hypermeter')"
           >
@@ -28,16 +28,16 @@
         </b-col>
         <b-col>
           <b-button
-              class="rhythm"
+              variant="danger"
               id="mghr"
-              @click="redirect('/mg-harmonic-rhythm')"
+              @click="redirect('/mg-harmonic-dagRhythm')"
           >
             Harmonic<br>Rhythm
           </b-button>
         </b-col>
         <b-col>
           <b-button
-              class="harmony"
+              variant="info"
               id="mghp"
               @click="redirect('/harmonic-progression')"
           >
@@ -53,7 +53,11 @@
 
         </b-col>
         <b-col>
-          <b-button class="melody" id="mgm">Middleground Melody</b-button>
+          <b-button
+              variant="warning"
+              id="mgm"
+              @click="redirect('/middleground-melody')"
+          >Middleground Melody</b-button>
         </b-col>
       </b-row>
       <b-row class="m-4">
@@ -61,11 +65,11 @@
 
         </b-col>
         <b-col>
-          <b-button class="rhythm" id="fgmr">Melodic<br>Rhythm</b-button>
+          <b-button variant="danger" id="fgmr">Melodic<br>Rhythm</b-button>
         </b-col>
         <b-col>
           <b-button
-              class="melody"
+              variant="warning"
               id="fgm"
               @click="redirect('/foreground-melody')"
           >Foreground Melody</b-button>
@@ -317,35 +321,6 @@ function toggleAnimation(refNames: string[]) {
 </script>
 
 <style scoped>
-.phrase {
-  background-color: rgb(100, 150, 100)
-}
-.phrase:hover, .phrase:active, .phrase:focus {
-  background-color: rgb(80, 130, 80)
-}
-
-
-.rhythm {
-  background-color: rgb(150, 100, 100)
-}
-.rhythm:hover, .rhythm:active, .rhythm:focus {
-  background-color: rgb(130, 80, 80)
-}
-
-.harmony {
-  background-color: rgb(50, 100, 150)
-}
-.harmony:hover, .harmony:active, .harmony:focus {
-  background-color: rgb(30, 80, 130);
-}
-
-.melody {
-  background-color: rgb(200, 180, 50)
-}
-.melody:hover, .melody:active, .melody:focus {
-  background-color: rgb(180, 160, 30)
-}
-
 .btn {
   border-color: rgba(0,0,0,0);
   font-size: 24px;

@@ -4,11 +4,13 @@ import VueRouter from 'vue-router'
 import App from '@/App.vue'
 import Home from "@/views/Home.vue"
 import Login from "@/views/Login.vue"
-import PhraseStructure from "@/views/PhraseStructure.vue"
-import MeterAndHypermeter from "@/views/MeterAndHypermeter.vue"
-import MiddlegroundHarmonicRhythm from "@/views/MiddlegroundHarmonicRhythm.vue"
-import HarmonicProgression from "@/views/HarmonicProgression.vue"
-import ForegroundMelody from "@/views/ForegroundMelody.vue"
+import PhraseStructure from "@/views/dagOther/PhraseStructure.vue"
+import MeterAndHypermeter from "@/views/dagRhythm/MeterAndHypermeter.vue"
+import MiddlegroundHarmonicRhythm from "@/views/dagRhythm/MiddlegroundHarmonicRhythm.vue"
+import HarmonicProgression from "@/views/dagOther/HarmonicProgression.vue"
+import ForegroundMelody from "@/views/dagOther/ForegroundMelody.vue"
+import MyMelodies from "@/views/MyMelodies.vue"
+import MiddlegroundMelody from "@/views/dagOther/MiddlegroundMelody.vue"
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -32,6 +34,10 @@ export const router = new VueRouter({
       component: Login
     },
     {
+      path: "/my-melodies",
+      component: MyMelodies
+    },
+    {
       path: "/phrase-structure",
       component: PhraseStructure
     },
@@ -40,12 +46,16 @@ export const router = new VueRouter({
       component: MeterAndHypermeter
     },
     {
-      path: "/mg-harmonic-rhythm",
+      path: "/mg-harmonic-dagRhythm",
       component: MiddlegroundHarmonicRhythm
     },
     {
       path: "/harmonic-progression",
       component: HarmonicProgression
+    },
+    {
+      path: "/middleground-melody",
+      component: MiddlegroundMelody
     },
     {
       path: "/foreground-melody",
