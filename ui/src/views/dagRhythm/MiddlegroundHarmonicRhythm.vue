@@ -129,7 +129,7 @@ function drawStaves() {
   defaultWidth = 800
   let rendererSize = defaultWidth * 2
   let xPart = defaultWidth / 4
-  let height = 10
+  let height = 0
 
   // A
   totalMeasures = phraseMeasures['a']
@@ -138,6 +138,7 @@ function drawStaves() {
 
   renderer_a.resize(rendererSize, 150)
   context_a = renderer_a.getContext()
+  context_a.scale(1.4, 1.4)
   context_a.setFont('Arial', 18)
 
   measures_a = []
@@ -159,6 +160,7 @@ function drawStaves() {
 
   renderer_b.resize(rendererSize, 150)
   context_b = renderer_b.getContext()
+  context_b.scale(1.4, 1.4)
   context_b.setFont('Arial', 18)
 
   measures_b = []
@@ -180,6 +182,7 @@ function drawStaves() {
 
   renderer_c.resize(rendererSize, 150)
   context_c = renderer_c.getContext()
+  context_c.scale(1.4, 1.4)
   context_c.setFont('Arial', 18)
 
   measures_c = []
@@ -201,6 +204,7 @@ function drawStaves() {
 
   renderer_d.resize(rendererSize, 150)
   context_d = renderer_d.getContext()
+  context_d.scale(1.4, 1.4)
   context_d.setFont('Arial', 18)
 
   measures_d = []
