@@ -31,6 +31,11 @@
           ></SchenkComposerDAG>
         </div>
       </b-col>
+      <b-col class="mt-5">
+        <div class="p-2" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px; overflow: auto">
+          <MusicPlayer></MusicPlayer>
+        </div>
+      </b-col>
     </b-row>
     <!--      ROUTER VIEW-->
     <b-row>
@@ -52,6 +57,7 @@
 import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
 import {ref, Ref, watch} from 'vue'
 import {router} from '@/main'
+import MusicPlayer from "@/components/MusicPlayer.vue";
 
 let phrase_anim = ref(false)
 let meter_anim = ref(false)

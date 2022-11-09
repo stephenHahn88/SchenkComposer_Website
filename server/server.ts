@@ -24,18 +24,23 @@ const logger = pino({
 app.use(expressPinoLogger({ logger }))
 
 // app routes
-app.get("/api/composer", async (req, res) => {
-  // const id = req.params.composerId.toString()
-  // console.log(`hello ${id}`)
-  // const mels = await melodies.find()
-  // console.log(mels)
-  // if (mels == null) {
-  //   res.status(404).json({id})
-  //   return
-  // }
-  console.log("hola!")
-  res.status(200).json({m: "hi"})
+app.get("/api/composer/:composerId", async (req, res) => {
+  const id = req.params.composerId.toString()
+
+  const db = client.db("test")
+  const melodies = db.collection("melodies")
+  const mels = await melodies.find({ composerId: id }).toArray()
+
+  if (mels == null) {
+    res.status(404).json({id})
+    return
+  }
+  res.status(200).json(mels)
 })
+
+
+
+
 
 // connect to Mongo
 client.connect().then(() => {

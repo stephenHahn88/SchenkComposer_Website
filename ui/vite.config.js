@@ -20,10 +20,14 @@ export default defineConfig({
 	server: {
 		port: 8090,
 		proxy: {
-			"^/socket.io": {
+			"^/api": {
 				target: "http://localhost:8095",
-        ws: true
+        		ws: true
 			},
-    }
+			"^/model": {
+				target: "http://localhost:8888",
+				ws: true
+			}
+    	}
 	},
 })
