@@ -38,7 +38,53 @@ app.get("/api/composer/:composerId", async (req, res) => {
   res.status(200).json(mels)
 })
 
+app.put("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) => {
+  const composerId = req.params.composerId.toString()
+  const melodyId = req.params.melodyId.toString()
 
+  const db = client.db("test")
+  const melodies = db.collection("melodies")
+  const result = melodies.updateOne(
+      {
+        composerId: composerId,
+        melodyId: melodyId
+      },
+      {
+        $set: {
+          transitionMatrix: req.body.matrix
+        }
+      },
+      {
+        upsert: true
+      }
+  )
+
+  res.status(200).json({status:"ok"})
+})
+
+app.put("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (req, res) => {
+  const composerId = req.params.composerId.toString()
+  const melodyId = req.params.melodyId.toString()
+
+  const db = client.db("test")
+  const melodies = db.collection("melodies")
+  const result = melodies.updateOne(
+      {
+        composerId: composerId,
+        melodyId: melodyId
+      },
+      {
+        $set: {
+          phraseStructure: req.body.phraseStructure
+        }
+      },
+      {
+        upsert: true
+      }
+  )
+
+  res.status(200).json({status:"ok"})
+})
 
 
 

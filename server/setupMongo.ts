@@ -10,10 +10,12 @@ const melodies: Melody[] = [
   {
     _id: "test1",
     composerId: "1",
+    melodyId: "1",
     composer: "Stephen"
   },
   {
     _id: "test2",
+    melodyId: "1",
     composerId: "2",
     composer: "bob",
     meter: "6/4",
@@ -21,9 +23,25 @@ const melodies: Melody[] = [
   },
   {
     _id: "test3",
+    melodyId: "2",
     composerId: "2",
     composer: "bob",
     meter: "4/4"
+  },
+  {
+    _id: "test4",
+    melodyId: "2",
+    composerId: "1",
+    composer: "Stephen",
+    transitionMatrix: [
+      [0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0],
+      [0,0,0,0,0,0,0],
+    ]
   }
 ]
 

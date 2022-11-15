@@ -4,6 +4,7 @@ type meter = "2/2" | "2/4" | "2/8" | "3/2" | "3/4" | "3/8" | "4/2" | "4/4" | "4/
 export interface Melody {
     _id: string
     composerId: string
+    melodyId: string
     composer: string
     phrase?: phraseUnit[]
     meter?: meter
@@ -13,4 +14,5 @@ export interface Melody {
     mgMelody?: string[]
     fgRhythm?: number[]
     result?: string[]
+    transitionMatrix?: number[][]
 }

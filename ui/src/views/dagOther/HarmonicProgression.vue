@@ -68,6 +68,13 @@
                 ></b-form-input>
               </b-col>
             </b-row>
+            <b-row>
+              <b-button
+                  class="m-4"
+                  variant="success"
+                  @click="saveMatrix"
+              >Save</b-button>
+            </b-row>
           </b-container>
         </b-row>
       </b-col>
@@ -129,7 +136,10 @@
           </b-col>
         </b-row>
         <b-row class="mt-3 mr-3" style="justify-content: end">
-          <b-button variant="success">Generate</b-button>
+          <b-button
+              variant="success"
+              @click="handleGenerate()"
+          >Generate</b-button>
         </b-row>
       </b-col>
     </b-row>
@@ -220,6 +230,37 @@ async function getMatrix(preset) {
   redraw()
 }
 
+async function saveMatrix() {
+  let matrix = []
+  for (let rowName in transitions.value) {
+    let row = []
+    for (let valName in transitions.value[rowName]) {
+      row.push(transitions.value[rowName][valName])
+    }
+    matrix.push(row)
+  }
+  // TODO get current composer and melody ID
+  const requestOptions = {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ "matrix": matrix })
+  }
+  let response = await fetch("/api/composer/1/melody/1/matrix", requestOptions)
+  response = await response.json()
+  console.log(response)
+}
+
+async function handleGenerate() {
+  let letter = _findActiveLetter()
+  // TODO: get length and endHarmony from database
+  let len = 5
+  let endHarmony = "V"
+  let progression = await fetch(`/model/harmonic-progression/${endHarmony}/${len}`)
+  progression = await progression.json()
+  console.log(progression)
+  sequences.value[letter]["sequenceReverse"] = progression["progression"].reverse()
+}
+
 function selectRow(letter) {
   for (let l in sequences.value) {
     if (l === letter) {
@@ -263,16 +304,6 @@ onMounted(() => {
     "VI": 'purple',
     "VII": 'black'
   })
-
-  // transitions = ref({
-  //   'I': ref({'I': 0, 'II': 0.2, 'III': 0.1, 'IV': 0.2, "V": 0.2, "VI": 0.2, "VII": 0.1}),
-  //   'II': ref({'I': 0, 'II': 0, 'III': 0, 'IV': 0, "V": 1, "VI": 0, "VII": 0}),
-  //   'III': ref({'I': 0, 'II': 0.1, 'III': 0, 'IV': 0.6, "V": 0, "VI": 0.3, "VII": 0}),
-  //   'IV': ref({'I': 0, 'II': 0.4, 'III': 0, 'IV': 0, "V": 0.5, "VI": 0, "VII": 0.1}),
-  //   'V': ref({'I': 0.8, 'II': 0, 'III': 0, 'IV': 0, "V": 0, "VI": 0.2, "VII": 0}),
-  //   'VI': ref({'I': 0, 'II': 0.5, 'III': 0.1, 'IV': 0.3, "V": 0.1, "VI": 0, "VII": 0}),
-  //   'VII': ref({'I': 1.0, 'II': 0, 'III': 0, 'IV': 0, "V": 0, "VI": 0, "VII": 0})
-  // })
 
   mySVG = document.getElementById("mySVG");
   simulation = new ForceSimulation(mySVG);
