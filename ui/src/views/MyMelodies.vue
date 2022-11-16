@@ -28,11 +28,32 @@ import {Melody} from '../../../server/data'
 const composerId = ref(1)
 const melodies: Ref<Melody[]> = ref([])
 const fields = [
-  "melodyId",
-  "composer",
+  {
+    key: "melodyId",
+    sortable: true
+  },
+  {
+    key: "composer",
+    sortable: true
+  },
+  {
+    key: "phraseStructure",
+    formatter: (arr: string[] | null) => {
+      if (arr === null) return
+      return arr.join(" ")
+    }
+  },
   {
     key: "meter",
     sortable: true
+  },
+  {
+    key: "hypermeter",
+    label: "Hypermeter (Measures)",
+    formatter: (obj: {"a": number, "b": number, "c": number, "d": number} | null) => {
+      if (obj === null) return
+      return `a:${obj.a} b:${obj.b} c:${obj.c} d:${obj.d}`
+    }
   },
   "harmonicProgression",
   {

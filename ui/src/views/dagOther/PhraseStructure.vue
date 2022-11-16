@@ -92,9 +92,9 @@
           <b-button
               id="confirm"
               style="height:100px;"
-              @click="handleConfirm"
+              @click="savePhrase"
           >
-            Confirm
+            Save
           </b-button>
         </b-col>
       </b-row>
@@ -103,14 +103,10 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, ref, Ref} from 'vue';
+import {computed, defineEmits, ref, Ref, onMounted} from 'vue';
 import {BButton} from "bootstrap-vue";
 
 const emit = defineEmits(['psanimate'])
-
-const handleConfirm = () => {
-  emit('psanimate')
-}
 
 let letters = ['a', 'b', 'c', 'd']
 
@@ -126,6 +122,13 @@ let letter_disabled: Ref<boolean[]> = ref([
 let cadence_disabled: Ref<boolean[]> = ref([true, true])
 let backspace_disabled = ref(true)
 
+onMounted(async () => {
+  //TODO get current melody and composer id
+  let ps = await fetch("/api/composer/1/melody/1/phrase-structure")
+  phrase.value = await ps.json()
+  checkButtonDisability()
+})
+
 function erasePhrase() {
   phrase.value = []
   letter_disabled.value = [false, true, true, true, true, true, true, true]
@@ -133,6 +136,7 @@ function erasePhrase() {
 }
 
 function checkButtonDisability() {
+  backspace_disabled.value = phrase.value.length === 0
   if (phrase.value.includes('d')) {
     letter_disabled.value = [false, false, false, false, false, false, false, false];
     return
@@ -189,6 +193,18 @@ function backspace() {
   }
 }
 
+async function savePhrase() {
+  const requestOptions = {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ "phraseStructure": phrase.value })
+  }
+  //TODO get current composer and melody ID
+  let response = await fetch("/api/composer/1/melody/1/phrase-structure", requestOptions)
+  let json = await response.json()
+  console.log(json)
+  emit('psanimate')
+}
 </script>
 
 <style scoped>
