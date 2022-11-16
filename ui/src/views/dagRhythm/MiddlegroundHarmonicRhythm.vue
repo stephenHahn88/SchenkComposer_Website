@@ -12,13 +12,16 @@
           v-for="letter in ['a','b','c','d']"
           :title="letter.toUpperCase()"
       >
+
         <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
+          <b-button variant="warning" @click="backspace(letter)" class="m-2">&#8592</b-button>
           <div :id="`boo_${letter}`" style="overflow: auto;"></div>
           <div class="mt-3">
             <b-button
-                v-for="rhythm in possibleRhythms"
+                v-for="rhythm in possibleRhythms[meter]"
                 v-on:click="placeNotes(rhythm, letter)"
                 class="mx-3"
+                variant="primary"
             >
               {{ rhythm }}
             </b-button>
@@ -42,7 +45,7 @@
 </template>
 
 <script setup>
-import {onMounted, defineProps} from 'vue'
+import {onMounted, defineProps, ref} from 'vue'
 import Vex from 'vexflow'
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
@@ -53,17 +56,29 @@ const handleConfirm = () => {
   emit('mgrhythmanimate')
 }
 
-let possibleRhythms = ['♩ ♩ ♩ ♩', '𝅝', '𝅗𝅥 𝅗𝅥', '𝅗𝅥. ♩', '𝅗𝅥 ♩ ♩']
+//TODO include something for all meters
+let possibleRhythms = {
+  "4/4": ['♩ ♩ ♩ ♩', '𝅝', '𝅗𝅥 𝅗𝅥', '𝅗𝅥. ♩', '𝅗𝅥 ♩ ♩'],
+  "6/8": ['𝅗𝅥.', '♩. ♩.']
+}
+
 
 let renderers = []
 let contexts = []
 let measures = []
 let curr_measures = [0, 0, 0, 0]
+let noteGroups = {
+  'a': [],
+  'b': [],
+  'c': [],
+  'd': []
+}
 
 let totalMeasures;
 let phrase;
 let phraseMeasures;
 let defaultWidth;
+let meter = ref('4/4');
 
 onMounted(async () => {
   await getPhraseInfo()
@@ -74,8 +89,7 @@ async function getPhraseInfo() {
   //TODO get melody and composer Ids
   phrase = await (await fetch("/api/composer/1/melody/1/phrase-structure")).json()
   phraseMeasures = await (await fetch("/api/composer/1/melody/1/hypermeter")).json()
-  console.log(phrase)
-  console.log(phraseMeasures)
+  meter.value = await (await fetch("/api/composer/1/melody/1/meter")).json()
 }
 
 function drawStaves() {
@@ -98,7 +112,7 @@ function drawStaves() {
     for (let i = 0; i < totalMeasures; i++) {
       if (i===0) {
         measures_l[i] = new Stave(xPart * i, height, xPart + 40)
-        measures_l[i].addClef('treble').addTimeSignature('4/4')
+        measures_l[i].addClef('treble').addTimeSignature(meter.value)
       } else {
         measures_l[i] = new Stave(40 + xPart * i, height, xPart)
         measures_l[i].measure = i + 1
@@ -109,14 +123,20 @@ function drawStaves() {
   }
 }
 
+function backspace(letter) {
+  let l = ['a','b','c','d'].indexOf(letter)
+  if (curr_measures[l] === 0) return
+  contexts[l].svg.removeChild(noteGroups[letter].pop())
+  curr_measures[l]--;
+}
+
 function placeNotes(rhythms, letter) {
+  let l = ['a','b','c','d'].indexOf(letter)
   let notes = _parseRhythms(rhythms)
-  switch (letter) {
-    case 'a': Formatter.FormatAndDraw(contexts[0], measures[0][curr_measures[0]], notes); curr_measures[0]++; break;
-    case 'b': Formatter.FormatAndDraw(contexts[1], measures[1][curr_measures[1]], notes); curr_measures[1]++; break;
-    case 'c': Formatter.FormatAndDraw(contexts[2], measures[2][curr_measures[2]], notes); curr_measures[2]++; break;
-    case 'd': Formatter.FormatAndDraw(contexts[3], measures[3][curr_measures[3]], notes); curr_measures[3]++; break;
-  }
+  noteGroups[letter].push(contexts[l].openGroup())
+  Formatter.FormatAndDraw(contexts[l], measures[l][curr_measures[l]], notes)
+  curr_measures[l]++
+  contexts[l].closeGroup()
 }
 
 function _parseRhythms(rhythms) {
@@ -157,7 +177,6 @@ h1 {
 }
 
 .btn {
-  background-color: rgb(150, 100, 100);
   font-size: 32px;
 }
 
