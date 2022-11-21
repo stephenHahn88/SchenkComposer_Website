@@ -6,6 +6,7 @@
         style="overflow: auto; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
       <b-table
           class="mt-3"
+          style="width: 2500px;"
           :items="melodies"
           :fields="fields"
           id="my-table"
@@ -53,6 +54,14 @@ const fields = [
     formatter: (obj: {"a": number, "b": number, "c": number, "d": number} | null) => {
       if (obj === null) return
       return `a:${obj.a} b:${obj.b} c:${obj.c} d:${obj.d}`
+    }
+  },
+  {
+    key: "mgRhythm",
+    label: "Harmonic Rhythm",
+    formatter: (obj: {'a': string[], 'b':string[],'c':string[],'d':string[]}) => {
+      if (obj === null) return
+      return `a:(${obj.a.join("|")}) b:(${obj.b.join("|")}) c:(${obj.c.join("|")}) d:(${obj.d.join("|")})`
     }
   },
   "harmonicProgression",

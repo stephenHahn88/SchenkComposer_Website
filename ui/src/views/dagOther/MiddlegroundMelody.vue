@@ -14,7 +14,7 @@
             class="m-1"
             @click="placeNextNote(availableNote)"
             style="width: 100%"
-        ><strong>{{availableNote}}</strong></b-button>
+        ><strong>{{availableNote.split('/').join("")}}</strong><img :src="getSrc(availableNote)" style="width:128px;"></b-button>
       </b-col>
       <b-col>
         <b-row><b-button variant="danger" class="mx-3 mb-3" style="width: 20%" @click="erase()">X</b-button></b-row>
@@ -22,6 +22,7 @@
         <b-row><b-button variant="success" class="m-3" style="width: 100%; height: 100px">Confirm</b-button></b-row>
       </b-col>
     </b-row>
+
 
   </div>
 </template>
@@ -84,6 +85,11 @@ onMounted(() => {
   drawStaff()
   setAvailableNotes()
 })
+
+function getSrc(availableNote: string) {
+  let n = availableNote.split("/").join("").toLowerCase()
+  return `src/static/staffNotes/${n}.svg`
+}
 
 function drawStaff() {
   let defaultWidth = 800
@@ -167,7 +173,6 @@ function setAvailableNotes() {
   availableNotes.value = [
     ...n.map((v: string) => v+"/5"),
     ...n.map((v: string) => v+"/4"),
-    ...n.map((v: string) => v+"/3"),
   ]
 }
 

@@ -8,8 +8,8 @@ export interface Melody {
     composer: string
     phrase?: phraseUnit[]
     meter?: meter
-    hypermeter?: {"a": number, "b": number, "c": number, "d": number}
-    harmonicRhythm?: number[]
+    hypermeter?: {"a"?: number, "b"?: number, "c"?: number, "d"?: number}
+    mgRhythm?: {'a'?: string[], 'b'?: string[], 'c'?: string[], 'd'?: string[]}
     harmonicProgression?: string[]
     mgMelody?: string[]
     fgRhythm?: number[]

@@ -11,6 +11,7 @@
       <b-tab
           v-for="letter in ['a','b','c','d']"
           :title="letter.toUpperCase()"
+          v-if="phraseMeasures[letter] > 0"
       >
 
         <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
@@ -34,10 +35,10 @@
       <b-col></b-col>
       <b-col>
         <b-button
-          @click="handleConfirm"
+          @click="saveAll"
           style="width: 100%; background-color: green"
         >
-          Confirm
+          Save all
         </b-button>
       </b-col>
     </b-row>
@@ -45,28 +46,65 @@
 </template>
 
 <script setup>
-import {onMounted, defineProps, ref} from 'vue'
+import {onMounted, defineProps, ref, watch} from 'vue'
 import Vex from 'vexflow'
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
 
 const emit = defineEmits(['mgrhythmanimate'])
 
-const handleConfirm = () => {
+async function saveAll() {
+  let requestOptions = {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ "mgRhythm": storedMeasures })
+  }
+  //TODO get current composer and melody ID
+  let response = await fetch("/api/composer/1/melody/1/mg-rhythm", requestOptions)
+  let json = await response.json()
+  console.log(json)
   emit('mgrhythmanimate')
 }
 
-//TODO include something for all meters
 let possibleRhythms = {
+  //Simple subdivision
+  "2/2": ['𝅗𝅥 𝅗𝅥', '𝅝'],
+  "3/2": ['𝅗𝅥 𝅗𝅥 𝅗𝅥', '𝅝.', '𝅗𝅥 𝅗𝅥', '𝅗𝅥 𝅗𝅥'],
+  "4/2": ['𝅗𝅥 𝅗𝅥 𝅗𝅥 𝅗𝅥', '𝅝', '𝅝 𝅝', '𝅝. 𝅗𝅥', '𝅝 𝅗𝅥 𝅗𝅥'],
+
+  "2/4": ['♩ ♩', '𝅗𝅥'],
+  "3/4": ['♩ ♩ ♩', '𝅗𝅥.', '𝅗𝅥 ♩', '♩ 𝅗𝅥'],
   "4/4": ['♩ ♩ ♩ ♩', '𝅝', '𝅗𝅥 𝅗𝅥', '𝅗𝅥. ♩', '𝅗𝅥 ♩ ♩'],
-  "6/8": ['𝅗𝅥.', '♩. ♩.']
+
+  "2/8": ['♪ ♪', '♩'],
+  "3/8": ['♪ ♪ ♪', '♩.', '♩ ♪', '♪ ♩'],
+  "4/8": ['♪ ♪ ♪ ♪', '𝅗𝅥', '♩ ♩', '♩. ♪', '♩ ♪ ♪'],
+
+  //Compound subdivision
+  "6/2": ['𝅜.', '𝅝. 𝅝.'],
+  "6/4": ['𝅝.', '𝅗𝅥. 𝅗𝅥.'],
+  "6/8": ['𝅗𝅥.', '♩. ♩.'],
+
+  "9/2": ['𝅜. 𝅝.', '𝅝. 𝅝. 𝅝.'],
+  "9/4": ['𝅝. 𝅗𝅥.', '𝅗𝅥. 𝅗𝅥. 𝅗𝅥.'],
+  "9/8": ['𝅗𝅥. ♩.', '♩. ♩. ♩.'],
+
+  "12/2": ['𝆷.', '𝅜. 𝅜.', '𝅝. 𝅝. 𝅝. 𝅝.'],
+  "12/4": ['𝅜.', '𝅝. 𝅝.', '𝅗𝅥. 𝅗𝅥. 𝅗𝅥. 𝅗𝅥.'],
+  "12/8": ['𝅝.', '𝅗𝅥. 𝅗𝅥.', '♩. ♩. ♩. ♩.'],
 }
 
 
 let renderers = []
 let contexts = []
 let measures = []
-let curr_measures = [0, 0, 0, 0]
+let storedMeasures = {
+  'a': [],
+  'b': [],
+  'c': [],
+  'd': []
+}
+let currMeasures = [0, 0, 0, 0]
 let noteGroups = {
   'a': [],
   'b': [],
@@ -76,20 +114,37 @@ let noteGroups = {
 
 let totalMeasures;
 let phrase;
-let phraseMeasures;
+let phraseMeasures = ref({});
 let defaultWidth;
 let meter = ref('4/4');
+let harmonicRhythm = ref({})
+
 
 onMounted(async () => {
   await getPhraseInfo()
   drawStaves()
+  await getSavedRhythm()
 })
 
 async function getPhraseInfo() {
   //TODO get melody and composer Ids
   phrase = await (await fetch("/api/composer/1/melody/1/phrase-structure")).json()
-  phraseMeasures = await (await fetch("/api/composer/1/melody/1/hypermeter")).json()
+  phraseMeasures.value = await (await fetch("/api/composer/1/melody/1/hypermeter")).json()
   meter.value = await (await fetch("/api/composer/1/melody/1/meter")).json()
+}
+
+async function getSavedRhythm() {
+  let temp = await (await fetch("/api/composer/1/melody/1/mg-rhythm")).json()
+  if (Object.keys(temp).every((key) => {return temp[key].length === 0})) return
+  for (let letter of ['a','b','c','d']) {
+    while (noteGroups[letter].length > 0) backspace(letter)
+  }
+  for (let letter of ['a','b','c','d']) {
+    for (let rhythm of temp[letter]) {
+      placeNotes(rhythm, letter)
+    }
+  }
+  storedMeasures = temp
 }
 
 function drawStaves() {
@@ -99,7 +154,8 @@ function drawStaves() {
   let height = 0
 
   for (let [l, letter] of ["a","b","c","d"].entries()) {
-    totalMeasures = phraseMeasures[letter]
+    if (phraseMeasures.value[letter] <= 0) continue
+    totalMeasures = phraseMeasures.value[letter]
     const div = document.getElementById(`boo_${letter}`)
     renderers[l] = new Renderer(div, Renderer.Backends.SVG)
 
@@ -125,17 +181,22 @@ function drawStaves() {
 
 function backspace(letter) {
   let l = ['a','b','c','d'].indexOf(letter)
-  if (curr_measures[l] === 0) return
+  if (currMeasures[l] === 0) return
   contexts[l].svg.removeChild(noteGroups[letter].pop())
-  curr_measures[l]--;
+  storedMeasures[letter].pop()
+  console.log(storedMeasures)
+  currMeasures[l]--;
 }
 
 function placeNotes(rhythms, letter) {
+  if (storedMeasures[letter].length === phraseMeasures.value[letter]) return
   let l = ['a','b','c','d'].indexOf(letter)
   let notes = _parseRhythms(rhythms)
+
   noteGroups[letter].push(contexts[l].openGroup())
-  Formatter.FormatAndDraw(contexts[l], measures[l][curr_measures[l]], notes)
-  curr_measures[l]++
+  Formatter.FormatAndDraw(contexts[l], measures[l][currMeasures[l]], notes)
+  currMeasures[l]++
+  storedMeasures[letter].push(rhythms)
   contexts[l].closeGroup()
 }
 
@@ -150,6 +211,10 @@ function _parseRhythms(rhythms) {
       case '𝅗𝅥.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '2'}))); break;
       case '𝅝': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1'})); break;
       case '𝅝.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1'}))); break;
+      case '𝅜': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1/2'})); break;
+      case '𝅜.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1/2'}))); break;
+      case '𝆷': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1/4'})); break;
+      case '𝆷.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1/4'}))); break;
     }
   })
   return finalRhythms

@@ -137,9 +137,15 @@
         </b-row>
         <b-row class="mt-3 mr-3" style="justify-content: end">
           <b-button
-              variant="success"
+              class="m-2"
+              variant="info"
               @click="handleGenerate()"
           >Generate</b-button>
+          <b-button
+              class="m-2"
+              variant="success"
+              @click="saveProgression"
+          >Save all</b-button>
         </b-row>
       </b-col>
     </b-row>
@@ -259,6 +265,10 @@ async function handleGenerate() {
   progression = await progression.json()
   console.log(progression)
   sequences.value[letter]["sequenceReverse"] = progression["progression"].reverse()
+}
+
+async function saveProgression() {
+
 }
 
 function selectRow(letter) {

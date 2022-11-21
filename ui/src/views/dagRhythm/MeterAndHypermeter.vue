@@ -63,14 +63,14 @@
 import {defineEmits, onMounted, ref, Ref} from 'vue'
 import { Phrase, PhraseUnit } from '@/views/dagOther/PhraseStructure.vue'
 
-let phraseStructure = ref(['a', "a'", 'b', '[HC]', 'c', "c'", 'd', '[AC]'])
+let phraseStructure = ref([])
 let numerator = ref("4")
 let denominator = ref("4")
 let hypermeterMeasures = ref({
-  "a": 4,
-  "b": 4,
-  "c": 4,
-  "d": 4
+  "a": 0,
+  "b": 0,
+  "c": 0,
+  "d": 0
 })
 
 const emit = defineEmits(['meteranimate'])

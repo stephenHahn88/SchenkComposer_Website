@@ -86,6 +86,22 @@ app.get("/api/composer/:composerId/melody/:melodyId/hypermeter", async (req, res
     res.status(200).json(result)
 })
 
+app.get("/api/composer/:composerId/melody/:melodyId/mg-rhythm", async (req, res) => {
+    const composerId = req.params.composerId.toString()
+    const melodyId = req.params.melodyId.toString()
+
+    const db = client.db("test")
+    const melodies = db.collection("melodies")
+    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
+
+    if (mel == null || mel[0]["mgRhythm"] == null) {
+        res.status(404).json({composerId, melodyId})
+        return
+    }
+    let result = mel[0]["mgRhythm"]
+    res.status(200).json(result)
+})
+
 app.put("/api/composer/:composerId/melody/:melodyId/hypermeter", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -130,7 +146,29 @@ app.put("/api/composer/:composerId/melody/:melodyId/meter", async (req, res) => 
             upsert: true
         }
     )
+    res.status(200).json({status:"ok"})
+})
 
+app.put("/api/composer/:composerId/melody/:melodyId/mg-rhythm", async (req, res) => {
+    const composerId = req.params.composerId.toString()
+    const melodyId = req.params.melodyId.toString()
+
+    const db = client.db("test")
+    const melodies = db.collection("melodies")
+    const result = melodies.updateOne(
+        {
+            composerId: composerId,
+            melodyId: melodyId
+        },
+        {
+            $set: {
+                mgRhythm: req.body.mgRhythm
+            }
+        },
+        {
+            upsert: true
+        }
+    )
     res.status(200).json({status:"ok"})
 })
 

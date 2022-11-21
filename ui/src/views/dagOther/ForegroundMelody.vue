@@ -2,16 +2,19 @@
   <div>
     <b-row>
 <!--      PRODUCTION RULES-->
-      <b-col class="m-3" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 10px; overflow-y: scroll; height: 400px;">
+      <b-col class="m-3" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 10px; overflow-y: scroll; height: 500px;">
+        <h2>Production Rules</h2>
         <b-table
             class="mt-3"
             :items="productionRules"
+            bordered
             hover
         ></b-table>
       </b-col>
 <!--      PRODUCTION RULE KEYBOARD-->
       <b-col class="m-3" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 10px; overflow-x: scroll">
-<!--        OUTPUT GOES HERE-->
+        <b-row class="m-1"><h2>Manual Production Rule Creator</h2></b-row>
+        <!--        OUTPUT GOES HERE-->
         <b-row class="m-1" style="width: 400px; height: 50px; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
           <b-col
               @click="selectPart('from')"

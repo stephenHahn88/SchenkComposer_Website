@@ -11,6 +11,7 @@ import HarmonicProgression from "@/views/dagOther/HarmonicProgression.vue"
 import ForegroundMelody from "@/views/dagOther/ForegroundMelody.vue"
 import MyMelodies from "@/views/MyMelodies.vue"
 import MiddlegroundMelody from "@/views/dagOther/MiddlegroundMelody.vue"
+import ForegroundRhythm from "@/views/dagRhythm/ForegroundRhythm.vue"
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -56,6 +57,10 @@ export const router = new VueRouter({
     {
       path: "/middleground-melody",
       component: MiddlegroundMelody
+    },
+    {
+      path: "/foreground-rhythm",
+      component: ForegroundRhythm
     },
     {
       path: "/foreground-melody",

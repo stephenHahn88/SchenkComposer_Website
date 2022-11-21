@@ -65,7 +65,11 @@
 
         </b-col>
         <b-col>
-          <b-button variant="danger" id="fgmr">Melodic<br>Rhythm</b-button>
+          <b-button
+              variant="danger"
+              id="fgmr"
+              @click="redirect('/foreground-rhythm')"
+          >Melodic<br>Rhythm</b-button>
         </b-col>
         <b-col>
           <b-button
