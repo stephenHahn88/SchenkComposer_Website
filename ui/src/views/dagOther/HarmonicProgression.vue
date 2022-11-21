@@ -23,7 +23,7 @@
               variant="info"
               style="width: 100px;"
               class="m-2"
-              @click="getMatrix(preset)"
+              @click="getPresetMatrix(preset)"
             >
               {{preset}}
             </b-button>
@@ -162,7 +162,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted, watch} from "vue";
+import {ref, onMounted, watch, computed} from "vue";
 import _ from "lodash";
 import { ForceSimulation } from "@livereader/graphly-d3";
 import "@livereader/graphly-d3/style.css";
@@ -194,15 +194,77 @@ let transitions = ref({
 let mySVG;
 let simulation;
 
-let max = 6 //Maximum of maxLen
+//Maximum of maxLen
+let max = computed(() => {
+  let m = 0
+  for (let letter in sequences.value) {
+    if (sequences.value[letter]["maxLen"] > m) {
+      m = sequences.value[letter]["maxLen"]
+    }
+  }
+  return m
+})
 let sequences = ref({
   "a": ref({"sequenceReverse": [], "maxLen": 6, 'selected': 'inactive'}),
   "b": ref({"sequenceReverse": [], "maxLen": 4, 'selected': 'inactive'}),
   "c": ref({"sequenceReverse": [], "maxLen": 5, 'selected': 'inactive'}),
   "d": ref({"sequenceReverse": [], "maxLen": 3, 'selected': 'inactive'}),
 })
+let mgRhythm = ref({})
 
-async function getMatrix(preset) {
+//updates sequence maxlens
+watch(mgRhythm, () => {
+  for (let letter in sequences.value) {
+    let count = 0
+    for (let str of mgRhythm.value[letter]) {
+      count += str.split(" ").length
+    }
+    sequences.value[letter]["maxLen"] = count
+  }
+})
+
+onMounted(() => {
+  harmonies = ref({
+    'I': 'green',
+    'II': 'navy',
+    'III': 'rgb(255, 130, 200)',
+    'IV': 'orange',
+    "V": 'red',
+    "VI": 'purple',
+    "VII": 'black'
+  })
+
+  mySVG = document.getElementById("mySVG");
+  simulation = new ForceSimulation(mySVG);
+  simulation.templateStore.add("hexagon", Hexagon)
+
+  getMgRhythm()
+  getSavedMatrix()
+  redraw()
+})
+
+async function getMgRhythm() {
+  //TODO get melody and composer Ids
+  let temp = await fetch("/api/composer/1/melody/1/mg-rhythm")
+  if (!temp.ok) return
+  mgRhythm.value = await temp.json()
+}
+
+async function getSavedMatrix() {
+  //TODO get melody and composer Ids
+  let temp = await fetch("/api/composer/1/melody/1/matrix")
+  if (!temp.ok) return
+  let matrix = await temp.json()
+  let numerals = ['I','II','III','IV','V','VI','VII']
+  for (let [i, r] of numerals.entries()) {
+    for (let [j, s] of numerals.entries()) {
+
+      transitions.value[r][s] = parseFloat(matrix[i][j])
+    }
+  }
+}
+
+async function getPresetMatrix(preset) {
   preset = preset.replaceAll(" ", "_")
   let matrix = await fetch(`/model/matrix/${preset}`)
   matrix = await matrix.json()
@@ -291,11 +353,13 @@ function _findActiveLetter() {
 
 function addHarmony(harmony) {
   let letter = _findActiveLetter()
+  if (sequences.value[letter]['sequenceReverse'].length >= sequences.value[letter]['maxLen']) return
   sequences.value[letter]['sequenceReverse'].push(harmony)
 }
 
 function backspace() {
   let letter = _findActiveLetter()
+  if (sequences.value[letter]['sequenceReverse'].length === 0) return
   sequences.value[letter]['sequenceReverse'].pop()
 }
 
@@ -303,24 +367,6 @@ function erase() {
   let letter = _findActiveLetter()
   sequences.value[letter]['sequenceReverse'] = []
 }
-
-onMounted(() => {
-  harmonies = ref({
-    'I': 'green',
-    'II': 'navy',
-    'III': 'rgb(255, 130, 200)',
-    'IV': 'orange',
-    "V": 'red',
-    "VI": 'purple',
-    "VII": 'black'
-  })
-
-  mySVG = document.getElementById("mySVG");
-  simulation = new ForceSimulation(mySVG);
-  simulation.templateStore.add("hexagon", Hexagon)
-
-  redraw()
-})
 
 function redraw() {
   let nodes = []

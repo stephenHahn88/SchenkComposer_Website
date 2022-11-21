@@ -12,7 +12,7 @@ export interface Melody {
     mgRhythm?: {'a'?: string[], 'b'?: string[], 'c'?: string[], 'd'?: string[]}
     harmonicProgression?: string[]
     mgMelody?: string[]
-    fgRhythm?: number[]
+    fgRhythm?: {'a'?: string[][], 'b'?: string[][], 'c'?: string[][], 'd'?: string[][]}
     result?: string[]
     transitionMatrix?: number[][]
 }

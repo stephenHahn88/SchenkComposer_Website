@@ -30,6 +30,17 @@
         </b-row>
       </b-tab>
     </b-tabs>
+    <b-row>
+      <b-col></b-col>
+      <b-col></b-col>
+      <b-col>
+        <b-button
+          @click="saveAll"
+          style="width: 100%"
+          variant="success"
+        >Save all</b-button>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
@@ -78,6 +89,8 @@ let currMeasureIdx = [0,0,0,0]
 let selectedLetter = ref('a')
 let letters = ['a','b','c','d']
 
+const emit = defineEmits(['fgrhythmanimate'])
+
 watch(storedNotes, () => {
   drawNotes()
 }, { deep: true })
@@ -85,13 +98,9 @@ watch(storedNotes, () => {
 onMounted(async () => {
   await getPhraseInfo()
   updateCurrHarmonicDuration()
-  storedNotes.value = {'a':[],'b':[],'c':[],'d':[]}
-  for (let letter of ['a','b','c','d']) {
-    for (let i = 0; i < mgRhythm.value[letter].length; i++) {
-      storedNotes.value[letter].push([])
-    }
-  }
+  _assignStoredNotes()
   drawStaves()
+  await getSavedForegroundRhythm()
 })
 
 async function getPhraseInfo() {
@@ -100,6 +109,35 @@ async function getPhraseInfo() {
   phraseMeasures.value = await (await fetch("/api/composer/1/melody/1/hypermeter")).json()
   meter.value = await (await fetch("/api/composer/1/melody/1/meter")).json()
   mgRhythm.value = await (await fetch("/api/composer/1/melody/1/mg-rhythm")).json()
+}
+
+async function getSavedForegroundRhythm() {
+  let temp = await fetch("api/composer/1/melody/1/fg-rhythm")
+  if (!temp.ok) return
+  temp = await temp.json()
+  storedNotes.value = temp
+}
+
+async function saveAll() {
+  let requestOptions = {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ "fgRhythm": storedNotes.value })
+  }
+  //TODO get current composer and melody ID
+  let response = await fetch("/api/composer/1/melody/1/fg-rhythm", requestOptions)
+  let json = await response.json()
+  console.log(json)
+  emit('fgrhythmanimate')
+}
+
+function _assignStoredNotes() {
+  storedNotes.value = {'a':[],'b':[],'c':[],'d':[]}
+  for (let letter of ['a','b','c','d']) {
+    for (let i = 0; i < mgRhythm.value[letter].length; i++) {
+      storedNotes.value[letter].push([])
+    }
+  }
 }
 
 function drawStaves() {

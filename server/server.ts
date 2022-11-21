@@ -3,6 +3,7 @@ import bodyParser from 'body-parser'
 import pino from 'pino'
 import expressPinoLogger from 'express-pino-logger'
 import { Collection, Db, MongoClient, ObjectId } from 'mongodb'
+import {Melody} from "./data";
 
 // set up Mongo
 const url = 'mongodb://127.0.0.1:27017'
@@ -50,6 +51,7 @@ app.get("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (re
         res.status(404).json({composerId, melodyId})
         return
     }
+    // @ts-ignore
     let result = mel[0]["phraseStructure"]
     res.status(200).json(result)
 })
@@ -99,6 +101,38 @@ app.get("/api/composer/:composerId/melody/:melodyId/mg-rhythm", async (req, res)
         return
     }
     let result = mel[0]["mgRhythm"]
+    res.status(200).json(result)
+})
+
+app.get("/api/composer/:composerId/melody/:melodyId/fg-rhythm", async (req, res) => {
+    const composerId = req.params.composerId.toString()
+    const melodyId = req.params.melodyId.toString()
+
+    const db = client.db("test")
+    const melodies = db.collection("melodies")
+    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
+
+    if (mel == null || mel[0]["fgRhythm"] == null) {
+        res.status(404).json({composerId, melodyId})
+        return
+    }
+    let result = mel[0]["fgRhythm"]
+    res.status(200).json(result)
+})
+
+app.get("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) => {
+    const composerId = req.params.composerId.toString()
+    const melodyId = req.params.melodyId.toString()
+
+    const db = client.db("test")
+    const melodies = db.collection("melodies")
+    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
+
+    if (mel == null || mel[0]["transitionMatrix"] == null) {
+        res.status(404).json({composerId, melodyId})
+        return
+    }
+    let result = mel[0]["transitionMatrix"]
     res.status(200).json(result)
 })
 
@@ -172,6 +206,29 @@ app.put("/api/composer/:composerId/melody/:melodyId/mg-rhythm", async (req, res)
     res.status(200).json({status:"ok"})
 })
 
+app.put("/api/composer/:composerId/melody/:melodyId/fg-rhythm", async (req, res) => {
+    const composerId = req.params.composerId.toString()
+    const melodyId = req.params.melodyId.toString()
+
+    const db = client.db("test")
+    const melodies = db.collection("melodies")
+    const result = melodies.updateOne(
+        {
+            composerId: composerId,
+            melodyId: melodyId
+        },
+        {
+            $set: {
+                fgRhythm: req.body.fgRhythm
+            }
+        },
+        {
+            upsert: true
+        }
+    )
+    res.status(200).json({status:"ok"})
+})
+
 app.put("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) => {
   const composerId = req.params.composerId.toString()
   const melodyId = req.params.melodyId.toString()
@@ -219,7 +276,6 @@ app.put("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (re
 
   res.status(200).json({status:"ok"})
 })
-
 
 
 // connect to Mongo

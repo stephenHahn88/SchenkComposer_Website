@@ -36,7 +36,8 @@
       <b-col>
         <b-button
           @click="saveAll"
-          style="width: 100%; background-color: green"
+          style="width: 100%"
+          variant="success"
         >
           Save all
         </b-button>
