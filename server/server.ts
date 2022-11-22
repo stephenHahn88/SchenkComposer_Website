@@ -136,6 +136,22 @@ app.get("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) =>
     res.status(200).json(result)
 })
 
+app.get("/api/composer/:composerId/melody/:melodyId/harmonicProgression", async (req, res) => {
+    const composerId = req.params.composerId.toString()
+    const melodyId = req.params.melodyId.toString()
+
+    const db = client.db("test")
+    const melodies = db.collection("melodies")
+    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
+
+    if (mel == null || mel[0]["harmonicProgression"] == null) {
+        res.status(404).json({composerId, melodyId})
+        return
+    }
+    let result = mel[0]["harmonicProgression"]
+    res.status(200).json(result)
+})
+
 app.put("/api/composer/:composerId/melody/:melodyId/hypermeter", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -275,6 +291,30 @@ app.put("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (re
   )
 
   res.status(200).json({status:"ok"})
+})
+
+app.put("/api/composer/:composerId/melody/:melodyId/harmonicProgression", async (req, res) => {
+    const composerId = req.params.composerId.toString()
+    const melodyId = req.params.melodyId.toString()
+
+    const db = client.db("test")
+    const melodies = db.collection("melodies")
+    const result = melodies.updateOne(
+        {
+            composerId: composerId,
+            melodyId: melodyId
+        },
+        {
+            $set: {
+                harmonicProgression: req.body.harmonicProgression
+            }
+        },
+        {
+            upsert: true
+        }
+    )
+
+    res.status(200).json({status:"ok"})
 })
 
 

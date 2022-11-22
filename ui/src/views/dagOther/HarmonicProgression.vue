@@ -239,6 +239,7 @@ onMounted(() => {
   simulation.templateStore.add("hexagon", Hexagon)
 
   getMgRhythm()
+  getSavedProgressions()
   getSavedMatrix()
   redraw()
 })
@@ -261,6 +262,16 @@ async function getSavedMatrix() {
 
       transitions.value[r][s] = parseFloat(matrix[i][j])
     }
+  }
+}
+
+async function getSavedProgressions() {
+  //TODO get melody and composer Ids
+  let temp = await fetch("/api/composer/1/melody/1/harmonicProgression")
+  if (!temp.ok) return
+  let progressions = await temp.json()
+  for (let letter in sequences.value) {
+    sequences.value[letter]["sequenceReverse"] = progressions[letter].slice().reverse()
   }
 }
 
@@ -318,6 +329,21 @@ async function saveMatrix() {
   console.log(response)
 }
 
+async function saveProgression() {
+  let progressions = {}
+  for (let letter in sequences.value) {
+    progressions[letter] = sequences.value[letter]["sequenceReverse"].slice().reverse()
+  }
+  const requestOptions = {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ "harmonicProgression": progressions })
+  }
+  let response = await fetch("/api/composer/1/melody/1/harmonicProgression", requestOptions)
+  response = await response.json()
+  console.log(response)
+}
+
 async function handleGenerate() {
   let letter = _findActiveLetter()
   // TODO: get length and endHarmony from database
@@ -327,10 +353,6 @@ async function handleGenerate() {
   progression = await progression.json()
   console.log(progression)
   sequences.value[letter]["sequenceReverse"] = progression["progression"].reverse()
-}
-
-async function saveProgression() {
-
 }
 
 function selectRow(letter) {

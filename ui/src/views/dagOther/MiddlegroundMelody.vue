@@ -7,7 +7,7 @@
     </b-row>
     <b-row class="m-3">
       <b-col class="p-3" style="background-color: rgba(0, 0, 0, 0.5); border-radius: 10px; overflow-y: scroll; height: 350px;">
-        <h2 style="color: white">Next Note (Harmony: {{harmonies[harmonyKeys[currNoteIndex]]['label']}})</h2>
+        <h2 style="color: white">Next Note (Rhythm: {{glyphs[currNoteIndex]}}; Harmony: {{plainHarmonies[currNoteIndex]}})</h2>
         <b-button
             v-for="availableNote in availableNotes"
             :variant="octaveColor(availableNote.slice(-1))"
@@ -22,8 +22,6 @@
         <b-row><b-button variant="success" class="m-3" style="width: 100%; height: 100px">Confirm</b-button></b-row>
       </b-col>
     </b-row>
-
-
   </div>
 </template>
 
@@ -32,41 +30,26 @@ import {computed, onMounted, ref, Ref} from "vue";
 import Vex from "vexflow"
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
+let letters = ['a','b','c','d']
+let div: string | HTMLDivElement | HTMLCanvasElement | { lastElementChild: any; }[];
 
 let key = "C"
-let harmonies = ref({
-  1: ref({
-    "label": "IV",
-    "notes": ["A", "F", "C"],
-    "duration": 2
-  }),
-  1.5: ref({
-    "label": "V",
-    "notes": ["B", "G", "D"],
-    "duration": 2
-  }),
-  2: ref({
-    "label": "I",
-    "notes": ["G", "E", "C"],
-    "duration": 2.5
-  }),
-  2.75: ref({
-    "label": "V",
-    "notes": ["B", "G", "D"],
-    "duration": 4
-  }),
-  3: ref({
-    "label": "vi",
-    "notes": ["A", "E", "C"],
-    "duration": 4.5
-  })
-})
-let harmonyKeys = Object.keys(harmonies.value).sort((a, b) => {return parseFloat(a) - parseFloat(b)}).map((x) => parseFloat(x))
+let harmonies = ref({})
+let durations = ref({})
+let glyphs = ref([])
+let plainHarmonies = ref([])
+let notesCMajor = {
+  "I": ["C","E","G"],
+  "II": ["D","F","A"],
+  "III": ["E","G","B"],
+  "IV": ["F","A","C"],
+  "V": ["G","B","D"],
+  "VI": ["A","C","E"],
+  "VII": ["B","D","F"]
+}
 
-let numMeasures: Ref<number> = computed(() => {
-  return Math.floor(Math.max(...Object.keys(harmonies.value).map(h => parseFloat(h))))
-})
-let availableNotes: Ref<string[]> = ref(["A/4", "A/3", "A/5"])
+let numMeasures: number;
+let availableNotes: Ref<string[]> = ref(["A/4", "A/5"])
 let timeSignature = "4/4"
 let currNoteIndex = ref(0)
 let noteGroup: any;
@@ -74,17 +57,51 @@ let noteGroup: any;
 let renderer;
 let context: Vex.RenderContext;
 let measures: Vex.Stave[];
-
 let measureNotes: any = {}
-for (let i = 0; i < numMeasures.value; i++) {
-  //@ts-ignore
-  measureNotes[i] = []
-}
 
-onMounted(() => {
+onMounted(async () => {
+  await getRhythmAndProgression()
   drawStaff()
   setAvailableNotes()
 })
+
+async function getRhythmAndProgression() {
+  let mgRhythm = await (await fetch("/api/composer/1/melody/1/mg-rhythm")).json()
+  let hp = await (await fetch("/api/composer/1/melody/1/harmonicProgression")).json()
+
+  let mgRhythmFlattened = []
+  let hpFlattened = []
+  for (let letter in mgRhythm) {
+    for (let measureString of mgRhythm[letter]) {
+      mgRhythmFlattened.push(measureString)
+    }
+    for (let harmony of hp[letter]) {
+      hpFlattened.push(harmony)
+    }
+  }
+
+  let hpIdx = 0
+  for (let [i, rhythm] of mgRhythmFlattened.entries()) {
+    for (let [j, noteString] of rhythm.split(" ").entries()) {
+      let newKey = parseFloat(`${i+1}.${j}`)
+      //@ts-ignore
+      harmonies.value[newKey] = hpFlattened[hpIdx]
+      //@ts-ignore
+      durations.value[newKey] = _noteToDuration(noteString)
+      //@ts-ignore
+      glyphs.value[hpIdx] = noteString
+      //@ts-ignore
+      plainHarmonies.value = hpFlattened
+      hpIdx++
+    }
+  }
+
+  numMeasures = mgRhythmFlattened.length
+  for (let i = 0; i < numMeasures; i++) {
+    //@ts-ignore
+    measureNotes[i] = []
+  }
+}
 
 function getSrc(availableNote: string) {
   let n = availableNote.split("/").join("").toLowerCase()
@@ -96,16 +113,16 @@ function drawStaff() {
   let xPart = defaultWidth/4
   let height = 25
 
-  const div = document.getElementById('boo') as HTMLDivElement
+  div = document.getElementById('boo') as HTMLDivElement
   renderer = new Renderer(div, Renderer.Backends.SVG)
 
-  renderer.resize(2000, 250)
+  renderer.resize(4000, 250)
   context = renderer.getContext()
   context.scale(1.4, 1.4)
   context.setFont('Arial', 32)
 
   measures = []
-  for (let i = 0; i < numMeasures.value; i++) {
+  for (let i = 0; i < numMeasures; i++) {
     if (i === 0) {
       measures[i] = new Stave(xPart * i, height, xPart + 40)
       measures[i].addClef("treble").addTimeSignature(timeSignature)
@@ -119,11 +136,14 @@ function drawStaff() {
 }
 
 function placeNextNote(note: string) {
+  let harmonyKeys = Object.keys(harmonies.value).sort(
+      (a, b) => {return parseFloat(a) - parseFloat(b)}).map((x) => parseFloat(x)
+  )
   if (currNoteIndex.value >= Object.keys(harmonies.value).length) return
   let measureIndex = Math.floor(harmonyKeys[currNoteIndex.value]) - 1
   let currKey = harmonyKeys[currNoteIndex.value]
   // @ts-ignore
-  let duration = harmonies.value[currKey]["duration"]
+  let duration = durations.value[currKey]
   let undottedValues = [1, 2, 4, 8, 16]
   if (undottedValues.indexOf(duration) !== -1) {
     // @ts-ignore
@@ -142,6 +162,9 @@ function placeNextNote(note: string) {
 }
 
 function drawNotes() {
+  let harmonyKeys = Object.keys(harmonies.value).sort(
+      (a, b) => {return parseFloat(a) - parseFloat(b)}).map((x) => parseFloat(x)
+  )
   let measureIndex = Math.floor(harmonyKeys[currNoteIndex.value]) - 1
 
   // CHECK WHETHER NOTES NEED TO BE ERASED
@@ -166,10 +189,14 @@ function drawNotes() {
 }
 
 function setAvailableNotes() {
+  let harmonyKeys = Object.keys(harmonies.value).sort(
+      (a, b) => {return parseFloat(a) - parseFloat(b)}).map((x) => parseFloat(x)
+  )
   let currKey = harmonyKeys[currNoteIndex.value]
-
+  // console.log(currKey)
   // @ts-ignore
-  let n = harmonies.value[currKey]["notes"]
+  let n = notesCMajor[harmonies.value[currKey]]
+  // console.log(n)
   availableNotes.value = [
     ...n.map((v: string) => v+"/5"),
     ...n.map((v: string) => v+"/4"),
@@ -200,13 +227,34 @@ function octaveColor(octave: string) {
 function erase() {
   if (measureNotes[0].length === 0) return
   measureNotes = {}
-  for (let i = 0; i < numMeasures.value; i++) {
+  for (let i = 0; i < numMeasures; i++) {
     //@ts-ignore
     measureNotes[i] = []
   }
   currNoteIndex.value = 0
   drawNotes()
   setAvailableNotes()
+}
+
+function _noteToDuration(note: string) {
+  switch (note) {
+    case '𝅘𝅥𝅰': return 32
+    case '𝅘𝅥𝅰.':return 32.5
+    case '𝅘𝅥𝅯': return 16
+    case '𝅘𝅥𝅯.':return 16.5
+    case '𝅘𝅥𝅮': return 8
+    case '𝅘𝅥𝅮.':return 8.5
+    case '♩': return 4
+    case '♩.':return 4.5
+    case '𝅗𝅥': return 2
+    case '𝅗𝅥.':return 2.5
+    case '𝅝': return 1
+    case '𝅝.':return 1.5
+    // case '𝅜': return
+    // case '𝅜.': return
+    // case '𝆷': return
+    // case '𝆷.':return
+  }
 }
 </script>
 

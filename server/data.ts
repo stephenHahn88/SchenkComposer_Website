@@ -10,7 +10,7 @@ export interface Melody {
     meter?: meter
     hypermeter?: {"a"?: number, "b"?: number, "c"?: number, "d"?: number}
     mgRhythm?: {'a'?: string[], 'b'?: string[], 'c'?: string[], 'd'?: string[]}
-    harmonicProgression?: string[]
+    harmonicProgression?: {'a'?: string[], 'b'?: string[], 'c'?: string[], 'd'?: string[]}
     mgMelody?: string[]
     fgRhythm?: {'a'?: string[][], 'b'?: string[][], 'c'?: string[][], 'd'?: string[][]}
     result?: string[]
