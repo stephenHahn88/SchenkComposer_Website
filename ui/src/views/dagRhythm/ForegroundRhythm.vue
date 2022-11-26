@@ -167,7 +167,7 @@ function drawStaff(letter) {
   for (let i = 0; i < totalMeasures; i++) {
     if (i===0) {
       measures_l[i] = new Stave(xPart * i, height, xPart + 40)
-      measures_l[i].addClef('treble').addTimeSignature(meter.value)
+      measures_l[i].addClef('percussion').addTimeSignature(meter.value)
     } else {
       measures_l[i] = new Stave(40 + xPart * i, height, xPart)
       measures_l[i].measure = i + 1

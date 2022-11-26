@@ -22,18 +22,23 @@
     <b-row>
       <b-col class="mt-5">
 <!--        DAG-->
-        <div class="p-2 ml-3" style="width: 700px; background-color: rgba(0, 0, 0, 0.6); border-radius: 30px; overflow: auto">
+        <div class="p-2 ml-3" style="width: 650px; background-color: rgba(0, 0, 0, 0.6); border-radius: 30px;">
           <SchenkComposerDAG
-              :phraseAnim="phrase_anim"
+              :phrase-anim="phrase_anim"
               :meter-anim="meter_anim"
               :mgrhythm-anim="mgrhythm_anim"
               :mgharmony-anim="mgharmony_anim"
+              :fgrhythm-anim="fgrhythm_anim"
+              :mgmelody-anim="mgmelody_anim"
           ></SchenkComposerDAG>
         </div>
       </b-col>
       <b-col class="mt-5">
         <div class="p-2" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px; overflow: auto">
           <MusicPlayer></MusicPlayer>
+          <router-view
+            name="tutorial"
+          />
         </div>
       </b-col>
     </b-row>
@@ -47,6 +52,7 @@
             @mgharmonyanimate="mgharmonyAnimate($event)"
             @mgmelodyanimate="mgmelodyAnimate($event)"
             @fgrhythmanimate="fgrhythmAnimate($event)"
+            name="default"
         />
       </b-col>
     </b-row>

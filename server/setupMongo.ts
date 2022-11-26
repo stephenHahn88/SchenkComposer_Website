@@ -19,7 +19,7 @@ const melodies: Melody[] = [
     composerId: "2",
     composer: "bob",
     meter: "6/4",
-    harmonicProgression: ["I", "IV", "V", "I"]
+    harmonicProgression: {"a": ["I", "IV", "V", "I"]}
   },
   {
     _id: "test3",

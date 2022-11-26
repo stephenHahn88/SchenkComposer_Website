@@ -40,7 +40,7 @@ export const router = new VueRouter({
     },
     {
       path: "/phrase-structure",
-      component: PhraseStructure
+      components: {default: PhraseStructure}//, tutorial: MeterAndHypermeter}
     },
     {
       path: "/meter-hypermeter",

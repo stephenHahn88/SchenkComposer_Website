@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-container class="text-center">
-      <b-row class="mb-4 center-text">
+      <b-row class="my-4 myRow">
         <b-col></b-col>
         <b-col>
           <b-button
@@ -12,11 +12,9 @@
             Phrase<br>Structure
           </b-button>
         </b-col>
-        <b-col>
-
-        </b-col>
+        <b-col></b-col>
       </b-row>
-      <b-row class="m-4">
+      <b-row class="my-4 myRow">
         <b-col>
           <b-button
               variant="danger"
@@ -45,13 +43,9 @@
           </b-button>
         </b-col>
       </b-row>
-      <b-row class="m-4">
-        <b-col>
-
-        </b-col>
-        <b-col>
-
-        </b-col>
+      <b-row class="my-4 myRow">
+        <b-col></b-col>
+        <b-col></b-col>
         <b-col>
           <b-button
               variant="warning"
@@ -60,10 +54,8 @@
           >Middleground Melody</b-button>
         </b-col>
       </b-row>
-      <b-row class="m-4">
-        <b-col>
-
-        </b-col>
+      <b-row class="my-4 myRow">
+        <b-col></b-col>
         <b-col>
           <b-button
               variant="danger"
@@ -155,7 +147,7 @@ onMounted(() => {
           path: 'magnet',
           startSocket: 'left',
           endSocket: 'top',
-          startSocketGravity: [-170, 0],
+          startSocketGravity: [-150, 0],
           dash: {animation: psMh.value},
           size: 3,
           color: psMh.value ? 'green': 'red'
@@ -181,7 +173,7 @@ onMounted(() => {
           path: 'magnet',
           startSocket: 'right',
           endSocket: 'top',
-          startSocketGravity: [170, 0],
+          startSocketGravity: [150, 0],
           dash: {animation: psMghp.value},
           size: 3,
           color: psMghp.value ? 'green': 'red'
@@ -208,7 +200,7 @@ onMounted(() => {
           path: 'magnet',
           startSocket: 'bottom',
           endSocket: 'left',
-          startSocketGravity: [0, 130],
+          startSocketGravity: [0, 190],
           dash: {animation: mhFgmr.value},
           size: 3,
           color: mhFgmr.value ? 'green': 'red'
@@ -248,7 +240,7 @@ onMounted(() => {
           path: 'magnet',
           startSocket: 'bottom',
           endSocket: 'left',
-          startSocketGravity: [50, 50],
+          startSocketGravity: [50, 70],
           dash: {animation: mghrMgm.value},
           size: 3,
           color: mghrMgm.value ? 'green': 'red'
@@ -328,5 +320,9 @@ function toggleAnimation(refNames: string[]) {
 .btn {
   border-color: rgba(0,0,0,0);
   font-size: 24px;
+}
+
+.myRow {
+  width: 600px;
 }
 </style>

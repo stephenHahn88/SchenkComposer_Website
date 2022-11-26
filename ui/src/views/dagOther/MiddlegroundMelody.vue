@@ -6,10 +6,25 @@
 
     </b-row>
     <b-row class="m-3">
-      <b-col class="p-3" style="background-color: rgba(0, 0, 0, 0.5); border-radius: 10px; overflow-y: scroll; height: 350px;">
-        <h2 style="color: white">Next Note (Rhythm: {{glyphs[currNoteIndex]}}; Harmony: {{plainHarmonies[currNoteIndex]}})</h2>
+      <b-col
+          class="p-3"
+          style="
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow-y: scroll;
+            height: 350px;
+          "
+      >
+        <h2 style="color: white" v-if="savedNotes.length !== flattenedHarmonies.length">
+          Next Note
+          (Rhythm: {{ glyphs[currNoteIndex] }}; Harmony: {{ flattenedHarmonies[currNoteIndex] }})
+        </h2>
+        <h2 style="color: white" v-else>
+          Middleground Melody Complete!
+        </h2>
         <b-button
             v-for="availableNote in availableNotes"
+            v-if="savedNotes.length !== flattenedHarmonies.length"
             :variant="octaveColor(availableNote.slice(-1))"
             class="m-1"
             @click="placeNextNote(availableNote)"
@@ -19,15 +34,17 @@
       <b-col>
         <b-row><b-button variant="danger" class="mx-3 mb-3" style="width: 20%" @click="erase()">X</b-button></b-row>
         <b-row><b-button variant="info" class="m-3" style="width: 100%; height: 100px">Generate</b-button></b-row>
-        <b-row><b-button variant="success" class="m-3" style="width: 100%; height: 100px">Confirm</b-button></b-row>
+        <b-row><b-button variant="success" class="m-3" style="width: 100%; height: 100px" @click="saveMelodyNotes">Save</b-button></b-row>
       </b-col>
     </b-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, Ref} from "vue";
+import {computed, defineEmits, onMounted, ref, Ref} from "vue";
 import Vex from "vexflow"
+
+const emit = defineEmits(['mgmanimate'])
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
 let letters = ['a','b','c','d']
@@ -37,7 +54,7 @@ let key = "C"
 let harmonies = ref({})
 let durations = ref({})
 let glyphs = ref([])
-let plainHarmonies = ref([])
+let flattenedHarmonies = ref([])
 let notesCMajor = {
   "I": ["C","E","G"],
   "II": ["D","F","A"],
@@ -59,10 +76,15 @@ let context: Vex.RenderContext;
 let measures: Vex.Stave[];
 let measureNotes: any = {}
 
+let savedNotes: Ref<string[]> = ref([])
+
 onMounted(async () => {
   await getRhythmAndProgression()
   drawStaff()
-  setAvailableNotes()
+  await getSavedMelodyNotes()
+  if (savedNotes.value.length !== flattenedHarmonies.value.length) {
+    setAvailableNotes()
+  }
 })
 
 async function getRhythmAndProgression() {
@@ -91,7 +113,7 @@ async function getRhythmAndProgression() {
       //@ts-ignore
       glyphs.value[hpIdx] = noteString
       //@ts-ignore
-      plainHarmonies.value = hpFlattened
+      flattenedHarmonies.value = hpFlattened
       hpIdx++
     }
   }
@@ -101,6 +123,32 @@ async function getRhythmAndProgression() {
     //@ts-ignore
     measureNotes[i] = []
   }
+}
+
+async function getSavedMelodyNotes() {
+  //TODO get current composer and melody ID
+  let mel = await fetch("/api/composer/1/melody/1/middleground-melody")
+  if (mel.status !== 404) {
+    let notes = await mel.json()
+    savedNotes.value = []
+    currNoteIndex.value = 0
+    for (let note of notes) {
+      placeNextNote(note)
+    }
+  }
+}
+
+async function saveMelodyNotes() {
+  const requestOptions = {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ "mgMelody": savedNotes.value })
+  }
+  //TODO get current composer and melody ID
+  let response = await fetch("/api/composer/1/melody/1/middleground-melody", requestOptions)
+  let json = await response.json()
+  console.log(json)
+  emit('mgmanimate')
 }
 
 function getSrc(availableNote: string) {
@@ -156,9 +204,12 @@ function placeNextNote(note: string) {
     measureNotes[measureIndex].push(_dotted(new StaveNote({keys: [note], duration: duration})))
   }
 
+  savedNotes.value.push(note)
   drawNotes()
   currNoteIndex.value += 1
-  setAvailableNotes()
+  if (savedNotes.value.length !== flattenedHarmonies.value.length) {
+    setAvailableNotes()
+  }
 }
 
 function drawNotes() {
@@ -231,6 +282,7 @@ function erase() {
     //@ts-ignore
     measureNotes[i] = []
   }
+  savedNotes.value = []
   currNoteIndex.value = 0
   drawNotes()
   setAvailableNotes()
