@@ -2,19 +2,23 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import pino from 'pino'
 import expressPinoLogger from 'express-pino-logger'
+// import session from 'express-session'
 import { Collection, Db, MongoClient, ObjectId } from 'mongodb'
-import {Melody} from "./data";
+import {Melody, _makeid} from "./data";
+import {hash, codec} from "sjcl"
 
 // set up Mongo
-const url = 'mongodb://127.0.0.1:27017'
-const client = new MongoClient(url)
+const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017'
+const client = new MongoClient(mongoUrl)
 let db: Db
 let melodies: Collection
+let users: Collection
 
 // set up Express
 const app = express()
 const port = parseInt(process.env.PORT) || 8095
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
 // set up Pino logging
 const logger = pino({
@@ -357,15 +361,89 @@ app.put("/api/composer/:composerId/melody/:melodyId/middleground-melody", async 
     res.status(200).json({status:"ok"})
 })
 
+// setup login and creation
+app.get("/api/user-exists/:username", async (req, res) => {
+    const username = req.params.username
+    const db = client.db("test")
+    const users = db.collection("users")
+
+    const user = await users.find({ username: username }).toArray()
+
+    if (user.length === 0) {
+        res.status(404).json({status: "not found"})
+        return
+    }
+    res.status(200).json({status:"ok"})
+})
+
+app.get("/api/find-user-info/:username", async (req, res) => {
+    const username = req.params.username
+    const db = client.db("test")
+    const users = db.collection("users")
+
+    const user = await users.find({ username: username }).toArray()
+    if (user.length === 0) {
+        res.status(404).json({status: "not found"})
+        return
+    }
+
+    res.status(200).json({status: "ok"})
+})
+
+app.get("/api/login-info/:username/:password", async (req, res) => {
+    const username = decodeURIComponent(req.params.username)
+    const password = decodeURIComponent(req.params.password)
+    const users = db.collection("users")
+
+    const user = await users.find({ username: username }).toArray()
+    const passwordHash = user[0]["passwordHash"]
+    const passwordSalt = user[0]["passwordSalt"]
+
+    const bitArray = hash.sha256.hash(password + passwordSalt)
+    const givenHash = codec.hex.fromBits(bitArray)
+    if (givenHash !== passwordHash) {
+        res.status(401).json({status: "unauthorized"})
+        return
+    }
+
+    const composerId = user[0]["composerId"]
+    res.status(200).json({composerId})
+})
+
+app.put("/api/create-user", async (req, res) => {
+    const db = client.db("test")
+    const users = db.collection("users")
+
+    const salt = _makeid(32)
+    const bitArray = hash.sha256.hash(req.body.password + salt)
+    const passHash = codec.hex.fromBits(bitArray)
+
+    const idSalt = _makeid(8)
+    const idBitArray = hash.sha256.hash(req.body.username + idSalt)
+    const idHash = codec.hex.fromBits(idBitArray)
+
+    const result = users.insertOne({
+        username: req.body.username,
+        passwordHash: passHash,
+        passwordSalt: salt,
+        composerId: idHash,
+        idSalt: idSalt
+    })
+
+    res.status(200).json({status:"ok"})
+})
+
+//TODO app.put for composer username, hashed pass, and incremental id
 
 // connect to Mongo
 client.connect().then(() => {
-  console.log('Connected successfully to MongoDB')
-  db = client.db("test")
-  melodies = db.collection('melodies')
+    console.log('Connected successfully to MongoDB')
+    db = client.db("test")
+    melodies = db.collection('melodies')
+    users = db.collection('users')
 
-  // start server
-  app.listen(port, () => {
+    // start server
+    app.listen(port, () => {
     console.log(`Server listening on port ${port}`)
-  })
+    })
 })

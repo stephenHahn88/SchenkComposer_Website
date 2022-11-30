@@ -16,3 +16,21 @@ export interface Melody {
     result?: string[]
     transitionMatrix?: number[][]
 }
+
+export interface User {
+    username: string
+    passwordHash: string
+    passwordSalt: string
+    composerId: string
+}
+
+// from https://stackoverflow.com/questions/1349404/generate-random-string-characters-in-javascript
+export function _makeid(length: number) {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
