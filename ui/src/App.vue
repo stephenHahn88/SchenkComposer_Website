@@ -61,9 +61,47 @@
 
 <script setup lang="ts">
 import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
-import {ref, Ref, watch} from 'vue'
+import {ref, Ref, watch, provide, onMounted} from 'vue'
 import {router} from '@/main'
 import MusicPlayer from "@/components/MusicPlayer.vue";
+import {_makeid, delay} from "../../server/data"
+
+let composerId: Ref<string> = ref("")
+let melodyId: Ref<string> = ref("")
+function updateComposerId(newComposerId: string) {
+  composerId.value = newComposerId
+}
+function updateMelodyId(newMelodyId: string) {
+  melodyId.value = newMelodyId
+}
+provide("composerId", {composerId, updateComposerId})
+provide("melodyId", {melodyId, updateMelodyId})
+
+
+watch(melodyId, async () => {
+  await defaultMelody()
+})
+async function defaultMelody() {
+  await delay(1000)
+  console.log(composerId.value)
+  console.log(melodyId.value)
+  let mel = {
+    _id: composerId.value + melodyId.value,
+    composerId: composerId.value,
+    melodyId: melodyId.value,
+    composer: "Anonymous"
+  }
+  const requestOptions = {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(mel)
+  }
+  let response = await (await fetch("/api/create-melody", requestOptions)).json()
+  console.log(response)
+}
+
+updateComposerId(_makeid(32))
+updateMelodyId("1")
 
 let phrase_anim = ref(false)
 let meter_anim = ref(false)
@@ -90,8 +128,6 @@ function mgmelodyAnimate() {
 function fgrhythmAnimate() {
   fgrhythm_anim.value = !fgrhythm_anim.value
 }
-
-
 </script>
 
 <style scoped>

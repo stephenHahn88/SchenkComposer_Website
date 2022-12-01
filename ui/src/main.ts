@@ -22,7 +22,6 @@ Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.use(VueRouter)
 
-
 export const router = new VueRouter({
   mode: "history",
   routes: [

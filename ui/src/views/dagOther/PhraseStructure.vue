@@ -103,10 +103,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, ref, Ref, onMounted} from 'vue';
+import {computed, defineEmits, ref, Ref, onMounted, inject, watch} from 'vue';
 import {BButton} from "bootstrap-vue";
 
 const emit = defineEmits(['psanimate'])
+
+let {composerId, updateComposerId}: any = inject("composerId");
+let {melodyId, updateMelodyId}: any = inject("melodyId")
 
 let letters = ['a', 'b', 'c', 'd']
 
@@ -123,8 +126,8 @@ let cadence_disabled: Ref<boolean[]> = ref([true, true])
 let backspace_disabled = ref(true)
 
 onMounted(async () => {
-  //TODO get current melody and composer id
-  let ps = await fetch("/api/composer/1/melody/1/phrase-structure")
+  let ps = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/phrase-structure")
+  if (ps.status === 404) return
   phrase.value = await ps.json()
   checkButtonDisability()
 })
@@ -199,8 +202,7 @@ async function savePhrase() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ "phraseStructure": phrase.value })
   }
-  //TODO get current composer and melody ID
-  let response = await fetch("/api/composer/1/melody/1/phrase-structure", requestOptions)
+  let response = await fetch(`/api/composer/${composerId.value}/melody/${melodyId.value}/phrase-structure`, requestOptions)
   let json = await response.json()
   console.log(json)
   emit('psanimate')

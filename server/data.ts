@@ -34,3 +34,7 @@ export function _makeid(length: number) {
     }
     return result;
 }
+
+export function delay(ms: number | undefined) {
+    return new Promise(res => setTimeout(res, ms))
+}

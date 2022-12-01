@@ -2,7 +2,6 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import pino from 'pino'
 import expressPinoLogger from 'express-pino-logger'
-// import session from 'express-session'
 import { Collection, Db, MongoClient, ObjectId } from 'mongodb'
 import {Melody, _makeid} from "./data";
 import {hash, codec} from "sjcl"
@@ -47,11 +46,12 @@ app.get("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (re
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
+    console.log(req.params)
     const db = client.db("test")
     const melodies = db.collection("melodies")
     const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
 
-    if (mel == null) {
+    if (mel == null || mel[0]["phraseStructure"] == null) {
         res.status(404).json({composerId, melodyId})
         return
     }
@@ -433,7 +433,10 @@ app.put("/api/create-user", async (req, res) => {
     res.status(200).json({status:"ok"})
 })
 
-//TODO app.put for composer username, hashed pass, and incremental id
+app.put("/api/create-melody", async (req, res) => {
+    console.log("inserting melodies", await db.collection("melodies").insertOne(req.body))
+    res.status(200).json({status: "ok"})
+})
 
 // connect to Mongo
 client.connect().then(() => {
