@@ -15,7 +15,7 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item @click="router.push({path: '/login'})">Login</b-nav-item>
-          <b-nav-item @click="router.push({path: '/my-melodies'})">My Melodies</b-nav-item>
+          <b-nav-item @click="router.push({path: '/my-melodies'})">{{username}}'s Melodies</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -66,14 +66,19 @@ import {router} from '@/main'
 import MusicPlayer from "@/components/MusicPlayer.vue";
 import {_makeid, delay} from "../../server/data"
 
+let username: Ref<string> = ref("Anonymous")
 let composerId: Ref<string> = ref("")
 let melodyId: Ref<string> = ref("")
+function updateUsername(newUsername: string) {
+  username.value = newUsername
+}
 function updateComposerId(newComposerId: string) {
   composerId.value = newComposerId
 }
 function updateMelodyId(newMelodyId: string) {
   melodyId.value = newMelodyId
 }
+provide("username", {username, updateUsername})
 provide("composerId", {composerId, updateComposerId})
 provide("melodyId", {melodyId, updateMelodyId})
 
@@ -82,15 +87,14 @@ watch(melodyId, async () => {
   await defaultMelody()
 })
 async function defaultMelody() {
-  await delay(1000)
-  console.log(composerId.value)
-  console.log(melodyId.value)
+  await delay(2000)
   let mel = {
     _id: composerId.value + melodyId.value,
     composerId: composerId.value,
     melodyId: melodyId.value,
     composer: "Anonymous"
   }
+  console.log(mel)
   const requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },

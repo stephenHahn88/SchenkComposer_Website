@@ -46,7 +46,6 @@ app.get("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (re
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    console.log(req.params)
     const db = client.db("test")
     const melodies = db.collection("melodies")
     const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
@@ -164,11 +163,12 @@ app.get("/api/composer/:composerId/melody/:melodyId/middleground-melody", async 
     const melodies = db.collection("melodies")
     const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
 
-    if (mel == null || mel[0]["harmonicProgression"] == null) {
+    if (mel == null || mel[0]["mgMelody"] == null) {
         res.status(404).json({composerId, melodyId})
         return
     }
     let result = mel[0]["mgMelody"]
+    console.log(result)
     res.status(200).json(result)
 })
 

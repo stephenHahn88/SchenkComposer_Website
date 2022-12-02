@@ -41,10 +41,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineEmits, onMounted, ref, Ref} from "vue";
+import {computed, defineEmits, inject, onMounted, ref, Ref} from "vue";
 import Vex from "vexflow"
 
 const emit = defineEmits(['mgmanimate'])
+
+let {composerId, updateComposerId}: any = inject("composerId")
+let {melodyId, updateMelodyId}: any = inject("melodyId")
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
 let letters = ['a','b','c','d']
@@ -88,8 +91,8 @@ onMounted(async () => {
 })
 
 async function getRhythmAndProgression() {
-  let mgRhythm = await (await fetch("/api/composer/1/melody/1/mg-rhythm")).json()
-  let hp = await (await fetch("/api/composer/1/melody/1/harmonicProgression")).json()
+  let mgRhythm = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm")).json()
+  let hp = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/harmonicProgression")).json()
 
   let mgRhythmFlattened = []
   let hpFlattened = []
@@ -126,8 +129,7 @@ async function getRhythmAndProgression() {
 }
 
 async function getSavedMelodyNotes() {
-  //TODO get current composer and melody ID
-  let mel = await fetch("/api/composer/1/melody/1/middleground-melody")
+  let mel = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/middleground-melody")
   if (mel.status !== 404) {
     let notes = await mel.json()
     savedNotes.value = []
@@ -145,7 +147,7 @@ async function saveMelodyNotes() {
     body: JSON.stringify({ "mgMelody": savedNotes.value })
   }
   //TODO get current composer and melody ID
-  let response = await fetch("/api/composer/1/melody/1/middleground-melody", requestOptions)
+  let response = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/middleground-melody", requestOptions)
   let json = await response.json()
   console.log(json)
   emit('mgmanimate')

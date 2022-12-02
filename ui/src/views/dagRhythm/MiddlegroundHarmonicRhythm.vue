@@ -47,12 +47,15 @@
 </template>
 
 <script setup>
-import {onMounted, defineProps, ref, watch} from 'vue'
+import {onMounted, defineProps, ref, inject, watch} from 'vue'
 import Vex from 'vexflow'
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
 
 const emit = defineEmits(['mgrhythmanimate'])
+
+let {composerId, updateComposerId} = inject("composerId")
+let {melodyId, updateMelodyId} = inject("melodyId")
 
 async function saveAll() {
   let requestOptions = {
@@ -60,8 +63,7 @@ async function saveAll() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ "mgRhythm": storedMeasures })
   }
-  //TODO get current composer and melody ID
-  let response = await fetch("/api/composer/1/melody/1/mg-rhythm", requestOptions)
+  let response = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm", requestOptions)
   let json = await response.json()
   console.log(json)
   emit('mgrhythmanimate')
@@ -128,14 +130,13 @@ onMounted(async () => {
 })
 
 async function getPhraseInfo() {
-  //TODO get melody and composer Ids
-  phrase = await (await fetch("/api/composer/1/melody/1/phrase-structure")).json()
-  phraseMeasures.value = await (await fetch("/api/composer/1/melody/1/hypermeter")).json()
-  meter.value = await (await fetch("/api/composer/1/melody/1/meter")).json()
+  phrase = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/phrase-structure")).json()
+  phraseMeasures.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")).json()
+  meter.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/meter")).json()
 }
 
 async function getSavedRhythm() {
-  let temp = await (await fetch("/api/composer/1/melody/1/mg-rhythm")).json()
+  let temp = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm")).json()
   if (Object.keys(temp).every((key) => {return temp[key].length === 0})) return
   for (let letter of ['a','b','c','d']) {
     while (noteGroups[letter].length > 0) backspace(letter)

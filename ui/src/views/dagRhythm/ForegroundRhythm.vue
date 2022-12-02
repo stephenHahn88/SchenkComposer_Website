@@ -45,10 +45,13 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from 'vue'
+import {computed, onMounted, inject, ref, watch} from 'vue'
 import Vex from 'vexflow'
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
+
+let {composerId, updateComposerId} = inject("composerId")
+let {melodyId, updateMelodyId} = inject("melodyId")
 
 let currHarmonicDuration = ref("𝅗𝅥.")
 let possibleRhythms = computed(() => {
@@ -104,15 +107,14 @@ onMounted(async () => {
 })
 
 async function getPhraseInfo() {
-  //TODO get melody and composer Ids
-  phrase = await (await fetch("/api/composer/1/melody/1/phrase-structure")).json()
-  phraseMeasures.value = await (await fetch("/api/composer/1/melody/1/hypermeter")).json()
-  meter.value = await (await fetch("/api/composer/1/melody/1/meter")).json()
-  mgRhythm.value = await (await fetch("/api/composer/1/melody/1/mg-rhythm")).json()
+  phrase = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/phrase-structure")).json()
+  phraseMeasures.value = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/hypermeter")).json()
+  meter.value = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/meter")).json()
+  mgRhythm.value = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/mg-rhythm")).json()
 }
 
 async function getSavedForegroundRhythm() {
-  let temp = await fetch("api/composer/1/melody/1/fg-rhythm")
+  let temp = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/fg-rhythm")
   if (!temp.ok) return
   temp = await temp.json()
   storedNotes.value = temp
@@ -124,8 +126,7 @@ async function saveAll() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ "fgRhythm": storedNotes.value })
   }
-  //TODO get current composer and melody ID
-  let response = await fetch("/api/composer/1/melody/1/fg-rhythm", requestOptions)
+  let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/fg-rhythm", requestOptions)
   let json = await response.json()
   console.log(json)
   emit('fgrhythmanimate')

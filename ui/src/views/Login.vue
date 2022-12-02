@@ -2,13 +2,19 @@
   <div>
     <b-container id="form-container" class="px-4 pt-2">
       <b-row>
+        <h1>Login or Create New User</h1>
+      </b-row>
+      <b-row>
+        <h4 v-if="username">Currently logged in as <span style="color: green">{{username}}</span></h4>
+      </b-row>
+      <b-row>
           <b-col>
             <label for="username" class="form-text">Username:</label>
             <b-form-input
                 type="text"
                 id="username"
                 class="input"
-                v-model="username"
+                v-model="usernameLocal"
             ></b-form-input>
           </b-col>
       </b-row>
@@ -33,7 +39,7 @@
               :unchecked-value="false"
               class="form-control-lg m-5"
           >
-            Create new account
+            Create new user
           </b-form-checkbox>
         </b-col>
         <b-col style="text-align: center;">
@@ -53,7 +59,7 @@
       </b-row>
       <b-row>
         <b-col style="text-align: center">
-          <h2 v-if="status === 'success!'" style="color: green">{{status}}</h2>
+          <h2 v-if="status === 'Success!'" style="color: green">{{status}}</h2>
           <h2 v-else-if="status.at(0) === 'U'" style="color: red">{{status}}</h2>
           <h2 v-else>{{status}}</h2>
         </b-col>
@@ -68,19 +74,20 @@ import {ref, inject} from 'vue'
 import {router} from '@/main'
 import {delay} from '../../../server/data'
 
-const username = ref('')
+const usernameLocal = ref('')
 const password = ref('')
-const createNew = ref(true)
+const createNew = ref(false)
 const status = ref("")
 
 const {composerId, updateComposerId} = inject("composerId")
 const {melodyId, updateMelodyId} = inject("melodyId")
+const {username, updateUsername} = inject("username")
 
 async function newUser() {
   status.value = "working..."
-  let foundUsername = await (await fetch("/api/user-exists/" + username.value)).json()
+  let foundUsername = await (await fetch("/api/user-exists/" + usernameLocal.value)).json()
   if (foundUsername.status === "ok") {
-    status.value = `Username ${username.value} is already taken`
+    status.value = `Username ${usernameLocal.value} is already taken`
     return
   }
 
@@ -88,34 +95,35 @@ async function newUser() {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      username: username.value,
+      username: usernameLocal.value,
       password: password.value
     })
   }
   let response = await fetch("/api/create-user", requestOptions)
   let json = await response.json()
   console.log(json)
+  await delay(1000)
   await login()
   await createMelody()
-  status.value = "success!"
-  await delay(2000)
-  await router.push({path: '/phrase-structure'})
 }
 
 async function login() {
   status.value = "working..."
-  let userExists = await (await fetch("/api/find-user-info/" + username.value)).json()
+  let userExists = await (await fetch("/api/find-user-info/" + usernameLocal.value)).json()
   if (userExists.status === "not found") {
-    alert(`Username ${username.value} does not exist`)
+    status.value = `Username ${usernameLocal.value} does not exist`
     return
   }
-  let login = await (await fetch(`/api/login-info/${encodeURIComponent(username.value)}/${encodeURIComponent(password.value)}`)).json()
+  let login = await (await fetch(`/api/login-info/${encodeURIComponent(usernameLocal.value)}/${encodeURIComponent(password.value)}`)).json()
+  if (login.status === "unauthorized") {
+    status.value = 'Username and password do not match'
+    return
+  }
   console.log(login)
   updateComposerId(login["composerId"])
   updateMelodyId("1")
-  status.value = "success!"
-  await delay(2000)
-  await router.push({path: '/phrase-structure'})
+  updateUsername(usernameLocal.value)
+  status.value = "Success!"
 }
 
 async function createMelody() {
@@ -123,7 +131,7 @@ async function createMelody() {
     _id: composerId.value + melodyId.value,
     composerId: composerId.value,
     melodyId: melodyId.value,
-    composer: username.value
+    composer: usernameLocal.value
   }
   const requestOptions = {
     method: "PUT",

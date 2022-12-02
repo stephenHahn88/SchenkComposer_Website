@@ -60,8 +60,11 @@
 </template>
 
 <script setup lang="ts">
-import {defineEmits, onMounted, ref, Ref} from 'vue'
+import {defineEmits, inject, onMounted, ref, Ref} from 'vue'
 import { Phrase, PhraseUnit } from '@/views/dagOther/PhraseStructure.vue'
+
+let {composerId, updateComposerId}: any = inject("composerId")
+let {melodyId, updateMelodyId}: any = inject("melodyId")
 
 let phraseStructure = ref([])
 let numerator = ref("4")
@@ -76,18 +79,17 @@ let hypermeterMeasures = ref({
 const emit = defineEmits(['meteranimate'])
 
 onMounted(async () => {
-  //TODO: get current melody and composer ids
-  let phrase = await fetch("/api/composer/1/melody/1/phrase-structure")
+  let phrase = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/phrase-structure")
   let json = await phrase.json()
   phraseStructure.value = json
 
-  let hypermeter = await fetch("/api/composer/1/melody/1/hypermeter")
+  let hypermeter = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")
   if (hypermeter.status !== 404) {
     json = await hypermeter.json()
     hypermeterMeasures.value = json
   }
 
-  let meter = await fetch("/api/composer/1/melody/1/meter")
+  let meter = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/meter")
   if (meter.status !== 404) {
     json = await meter.json()
     numerator.value = json.split("/")[0]
@@ -95,16 +97,13 @@ onMounted(async () => {
   }
 })
 
-//TODO: Match input fields with same letter
-
 async function saveMeter() {
   let requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ "meter": `${numerator.value}/${denominator.value}` })
   }
-  //TODO get current composer and melody ID
-  let response = await fetch("/api/composer/1/melody/1/meter", requestOptions)
+  let response = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/meter", requestOptions)
   let json = await response.json()
   console.log(json)
 
@@ -112,7 +111,7 @@ async function saveMeter() {
     ...requestOptions,
     body: JSON.stringify({"hypermeter": hypermeterMeasures.value})
   }
-  response = await fetch("/api/composer/1/melody/1/hypermeter", requestOptions)
+  response = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter", requestOptions)
   json = await response.json()
   console.log(json)
 

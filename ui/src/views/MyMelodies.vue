@@ -1,6 +1,5 @@
 <template>
   <div>
-    <b-form-input v-model="composerId"></b-form-input>
     <b-button class="m-2" @click="refresh" variant="info">&#8635; Refresh</b-button>
     <b-container
         style="overflow: auto; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
@@ -23,10 +22,10 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, Ref, ref} from "vue";
+import {inject, onMounted, Ref, ref} from "vue";
 import {Melody} from '../../../server/data'
 
-const composerId = ref(1)
+const {composerId, updateComposerId}: any = inject("composerId")
 const melodies: Ref<Melody[]> = ref([])
 const fields = [
   {
@@ -76,6 +75,14 @@ const fields = [
       }
 
       return answer
+    }
+  },
+  {
+    key: "mgMelody",
+    label: "Middleground Melody",
+    formatter: (mel: string[] | null) => {
+      if (mel === null) return
+      return mel.join(" ").replaceAll("/", "")
     }
   }
 ]

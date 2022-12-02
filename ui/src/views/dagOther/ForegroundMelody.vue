@@ -88,7 +88,10 @@
 
 <script setup lang="ts">
 import go from 'gojs'
-import {onMounted, ref, Ref} from "vue";
+import {inject, onMounted, ref, Ref} from "vue";
+
+let {composerId, updateComposerId}: any = inject("composerId")
+let {melodyId, updateMelodyId}: any = inject("melodyId")
 
 const up = "\u2197"+"\uFE0E"
 const down = "\u2198"+"\uFE0E"

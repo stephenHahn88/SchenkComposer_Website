@@ -162,12 +162,15 @@
 </template>
 
 <script setup>
-import {ref, onMounted, watch, computed} from "vue";
+import {ref, onMounted, watch, computed, inject} from "vue";
 import _ from "lodash";
 import { ForceSimulation } from "@livereader/graphly-d3";
 import "@livereader/graphly-d3/style.css";
 
 import Hexagon from "../../static/hexagon"
+
+let {composerId, updateComposerId} = inject("composerId")
+let {melodyId, updateMelodyId} = inject("melodyId")
 
 let harmonies = ref({
   'I': 'green',
@@ -241,19 +244,18 @@ onMounted(() => {
   getMgRhythm()
   getSavedProgressions()
   getSavedMatrix()
+  saveMatrix()
   redraw()
 })
 
 async function getMgRhythm() {
-  //TODO get melody and composer Ids
-  let temp = await fetch("/api/composer/1/melody/1/mg-rhythm")
+  let temp = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/mg-rhythm")
   if (!temp.ok) return
   mgRhythm.value = await temp.json()
 }
 
 async function getSavedMatrix() {
-  //TODO get melody and composer Ids
-  let temp = await fetch("/api/composer/1/melody/1/matrix")
+  let temp = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/matrix")
   if (!temp.ok) return
   let matrix = await temp.json()
   let numerals = ['I','II','III','IV','V','VI','VII']
@@ -266,8 +268,7 @@ async function getSavedMatrix() {
 }
 
 async function getSavedProgressions() {
-  //TODO get melody and composer Ids
-  let temp = await fetch("/api/composer/1/melody/1/harmonicProgression")
+  let temp = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/harmonicProgression")
   if (!temp.ok) return
   let progressions = await temp.json()
   for (let letter in sequences.value) {
@@ -318,13 +319,12 @@ async function saveMatrix() {
     }
     matrix.push(row)
   }
-  // TODO get current composer and melody ID
   const requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ "matrix": matrix })
   }
-  let response = await fetch("/api/composer/1/melody/1/matrix", requestOptions)
+  let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/matrix", requestOptions)
   response = await response.json()
   console.log(response)
 }
@@ -339,7 +339,7 @@ async function saveProgression() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ "harmonicProgression": progressions })
   }
-  let response = await fetch("/api/composer/1/melody/1/harmonicProgression", requestOptions)
+  let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/harmonicProgression", requestOptions)
   response = await response.json()
   console.log(response)
 }
