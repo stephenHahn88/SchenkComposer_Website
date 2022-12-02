@@ -63,7 +63,13 @@ const fields = [
       return `a:(${obj.a.join("|")}) b:(${obj.b.join("|")}) c:(${obj.c.join("|")}) d:(${obj.d.join("|")})`
     }
   },
-  "harmonicProgression",
+  {
+    key: "harmonicProgression",
+    formatter: (obj: any | null) => {
+      if (obj === null) return
+      return `a: (${obj.a.join(" ")}) b: (${obj.b.join(" ")}) c: (${obj.c.join(" ")}) d: (${obj.d.join(" ")})`
+    }
+  },
   {
     key: "transitionMatrix",
     formatter: (mat: number[][] | null) => {
@@ -83,6 +89,19 @@ const fields = [
     formatter: (mel: string[] | null) => {
       if (mel === null) return
       return mel.join(" ").replaceAll("/", "")
+    }
+  },
+  {
+    key: "fgRhythm",
+    label: "Foreground Rhythm",
+    formatter: (obj: {'a': string[][], 'b': string[][], 'c': string[][], 'd': string[][]} | null) => {
+      if (obj === null) return
+      return `
+        a: (${obj.a.join(" | ").replaceAll(",", " ")})
+        b: (${obj.b.join(" | ").replaceAll(",", " ")})
+        c: (${obj.c.join(" | ").replaceAll(",", " ")})
+        d: (${obj.d.join(" | ").replaceAll(",", " ")})
+      `
     }
   }
 ]
