@@ -33,7 +33,7 @@
       </b-col>
       <b-col>
         <b-row><b-button variant="danger" class="mx-3 mb-3" style="width: 20%" @click="erase()">X</b-button></b-row>
-        <b-row><b-button variant="info" class="m-3" style="width: 100%; height: 100px">Generate</b-button></b-row>
+        <b-row><b-button variant="info" class="m-3" style="width: 100%; height: 100px" @click="generateMgMelody">Generate</b-button></b-row>
         <b-row><b-button variant="success" class="m-3" style="width: 100%; height: 100px" @click="saveMelodyNotes">Save</b-button></b-row>
       </b-col>
     </b-row>
@@ -60,12 +60,12 @@ let glyphs = ref([])
 let flattenedHarmonies = ref([])
 let notesCMajor = {
   "I": ["C","E","G"],
-  "II": ["D","F","A"],
-  "III": ["E","G","B"],
+  "ii": ["D","F","A"],
+  "iii": ["E","G","B"],
   "IV": ["F","A","C"],
   "V": ["G","B","D"],
-  "VI": ["A","C","E"],
-  "VII": ["B","D","F"]
+  "vi": ["A","C","E"],
+  "viio6": ["B","D","F"]
 }
 
 let numMeasures: number;
@@ -246,10 +246,8 @@ function setAvailableNotes() {
       (a, b) => {return parseFloat(a) - parseFloat(b)}).map((x) => parseFloat(x)
   )
   let currKey = harmonyKeys[currNoteIndex.value]
-  // console.log(currKey)
   // @ts-ignore
   let n = notesCMajor[harmonies.value[currKey]]
-  // console.log(n)
   availableNotes.value = [
     ...n.map((v: string) => v+"/5"),
     ...n.map((v: string) => v+"/4"),
@@ -308,6 +306,16 @@ function _noteToDuration(note: string) {
     // case '𝅜.': return
     // case '𝆷': return
     // case '𝆷.':return
+  }
+}
+
+async function generateMgMelody() {
+  let mgMel = await (await fetch("/model/middleground-melody/" + flattenedHarmonies.value.join("-"))).json()
+  erase()
+  savedNotes.value = []
+  currNoteIndex.value = 0
+  for (let note of mgMel["mgNotes"]) {
+    placeNextNote(note)
   }
 }
 </script>

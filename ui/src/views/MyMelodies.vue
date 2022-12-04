@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-button class="m-2" @click="refresh" variant="info">&#8635; Refresh</b-button>
+    <h2 style="color: white">Currently selected melody: {{melodyId}}</h2>
     <b-container
         style="overflow: auto; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
       <b-table
@@ -14,6 +15,7 @@
           bordered
           head-variant="dark"
           table-variant="info"
+          @row-clicked="(item) => handleRowClick(item['melodyId'])"
       >
       </b-table>
     </b-container>
@@ -26,6 +28,7 @@ import {inject, onMounted, Ref, ref} from "vue";
 import {Melody} from '../../../server/data'
 
 const {composerId, updateComposerId}: any = inject("composerId")
+const {melodyId, updateMelodyId}: any = inject("melodyId")
 const melodies: Ref<Melody[]> = ref([])
 const fields = [
   {
@@ -60,7 +63,7 @@ const fields = [
     label: "Harmonic Rhythm",
     formatter: (obj: {'a': string[], 'b':string[],'c':string[],'d':string[]}) => {
       if (obj === null) return
-      return `a:(${obj.a.join("|")}) b:(${obj.b.join("|")}) c:(${obj.c.join("|")}) d:(${obj.d.join("|")})`
+      return `a: (${obj.a.join("|")}) b: (${obj.b.join("|")}) c: (${obj.c.join("|")}) d: (${obj.d.join("|")})`
     }
   },
   {
@@ -105,6 +108,10 @@ const fields = [
     }
   }
 ]
+
+function handleRowClick(item: string) {
+  updateMelodyId(item)
+}
 
 async function refresh() {
   let data = await fetch(`/api/composer/${composerId.value}`)

@@ -12,6 +12,7 @@
         v-for="letter in ['a','b','c','d']"
         :title="letter.toUpperCase()"
         @click="clickTab(letter)"
+        v-if="phraseMeasures[letter] > 0"
       >
         <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
           <b-button variant="danger" class="m-2" @click="clearAll(letter)">X</b-button>
@@ -32,13 +33,21 @@
     </b-tabs>
     <b-row>
       <b-col></b-col>
-      <b-col></b-col>
+      <b-col>
+        <b-button
+            @click="generate"
+            style="width: 100%"
+            variant="info"
+        >
+          Generate
+        </b-button>
+      </b-col>
       <b-col>
         <b-button
           @click="saveAll"
           style="width: 100%"
           variant="success"
-        >Save all</b-button>
+        >Save All</b-button>
       </b-col>
     </b-row>
   </div>
@@ -59,7 +68,7 @@ let possibleRhythms = computed(() => {
     case '𝅘𝅥𝅮': return ['𝅘𝅥𝅮', '𝅘𝅥𝅯 𝅘𝅥𝅯', '𝅘𝅥𝅰 𝅘𝅥𝅰 𝅘𝅥𝅰 𝅘𝅥𝅰', '𝅘𝅥𝅯 𝅘𝅥𝅰 𝅘𝅥𝅰']
     case '♩': return ['♩', '𝅘𝅥𝅮 𝅘𝅥𝅮', '𝅘𝅥𝅮 𝅘𝅥𝅯 𝅘𝅥𝅯', '𝅘𝅥𝅯 𝅘𝅥𝅯 𝅘𝅥𝅯 𝅘𝅥𝅯']
     case '♩.': return ['♩.', '♩ 𝅘𝅥𝅮', '𝅘𝅥𝅮 ♩', '𝅘𝅥𝅮 𝅘𝅥𝅮 𝅘𝅥𝅮']
-    case '𝅗𝅥': return ['𝅗𝅥', '♩ ♩', '♩. 𝅘𝅥𝅮', '𝅘𝅥𝅮 ♩ 𝅘𝅥𝅮', '𝅘𝅥𝅮 𝅘𝅥𝅮 𝅘𝅥𝅮 𝅘𝅥𝅮']
+    case '𝅗𝅥': return ['𝅗𝅥', '♩ ♩', '♩. 𝅘𝅥𝅮', '𝅘𝅥𝅮 ♩ 𝅘𝅥𝅮', '𝅘𝅥𝅮 𝅘𝅥𝅮 𝅘𝅥𝅮 𝅘𝅥𝅮', '♩ 𝅘𝅥𝅮 𝅘𝅥𝅮']
     case '𝅗𝅥.': return ['𝅗𝅥.', '♩ ♩ ♩', '♩. ♩.', '♩. ♩ 𝅘𝅥𝅮', '𝅘𝅥𝅮 ♩ ♩ 𝅘𝅥𝅮', '♩ 𝅘𝅥𝅮 𝅘𝅥𝅮 𝅘𝅥𝅮']
     case '𝅝': return ['𝅝', '𝅗𝅥 𝅗𝅥', '𝅗𝅥. ♩', '♩ ♩ ♩ ♩', '♩ 𝅗𝅥 ♩']
     case '𝅝.': return ['𝅝.', '𝅗𝅥. 𝅗𝅥.', '𝅗𝅥. 𝅗𝅥 ♩', '♩ 𝅗𝅥 𝅗𝅥 ♩', '𝅗𝅥 ♩ ♩ ♩']
@@ -109,6 +118,12 @@ onMounted(async () => {
 async function getPhraseInfo() {
   phrase = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/phrase-structure")).json()
   phraseMeasures.value = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/hypermeter")).json()
+  letters = []
+  for (let letter in phraseMeasures.value) {
+    if (phraseMeasures.value[letter] > 0) {
+      letters.push(letter)
+    }
+  }
   meter.value = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/meter")).json()
   mgRhythm.value = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/mg-rhythm")).json()
 }
@@ -293,6 +308,44 @@ function _dotted(staveNote, noteIndex = -1) {
     });
   }
   return staveNote;
+}
+
+async function generate() {
+  let rhythms = mgRhythm.value[selectedLetter.value]
+  let flattenedRhythms = []
+  for (let m of rhythms) {
+    m = m.split(" ")
+    m.forEach((b) => flattenedRhythms.push(b))
+  }
+  let meterComponent = meter.value.split("/").join("-")
+  let rhythmComponent = flattenedRhythms.join("-")
+  let fgRhythm = await (await fetch(`model/foreground-rhythm/${encodeURIComponent(meterComponent)}/${encodeURIComponent(rhythmComponent)}`)).json()
+  console.log(fgRhythm["fgRhythm"])
+  clearAll(selectedLetter.value)
+  for (let rhythmGroup of fgRhythm["fgRhythm"]) {
+    let unit = []
+    for (let ql of rhythmGroup) {
+      unit.push(_quarterLengthToGlyph(ql))
+    }
+    placeNotes(unit.join(" "), selectedLetter.value)
+  }
+}
+
+function _quarterLengthToGlyph(ql) {
+  switch (ql) {
+    case 0.125: return "𝅘𝅥𝅰"
+    case 0.1875: return "𝅘𝅥𝅰."
+    case 0.25: return "𝅘𝅥𝅯"
+    case 0.375: return "𝅘𝅥𝅯."
+    case 0.5: return "𝅘𝅥𝅮"
+    case 0.75: return "𝅘𝅥𝅮."
+    case 1.0: return "♩"
+    case 1.5: return "♩."
+    case 2.0: return "𝅗𝅥"
+    case 3.0: return "𝅗𝅥."
+    case 4.0: return "𝅝"
+    case 6.0: return "𝅝."
+  }
 }
 </script>
 

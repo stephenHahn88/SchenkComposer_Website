@@ -86,7 +86,13 @@
       </b-row>
       <b-row class="mb-5">
         <b-col>
-          <b-button variant="info" style="height:100px;">Generate</b-button>
+          <b-button
+              variant="info"
+              style="height:100px;"
+              @click="generatePhrase"
+          >
+            Generate
+          </b-button>
         </b-col>
         <b-col>
           <b-button
@@ -206,6 +212,12 @@ async function savePhrase() {
   let json = await response.json()
   console.log(json)
   emit('psanimate')
+}
+
+async function generatePhrase() {
+  let modelPhrase = await (await fetch("/model/phrase-structure")).json()
+  phrase.value = modelPhrase["phrase"]
+  checkButtonDisability()
 }
 </script>
 

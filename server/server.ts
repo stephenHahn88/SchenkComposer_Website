@@ -429,7 +429,6 @@ app.put("/api/create-user", async (req, res) => {
         composerId: idHash,
         idSalt: idSalt
     })
-
     res.status(200).json({status:"ok"})
 })
 

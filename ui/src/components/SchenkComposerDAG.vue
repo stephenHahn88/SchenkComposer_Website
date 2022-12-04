@@ -79,7 +79,7 @@
 import LeaderLine from "leader-line-new"
 
 import {router} from '@/main'
-import {onMounted, Ref, ref, watch} from "vue";
+import {onMounted, onUpdated, Ref, ref, watch} from "vue";
 
 let ps_mh: LeaderLine;
 let ps_mghr: LeaderLine;
@@ -112,13 +112,13 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 watch(() => props.phraseAnim, () => {
-  toggleAnimation(['psMh', 'psMghr', 'psMghp'])
+  activateAnimation(['psMh', 'psMghr', 'psMghp'])
 })
 watch(() => props.meterAnim, () => {
-  toggleAnimation(['mhMghr', 'mhFgmr'])
+  activateAnimation(['mhMghr', 'mhFgmr'])
 })
 watch(() => props.mgrhythmAnim, () => {
-  toggleAnimation(['mghrFgmr', 'mghrMghp', 'mghrMgm'])
+  activateAnimation(['mghrFgmr', 'mghrMghp', 'mghrMgm'])
 })
 
 let psMh = ref(false);
@@ -133,164 +133,182 @@ let mghpMgm = ref(false);
 let mgmFgm = ref(false);
 let fgmrFgm = ref(false);
 
+let psDiv: Element;
+let mhDiv: Element;
+let mghrDiv: Element;
+let mgmDiv: Element;
+let mghpDiv: Element;
+let fgmDiv: Element;
+let fgmrDiv: Element;
 
 function redirect(path:string) {
   router.push({path: path})
 }
 
 onMounted(() => {
-  //From phrase structure
-  ps_mh = new LeaderLine(
-        document.getElementById("ps") as any,
-        document.getElementById("mh") as any,
-        {
-          path: 'magnet',
-          startSocket: 'left',
-          endSocket: 'top',
-          startSocketGravity: [-150, 0],
-          dash: {animation: psMh.value},
-          size: 3,
-          color: psMh.value ? 'green': 'red'
-        }
-    )
-    ps_mghr = new LeaderLine(
-        document.getElementById("ps") as any,
-        document.getElementById("mghr") as any,
-        {
-          path: 'magnet',
-          startSocket: 'bottom',
-          endSocket: 'top',
-          startSocketGravity: [0, 0],
-          dash: {animation: psMghr.value},
-          size: 3,
-          color: psMghr.value ? 'green': 'red'
-        }
-    )
-    ps_mghp = new LeaderLine(
-        document.getElementById("ps") as any,
-        document.getElementById("mghp") as any,
-        {
-          path: 'magnet',
-          startSocket: 'right',
-          endSocket: 'top',
-          startSocketGravity: [150, 0],
-          dash: {animation: psMghp.value},
-          size: 3,
-          color: psMghp.value ? 'green': 'red'
-        }
-    )
-    //From Meter and Hypermeter
-    mh_mghr = new LeaderLine(
-        document.getElementById("mh") as any,
-        document.getElementById("mghr") as any,
-        {
-          path: 'magnet',
-          startSocket: 'right',
-          endSocket: 'left',
-          startSocketGravity: [0, 0],
-          dash: {animation: mhMghr.value},
-          size: 3,
-          color: mhMghr.value ? 'green': 'red'
-        }
-    )
-    mh_fgmr = new LeaderLine(
-        document.getElementById("mh") as any,
-        document.getElementById("fgmr") as any,
-        {
-          path: 'magnet',
-          startSocket: 'bottom',
-          endSocket: 'left',
-          startSocketGravity: [0, 190],
-          dash: {animation: mhFgmr.value},
-          size: 3,
-          color: mhFgmr.value ? 'green': 'red'
-        }
-    )
-    //From Middleground Harmonic Rhythm
-    mghr_fgmr = new LeaderLine(
-        document.getElementById("mghr") as any,
-        document.getElementById("fgmr") as any,
-        {
-          path: 'magnet',
-          startSocket: 'bottom',
-          endSocket: 'top',
-          startSocketGravity: [0, 0],
-          dash: {animation: mghrFgmr.value},
-          size: 3,
-          color: mghrFgmr.value ? 'green': 'red'
-        }
-    )
-    mghr_mghp = new LeaderLine(
-        document.getElementById("mghr") as any,
-        document.getElementById("mghp") as any,
-        {
-          path: 'magnet',
-          startSocket: 'right',
-          endSocket: 'left',
-          startSocketGravity: [0, 0],
-          dash: {animation: mghrMghp.value},
-          size: 3,
-          color: mghrMghp.value ? 'green': 'red'
-        }
-    )
-    mghr_mgm = new LeaderLine(
-        document.getElementById("mghr") as any,
-        document.getElementById("mgm") as any,
-        {
-          path: 'magnet',
-          startSocket: 'bottom',
-          endSocket: 'left',
-          startSocketGravity: [50, 70],
-          dash: {animation: mghrMgm.value},
-          size: 3,
-          color: mghrMgm.value ? 'green': 'red'
-        }
-    )
-    //From Middleground Harmonic Progression
-    mghp_mgm = new LeaderLine(
-        document.getElementById("mghp") as any,
-        document.getElementById("mgm") as any,
-        {
-          path: 'magnet',
-          startSocket: 'bottom',
-          endSocket: 'top',
-          startSocketGravity: [0, 0],
-          dash: {animation: mghpMgm.value},
-          size: 3,
-          color: mghpMgm.value ? 'green': 'red'
-        }
-    )
-    //From Middleground Melody
-    mgm_fgm = new LeaderLine(
-        document.getElementById("mgm") as any,
-        document.getElementById("fgm") as any,
-        {
-          path: 'magnet',
-          startSocket: 'bottom',
-          endSocket: 'top',
-          startSocketGravity: [0, 0],
-          dash: {animation: mgmFgm.value},
-          size: 3,
-          color: mgmFgm.value ? 'green': 'red'
-        }
-    )
-    //From Foreground Melodic Rhythm
-    fgmr_fgm = new LeaderLine(
-        document.getElementById("fgmr") as any,
-        document.getElementById("fgm") as any,
-        {
-          path: 'magnet',
-          startSocket: 'right',
-          endSocket: 'left',
-          startSocketGravity: [0, 0],
-          dash: {animation: fgmrFgm.value},
-          size: 3,
-          color: fgmrFgm.value ? 'green': 'red'
-        }
-    )
+  psDiv = document.getElementById("ps") as Element
+  mhDiv = document.getElementById("mh") as Element
+  mghrDiv = document.getElementById("mghr") as Element
+  mgmDiv = document.getElementById("mgm") as Element
+  mghpDiv = document.getElementById("mghp") as Element
+  fgmDiv = document.getElementById("fgm") as Element
+  fgmrDiv = document.getElementById("fgmr") as Element
+  drawLines()
 })
 
-function toggleAnimation(refNames: string[]) {
+function drawLines() {
+  //From phrase structure
+  ps_mh = new LeaderLine(
+      psDiv,
+      mhDiv,
+      {
+        path: 'magnet',
+        startSocket: 'left',
+        endSocket: 'top',
+        startSocketGravity: [-150, 0],
+        dash: {animation: psMh.value},
+        size: 3,
+        color: psMh.value ? 'green': 'red'
+      }
+  )
+  ps_mghr = new LeaderLine(
+      psDiv,
+      mghrDiv,
+      {
+        path: 'magnet',
+        startSocket: 'bottom',
+        endSocket: 'top',
+        startSocketGravity: [0, 0],
+        dash: {animation: psMghr.value},
+        size: 3,
+        color: psMghr.value ? 'green': 'red'
+      }
+  )
+  ps_mghp = new LeaderLine(
+      psDiv,
+      mghpDiv,
+      {
+        path: 'magnet',
+        startSocket: 'right',
+        endSocket: 'top',
+        startSocketGravity: [150, 0],
+        dash: {animation: psMghp.value},
+        size: 3,
+        color: psMghp.value ? 'green': 'red'
+      }
+  )
+  //From Meter and Hypermeter
+  mh_mghr = new LeaderLine(
+      mhDiv,
+      mghrDiv,
+      {
+        path: 'magnet',
+        startSocket: 'right',
+        endSocket: 'left',
+        startSocketGravity: [0, 0],
+        dash: {animation: mhMghr.value},
+        size: 3,
+        color: mhMghr.value ? 'green': 'red'
+      }
+  )
+  mh_fgmr = new LeaderLine(
+      mhDiv,
+      fgmrDiv,
+      {
+        path: 'magnet',
+        startSocket: 'bottom',
+        endSocket: 'left',
+        startSocketGravity: [0, 190],
+        dash: {animation: mhFgmr.value},
+        size: 3,
+        color: mhFgmr.value ? 'green': 'red'
+      }
+  )
+  //From Middleground Harmonic Rhythm
+  mghr_fgmr = new LeaderLine(
+      mghrDiv,
+      fgmrDiv,
+      {
+        path: 'magnet',
+        startSocket: 'bottom',
+        endSocket: 'top',
+        startSocketGravity: [0, 0],
+        dash: {animation: mghrFgmr.value},
+        size: 3,
+        color: mghrFgmr.value ? 'green': 'red'
+      }
+  )
+  mghr_mghp = new LeaderLine(
+      mghrDiv,
+      mghpDiv,
+      {
+        path: 'magnet',
+        startSocket: 'right',
+        endSocket: 'left',
+        startSocketGravity: [0, 0],
+        dash: {animation: mghrMghp.value},
+        size: 3,
+        color: mghrMghp.value ? 'green': 'red'
+      }
+  )
+  mghr_mgm = new LeaderLine(
+      mghrDiv,
+      mgmDiv,
+      {
+        path: 'magnet',
+        startSocket: 'bottom',
+        endSocket: 'left',
+        startSocketGravity: [50, 70],
+        dash: {animation: mghrMgm.value},
+        size: 3,
+        color: mghrMgm.value ? 'green': 'red'
+      }
+  )
+  //From Middleground Harmonic Progression
+  mghp_mgm = new LeaderLine(
+      mghpDiv,
+      mgmDiv,
+      {
+        path: 'magnet',
+        startSocket: 'bottom',
+        endSocket: 'top',
+        startSocketGravity: [0, 0],
+        dash: {animation: mghpMgm.value},
+        size: 3,
+        color: mghpMgm.value ? 'green': 'red'
+      }
+  )
+  //From Middleground Melody
+  mgm_fgm = new LeaderLine(
+      mgmDiv,
+      fgmDiv,
+      {
+        path: 'magnet',
+        startSocket: 'bottom',
+        endSocket: 'top',
+        startSocketGravity: [0, 0],
+        dash: {animation: mgmFgm.value},
+        size: 3,
+        color: mgmFgm.value ? 'green': 'red'
+      }
+  )
+  //From Foreground Melodic Rhythm
+  fgmr_fgm = new LeaderLine(
+      fgmrDiv,
+      fgmDiv,
+      {
+        path: 'magnet',
+        startSocket: 'right',
+        endSocket: 'left',
+        startSocketGravity: [0, 0],
+        dash: {animation: fgmrFgm.value},
+        size: 3,
+        color: fgmrFgm.value ? 'green': 'red'
+      }
+  )
+}
+
+function activateAnimation(refNames: string[], activate: boolean = true) {
   for (let refName of refNames) {
     let reference: Ref<boolean>;
     let line: LeaderLine;
@@ -308,7 +326,7 @@ function toggleAnimation(refNames: string[]) {
       case 'fgmrFgm': reference = fgmrFgm; line = fgmr_fgm; break;
       default: return
     }
-    reference.value = !reference.value
+    reference.value = activate
     line.color = reference.value ? 'green': 'red'
     line.setOptions({dash: {animation: reference.value}})
   }

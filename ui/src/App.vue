@@ -11,6 +11,11 @@
             style="height: 90px; width: auto;"
         >
       </b-navbar-brand>
+      <b-navbar-brand>
+        <b-button variant="success" @click="createNewMelody">
+          Create New Melody
+        </b-button>
+      </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
@@ -22,16 +27,18 @@
     <b-row>
       <b-col class="mt-5">
 <!--        DAG-->
-        <div class="p-2 ml-3" style="width: 650px; background-color: rgba(0, 0, 0, 0.6); border-radius: 30px;">
-          <SchenkComposerDAG
-              :phrase-anim="phrase_anim"
-              :meter-anim="meter_anim"
-              :mgrhythm-anim="mgrhythm_anim"
-              :mgharmony-anim="mgharmony_anim"
-              :fgrhythm-anim="fgrhythm_anim"
-              :mgmelody-anim="mgmelody_anim"
-          ></SchenkComposerDAG>
-        </div>
+        <b-container style="overflow: auto">
+          <div class="p-2 ml-3" style="width: 650px; background-color: rgba(0, 0, 0, 0.6); border-radius: 30px;">
+            <SchenkComposerDAG
+                :phrase-anim="phrase_anim"
+                :meter-anim="meter_anim"
+                :mgrhythm-anim="mgrhythm_anim"
+                :mgharmony-anim="mgharmony_anim"
+                :fgrhythm-anim="fgrhythm_anim"
+                :mgmelody-anim="mgmelody_anim"
+            ></SchenkComposerDAG>
+          </div>
+        </b-container>
       </b-col>
       <b-col class="mt-5">
         <div class="p-2" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px; overflow: auto">
@@ -82,19 +89,29 @@ provide("username", {username, updateUsername})
 provide("composerId", {composerId, updateComposerId})
 provide("melodyId", {melodyId, updateMelodyId})
 
+async function createNewMelody() {
+  let result = await (await fetch("/api/composer/" + composerId.value)).json()
+  let max = 0
+  for (let mel of result) {
+    if (parseInt(mel["melodyId"]) > max) {
+      max = parseInt(mel["melodyId"])
+    }
+  }
+  melodyId.value = (max + 1).toString()
+  await putMelody()
+}
 
-watch(melodyId, async () => {
-  await defaultMelody()
+onMounted(async () => {
+  await putMelody()
 })
-async function defaultMelody() {
-  await delay(2000)
+async function putMelody() {
+  await delay(500)
   let mel = {
     _id: composerId.value + melodyId.value,
     composerId: composerId.value,
     melodyId: melodyId.value,
-    composer: "Anonymous"
+    composer: username.value
   }
-  console.log(mel)
   const requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },

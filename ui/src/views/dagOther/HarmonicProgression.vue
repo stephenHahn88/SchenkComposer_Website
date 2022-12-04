@@ -6,147 +6,154 @@
       <b-col
           class="p-2"
           cols="6"
-          style="background-color: rgba(0, 0, 0, 0.3); border-radius: 10px; overflow: auto">
-        <b-row class="mb-5" style="height: 100px;">
-          <b-col cols="4"><h2>Transition Matrix</h2></b-col>
-<!--          PRESET MATRICES-->
-          <b-col
-              class="mr-3"
-              style="
+          style="background-color: rgba(0, 0, 0, 0.3); border-radius: 10px; overflow: auto"
+      >
+        <b-container>
+          <b-row class="mb-5" style="height: 100px; width: 800px">
+            <b-col cols="4"><h2>Transition Matrix</h2></b-col>
+            <!--          PRESET MATRICES-->
+            <b-col
+                class="mr-3"
+                style="
                 background-color: rgba(255, 255, 255, 0.2);
                 border-radius: 10px;
               "
-          >
-            <h3>Preset Matrices</h3>
-            <b-button
-              v-for="preset in presetMatrices"
-              variant="info"
-              style="width: 100px;"
-              class="m-2"
-              @click="getPresetMatrix(preset)"
             >
-              {{preset}}
-            </b-button>
-          </b-col>
-        </b-row>
-<!--        MATRIX-->
-        <b-row>
-          <b-container style="width: 640px; border-radius: 10px;">
-            <b-row>
-              <b-col class="mt-3">
-                <b-button variant="danger" @click="clear">X</b-button>
-              </b-col>
-              <b-col
-                  v-for="(color, harmony_label, i) in harmonies" :key="i"
-                  style="text-align: center"
-                  class="mt-3"
-              >
-                <p
-                    :style='{ backgroundColor: harmonies[harmony_label], color: "white", borderRadius: "30px"}'
-                >{{harmony_label}}</p>
-              </b-col>
-            </b-row>
-            <b-row
-                v-for="(color, harmony_from, i) in harmonies" :key="i"
-                class="harmony_row"
-                :class="harmony_from"
-            >
-              <b-col
-                style="text-align: center"
-              >
-                <p
-                    :style='{ backgroundColor: harmonies[harmony_from], color: "white", borderRadius: "30px"}'
-                >{{harmony_from}}</p>
-              </b-col>
-              <b-col
-                  v-for="(color, harmony_to, j) in harmonies" :key="j"
-              >
-                <b-form-input
-                    class="my-2"
-                    style="width:48px;"
-                    v-model="transitions[harmony_from][harmony_to]"
-                ></b-form-input>
-              </b-col>
-            </b-row>
-            <b-row>
+              <h3>Preset Matrices</h3>
               <b-button
-                  class="m-4"
-                  variant="success"
-                  @click="saveMatrix"
-              >Save</b-button>
-            </b-row>
-          </b-container>
-        </b-row>
+                  v-for="preset in presetMatrices"
+                  variant="info"
+                  style="width: 100px;"
+                  class="m-2"
+                  @click="getPresetMatrix(preset)"
+              >
+                {{preset}}
+              </b-button>
+            </b-col>
+          </b-row>
+          <!--        MATRIX-->
+          <b-row style="width: 800px">
+            <b-container style="width: 740px; border-radius: 10px;">
+              <b-row>
+                <b-col class="mt-3">
+                  <b-button variant="danger" @click="clear">X</b-button>
+                </b-col>
+                <b-col
+                    v-for="(color, harmony_label, i) in harmonies" :key="i"
+                    style="text-align: center"
+                    class="mt-3"
+                >
+                  <p
+                      :style='{ backgroundColor: harmonies[harmony_label], color: "white", borderRadius: "30px"}'
+                  >{{harmony_label}}</p>
+                </b-col>
+              </b-row>
+              <b-row
+                  v-for="(color, harmony_from, i) in harmonies" :key="i"
+                  class="harmony_row"
+                  :class="harmony_from"
+              >
+                <b-col
+                    style="text-align: center"
+                >
+                  <p
+                      :style='{ backgroundColor: harmonies[harmony_from], color: "white", borderRadius: "30px"}'
+                  >{{harmony_from}}</p>
+                </b-col>
+                <b-col
+                    v-for="(color, harmony_to, j) in harmonies" :key="j"
+                >
+                  <b-form-input
+                      class="my-2"
+                      style="width:62px;"
+                      v-model="transitions[harmony_from][harmony_to]"
+                  ></b-form-input>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-button
+                    class="m-4"
+                    variant="success"
+                    @click="saveMatrix"
+                >Save</b-button>
+              </b-row>
+            </b-container>
+          </b-row>
+        </b-container>
       </b-col>
 <!--      SEQUENCE GENERATION-->
       <b-col
           class="mx-4 p-4"
           style="border-radius: 10px; background-color: rgba(0, 0, 0, 0.3); overflow: auto"
       >
-        <b-row class="mb-2">
-          <b-col>
-            <h2>Generation</h2>
-          </b-col>
-          <b-col></b-col>
-          <b-col>
-            <b-button
-                variant="warning"
-                @click="backspace()"
-                style="width: 100%; font-size: 20px"
-            >&#8592</b-button>
-          </b-col>
-          <b-col>
-            <b-button
-                variant="danger"
-                @click="erase()"
-                style="font-size: 20px"
-            >X</b-button>
-          </b-col>
-        </b-row>
-        <b-row
-            v-for="letter in Object.keys(sequences)"
-            @click="selectRow(letter)"
-            class="hoverable p-1 mb-1"
-            :class="sequences[letter]['selected']"
-        >
-          <b-col>
-            <p style="font-size: 32px;">{{letter}}:</p>
-          </b-col>
-          <b-col
-            v-for="i in max"
-            v-if="max - i < sequences[letter]['sequenceReverse'].length"
+        <b-container style="width: 700px">
+          <b-row class="mb-2">
+            <b-col>
+              <h2>Generation</h2>
+            </b-col>
+            <b-col></b-col>
+            <b-col>
+              <b-button
+                  variant="warning"
+                  @click="backspace()"
+                  style="width: 100%; font-size: 20px"
+              >&#8592</b-button>
+            </b-col>
+            <b-col>
+              <b-button
+                  variant="danger"
+                  @click="erase()"
+                  style="font-size: 20px"
+              >X</b-button>
+            </b-col>
+          </b-row>
+          <b-row
+              v-for="letter in Object.keys(sequences)"
+              @click="selectRow(letter)"
+              class="hoverable p-1 mb-1"
+              :class="sequences[letter]['selected']"
+              v-if="phraseMeasures[letter] > 0"
           >
-            <p style="font-size: 32px;">{{sequences[letter]['sequenceReverse'][max - i]}}</p>
-          </b-col>
-          <b-col
-              v-else
-              style="font-size: 32px;"
-          >
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col
-            v-for="(color, harmony, i) in harmonies"
-            :key="i"
-          >
+            <b-col>
+              <p style="font-size: 32px;">{{letter}}:</p>
+            </b-col>
+            <b-col
+                v-for="i in max"
+                v-if="max - i < sequences[letter]['sequenceReverse'].length"
+            >
+              <p style="font-size: 32px;">{{sequences[letter]['sequenceReverse'][max - i]}}</p>
+            </b-col>
+            <b-col
+                v-else
+                style="font-size: 32px;"
+            >
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col
+                v-for="(color, harmony, i) in harmonies"
+                :key="i"
+            >
+              <b-button
+                  :style="{ backgroundColor: color}"
+                  @click="addHarmony(harmony)"
+              >{{harmony}}</b-button>
+            </b-col>
+          </b-row>
+          <b-row class="mt-3 mr-3" style="justify-content: end">
             <b-button
-                :style="{ backgroundColor: color}"
-                @click="addHarmony(harmony)"
-            >{{harmony}}</b-button>
-          </b-col>
-        </b-row>
-        <b-row class="mt-3 mr-3" style="justify-content: end">
-          <b-button
-              class="m-2"
-              variant="info"
-              @click="handleGenerate()"
-          >Generate</b-button>
-          <b-button
-              class="m-2"
-              variant="success"
-              @click="saveProgression"
-          >Save all</b-button>
-        </b-row>
+                class="m-2"
+                variant="info"
+                @click="handleGenerate()"
+            >Generate</b-button>
+            <b-button
+                class="m-2"
+                variant="success"
+                @click="saveProgression"
+            >Save all</b-button>
+          </b-row>
+        </b-container>
+
       </b-col>
     </b-row>
 <!--      MARKOV CHAIN GRAPH-->
@@ -182,16 +189,16 @@ let harmonies = ref({
   "VII": 'black'
 })
 
-let presetMatrices = ["Classical Major", "Classical Minor", "Rock", "Pentatonic"]
+let presetMatrices = ["Classical Major", "Rock"]
 
 let transitions = ref({
-  'I': ref({'I': 0, 'II': 0.2, 'III': 0.1, 'IV': 0.2, "V": 0.2, "VI": 0.2, "VII": 0.1}),
+  'I': ref({'I': 0, 'II': 2, 'III': 1, 'IV': 2, "V": 2, "VI": 2, "VII": 1}),
   'II': ref({'I': 0, 'II': 0, 'III': 0, 'IV': 0, "V": 1, "VI": 0, "VII": 0}),
-  'III': ref({'I': 0, 'II': 0.1, 'III': 0, 'IV': 0.6, "V": 0, "VI": 0.3, "VII": 0}),
-  'IV': ref({'I': 0, 'II': 0.4, 'III': 0, 'IV': 0, "V": 0.5, "VI": 0, "VII": 0.1}),
-  'V': ref({'I': 0.8, 'II': 0, 'III': 0, 'IV': 0, "V": 0, "VI": 0.2, "VII": 0}),
-  'VI': ref({'I': 0, 'II': 0.5, 'III': 0.1, 'IV': 0.3, "V": 0.1, "VI": 0, "VII": 0}),
-  'VII': ref({'I': 1.0, 'II': 0, 'III': 0, 'IV': 0, "V": 0, "VI": 0, "VII": 0})
+  'III': ref({'I': 0, 'II': 1, 'III': 0, 'IV': 6, "V": 0, "VI": 3, "VII": 0}),
+  'IV': ref({'I': 0, 'II': 4, 'III': 0, 'IV': 0, "V": 5, "VI": 0, "VII": 1}),
+  'V': ref({'I': 8, 'II': 0, 'III': 0, 'IV': 0, "V": 0, "VI": 2, "VII": 0}),
+  'VI': ref({'I': 0, 'II': 5, 'III': 1, 'IV': 3, "V": 1, "VI": 0, "VII": 0}),
+  'VII': ref({'I': 1, 'II': 0, 'III': 0, 'IV': 0, "V": 0, "VI": 0, "VII": 0})
 })
 
 let mySVG;
@@ -215,6 +222,9 @@ let sequences = ref({
 })
 let mgRhythm = ref({})
 
+let phraseMeasures = ref({})
+let phraseStructure = ref([])
+
 //updates sequence maxlens
 watch(mgRhythm, () => {
   for (let letter in sequences.value) {
@@ -226,7 +236,7 @@ watch(mgRhythm, () => {
   }
 })
 
-onMounted(() => {
+onMounted(async () => {
   harmonies = ref({
     'I': 'green',
     'II': 'navy',
@@ -241,10 +251,12 @@ onMounted(() => {
   simulation = new ForceSimulation(mySVG);
   simulation.templateStore.add("hexagon", Hexagon)
 
-  getMgRhythm()
-  getSavedProgressions()
-  getSavedMatrix()
-  saveMatrix()
+  await getMgRhythm()
+  phraseMeasures.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")).json()
+  phraseStructure.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/phrase-structure")).json()
+  await getSavedProgressions()
+  await getSavedMatrix()
+  await saveMatrix()
   redraw()
 })
 
@@ -261,7 +273,6 @@ async function getSavedMatrix() {
   let numerals = ['I','II','III','IV','V','VI','VII']
   for (let [i, r] of numerals.entries()) {
     for (let [j, s] of numerals.entries()) {
-
       transitions.value[r][s] = parseFloat(matrix[i][j])
     }
   }
@@ -311,14 +322,7 @@ async function getPresetMatrix(preset) {
 }
 
 async function saveMatrix() {
-  let matrix = []
-  for (let rowName in transitions.value) {
-    let row = []
-    for (let valName in transitions.value[rowName]) {
-      row.push(transitions.value[rowName][valName])
-    }
-    matrix.push(row)
-  }
+  let matrix = _getMatrixAsArray()
   const requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
@@ -327,6 +331,18 @@ async function saveMatrix() {
   let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/matrix", requestOptions)
   response = await response.json()
   console.log(response)
+}
+
+function _getMatrixAsArray() {
+  let matrix = []
+  for (let rowName in transitions.value) {
+    let row = []
+    for (let valName in transitions.value[rowName]) {
+      row.push(transitions.value[rowName][valName])
+    }
+    matrix.push(row)
+  }
+  return matrix
 }
 
 async function saveProgression() {
@@ -346,13 +362,44 @@ async function saveProgression() {
 
 async function handleGenerate() {
   let letter = _findActiveLetter()
-  // TODO: get length and endHarmony from database
-  let len = 5
-  let endHarmony = "V"
-  let progression = await fetch(`/model/harmonic-progression/${endHarmony}/${len}`)
+  let phraseEndsForCadences = _findPhraseEndHarmonies()
+  let len = sequences.value[letter]["maxLen"]
+  let endHarmony;
+  if (Object.keys(phraseEndsForCadences).includes(letter)) {
+    endHarmony = phraseEndsForCadences[letter]
+  } else {
+    endHarmony = "IV"
+  }
+  let matrix = _getMatrixAsArray()
+  let flattenedMatrix = []
+  for (let r of matrix) {
+    for (let e of r) {
+      flattenedMatrix.push(e)
+    }
+  }
+  let progression = await fetch(`/model/harmonic-progression/${endHarmony}/${len}/${flattenedMatrix.join("-")}`)
   progression = await progression.json()
   console.log(progression)
   sequences.value[letter]["sequenceReverse"] = progression["progression"].reverse()
+}
+
+function _findPhraseEndHarmonies() {
+  let answers = {}
+  let curr;
+  let prev;
+  let i = 0
+  for (let phraseUnit of phraseStructure.value) {
+    if (i === 0) {curr = phraseUnit; i++; continue;}
+    prev = curr
+    curr = phraseUnit
+    if (curr === "[HC]") {
+      answers[prev.at(0)] = "V"
+    } else if (curr === "[AC]") {
+      answers[prev.at(0)] = "I"
+    }
+    i++
+  }
+  return answers
 }
 
 function selectRow(letter) {
