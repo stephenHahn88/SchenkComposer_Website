@@ -6,6 +6,8 @@
     "jointjs": "^3.6.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.28.1",
     "@types/sjcl": "^1.0.30"
-  }
+  },
+  "scripts": {}
 }

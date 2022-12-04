@@ -27,7 +27,9 @@ const logger = pino({
 })
 app.use(expressPinoLogger({ logger }))
 
-// app routes
+// APP ROUTES
+
+// returns all melodies of a composer
 app.get("/api/composer/:composerId", async (req, res) => {
   const id = req.params.composerId.toString()
 
@@ -42,6 +44,7 @@ app.get("/api/composer/:composerId", async (req, res) => {
   res.status(200).json(mels)
 })
 
+// gets a particular phrase structure
 app.get("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -59,6 +62,7 @@ app.get("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (re
     res.status(200).json(result)
 })
 
+// gets a particular meter
 app.get("/api/composer/:composerId/melody/:melodyId/meter", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -75,6 +79,7 @@ app.get("/api/composer/:composerId/melody/:melodyId/meter", async (req, res) => 
     res.status(200).json(result)
 })
 
+// gets a particular hypermeter
 app.get("/api/composer/:composerId/melody/:melodyId/hypermeter", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -91,6 +96,7 @@ app.get("/api/composer/:composerId/melody/:melodyId/hypermeter", async (req, res
     res.status(200).json(result)
 })
 
+// gets a particular middleground rhythm
 app.get("/api/composer/:composerId/melody/:melodyId/mg-rhythm", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -107,6 +113,7 @@ app.get("/api/composer/:composerId/melody/:melodyId/mg-rhythm", async (req, res)
     res.status(200).json(result)
 })
 
+// gets a particular foreground rhythm
 app.get("/api/composer/:composerId/melody/:melodyId/fg-rhythm", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -123,6 +130,7 @@ app.get("/api/composer/:composerId/melody/:melodyId/fg-rhythm", async (req, res)
     res.status(200).json(result)
 })
 
+// gets a particular harmony transition matrix
 app.get("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -139,6 +147,7 @@ app.get("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) =>
     res.status(200).json(result)
 })
 
+// gets a particular harmonic progression
 app.get("/api/composer/:composerId/melody/:melodyId/harmonicProgression", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -155,6 +164,7 @@ app.get("/api/composer/:composerId/melody/:melodyId/harmonicProgression", async 
     res.status(200).json(result)
 })
 
+// gets a particular middleground melody
 app.get("/api/composer/:composerId/melody/:melodyId/middleground-melody", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -172,6 +182,7 @@ app.get("/api/composer/:composerId/melody/:melodyId/middleground-melody", async 
     res.status(200).json(result)
 })
 
+// puts a particular hypermeter
 app.put("/api/composer/:composerId/melody/:melodyId/hypermeter", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -192,10 +203,10 @@ app.put("/api/composer/:composerId/melody/:melodyId/hypermeter", async (req, res
             upsert: true
         }
     )
-
     res.status(200).json({status:"ok"})
 })
 
+// puts a particular meter
 app.put("/api/composer/:composerId/melody/:melodyId/meter", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -219,6 +230,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/meter", async (req, res) => 
     res.status(200).json({status:"ok"})
 })
 
+// puts a particular middleground rhythm
 app.put("/api/composer/:composerId/melody/:melodyId/mg-rhythm", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -242,6 +254,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/mg-rhythm", async (req, res)
     res.status(200).json({status:"ok"})
 })
 
+// puts a particular foreground rhythm
 app.put("/api/composer/:composerId/melody/:melodyId/fg-rhythm", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -265,6 +278,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/fg-rhythm", async (req, res)
     res.status(200).json({status:"ok"})
 })
 
+// puts a particular harmonic transition matrix
 app.put("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) => {
   const composerId = req.params.composerId.toString()
   const melodyId = req.params.melodyId.toString()
@@ -285,10 +299,10 @@ app.put("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) =>
         upsert: true
       }
   )
-
   res.status(200).json({status:"ok"})
 })
 
+// puts a particular phrase structure
 app.put("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (req, res) => {
   const composerId = req.params.composerId.toString()
   const melodyId = req.params.melodyId.toString()
@@ -309,10 +323,10 @@ app.put("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (re
         upsert: true
       }
   )
-
   res.status(200).json({status:"ok"})
 })
 
+// puts a particular harmonic progression
 app.put("/api/composer/:composerId/melody/:melodyId/harmonicProgression", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -333,10 +347,10 @@ app.put("/api/composer/:composerId/melody/:melodyId/harmonicProgression", async 
             upsert: true
         }
     )
-
     res.status(200).json({status:"ok"})
 })
 
+// puts a particular middleground melody
 app.put("/api/composer/:composerId/melody/:melodyId/middleground-melody", async (req, res) => {
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
@@ -357,11 +371,12 @@ app.put("/api/composer/:composerId/melody/:melodyId/middleground-melody", async 
             upsert: true
         }
     )
-
     res.status(200).json({status:"ok"})
 })
 
-// setup login and creation
+// LOGIN AND USER CREATION
+
+// check whether a username exists in the database
 app.get("/api/user-exists/:username", async (req, res) => {
     const username = req.params.username
     const db = client.db("test")
@@ -376,6 +391,7 @@ app.get("/api/user-exists/:username", async (req, res) => {
     res.status(200).json({status:"ok"})
 })
 
+// gets particular user information
 app.get("/api/find-user-info/:username", async (req, res) => {
     const username = req.params.username
     const db = client.db("test")
@@ -390,6 +406,7 @@ app.get("/api/find-user-info/:username", async (req, res) => {
     res.status(200).json({status: "ok"})
 })
 
+// returns composer id if username and password match
 app.get("/api/login-info/:username/:password", async (req, res) => {
     const username = decodeURIComponent(req.params.username)
     const password = decodeURIComponent(req.params.password)
@@ -410,6 +427,7 @@ app.get("/api/login-info/:username/:password", async (req, res) => {
     res.status(200).json({composerId})
 })
 
+// creates new user with salting and hashing
 app.put("/api/create-user", async (req, res) => {
     const db = client.db("test")
     const users = db.collection("users")
@@ -432,6 +450,7 @@ app.put("/api/create-user", async (req, res) => {
     res.status(200).json({status:"ok"})
 })
 
+// creates a new 'empty' melody
 app.put("/api/create-melody", async (req, res) => {
     console.log("inserting melodies", await db.collection("melodies").insertOne(req.body))
     res.status(200).json({status: "ok"})

@@ -1,0 +1,8 @@
+{
+  "teamMembers": [{"name": "Stephen Hahn", "netId": "sh597"}],
+  "panoptoVideoUrl": "https://duke.hosted.panopto.com/...",
+  "gitLabRepositoryUrl": "https://coursework.cs.duke.edu/...",
+  "commentsForGrader": "This project was based around my research, for which I'm building a website. It involves connections to a Python Flask server, but the code for that is not included here. All my code is on Github rather than Gitlab."
+
+
+}
