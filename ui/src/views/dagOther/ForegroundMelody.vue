@@ -1,6 +1,15 @@
 <template>
   <div>
     <b-row>
+      <b-col></b-col>
+      <b-col>
+        <b-button
+          variant="info"
+          @click="generateMelody"
+        >Generate</b-button>
+      </b-col>
+    </b-row>
+    <b-row>
 <!--      PRODUCTION RULES-->
       <b-col class="m-3" style="background-color: rgba(255, 255, 255, 0.6); border-radius: 10px; overflow-y: scroll; height: 500px;">
         <h2>Production Rules</h2>
@@ -88,10 +97,26 @@
 
 <script setup lang="ts">
 import go from 'gojs'
-import {inject, onMounted, ref, Ref} from "vue";
+import {computed, inject, onMounted, ref, Ref} from "vue";
+import * as Tone from "tone";
 
 let {composerId, updateComposerId}: any = inject("composerId")
 let {melodyId, updateMelodyId}: any = inject("melodyId")
+
+let phraseStructure;
+let fgRhythm;
+let mgRhythm;
+let mgHarmony;
+let mgMelody: string[];
+let fgRhythmFlattened: string[];
+let mgHarmonyFlattened: string[];
+let mgRhythmFlattened: string[];
+
+let foregroundMelody = ref([])
+
+onMounted(() => {
+  getMelodyInfo()
+})
 
 const up = "\u2197"+"\uFE0E"
 const down = "\u2198"+"\uFE0E"
@@ -162,6 +187,61 @@ function addToTable() {
     to: newRule.value["to"]["value"].join(""),
     count: newRule.value["count"]["value"].join("")
   })
+}
+
+async function getMelodyInfo() {
+  phraseStructure = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/phrase-structure")).json()
+  fgRhythm = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/fg-rhythm")).json()
+  mgRhythm = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/mg-rhythm")).json()
+  mgHarmony = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/harmonicProgression")).json()
+  mgMelody = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/middleground-melody")).json()
+
+  phraseStructure = phraseStructure
+      .filter((s: string) => s.at(0) !== "[")
+      .map((s: string) => s.at(0))
+
+  fgRhythmFlattened = []
+  mgRhythmFlattened = []
+  mgHarmonyFlattened = []
+  for (let letter of phraseStructure) {
+    for (let measureString of mgRhythm[letter]) {
+      mgRhythmFlattened.push(measureString)
+    }
+    for (let harmony of mgHarmony[letter]) {
+      mgHarmonyFlattened.push(harmony)
+    }
+    for (let rhythm of fgRhythm[letter]) {
+      for (let subrhythm of rhythm) {
+        fgRhythmFlattened.push(subrhythm)
+      }
+    }
+  }
+}
+
+async function generateMelody() {
+  //foreground rhythm, middleground melody, middleground harmony, mg rhythm,
+
+  let mgMelodyComponent = mgMelody
+      .map((s: string) => s.replaceAll("/", ""))
+      .join("-")
+  let fgRhythmComponent = fgRhythmFlattened
+      .join("-")
+      .replaceAll(" ", "s")
+  let mgRhythmComponent = mgRhythmFlattened
+      .join("-")
+      .replaceAll(" ", "s")
+  let mgHarmonyComponent = mgHarmonyFlattened
+      .join("-")
+
+  let mel = await (await fetch(`
+    /model/generate-melody/
+    ${encodeURIComponent(mgMelodyComponent)}/
+    ${encodeURIComponent(fgRhythmComponent)}/
+    ${encodeURIComponent(mgRhythmComponent)}/
+    ${encodeURIComponent(mgHarmonyComponent)}
+  `)).json()
+
+  playNotesAndHarmony(mel.notes, mel.harmony)
 }
 
 //THE FOLLOWING IS BASED ON https://github.com/NorthwoodsSoftware/GoJS/blob/master/samples/parseTree.html
@@ -278,6 +358,56 @@ function test() {
   myDiagram.model = new go.TreeModel({
     nodeDataArray: nodeDataArray.value
   })
+}
+
+const sampler = new Tone.Sampler({
+  urls: {
+    "C5": "C5.mp3",
+    "D#4": "Ds4.mp3",
+    "F#4": "Fs4.mp3",
+    "A4": "A4.mp3",
+  },
+  release: 1,
+  baseUrl: "https://tonejs.github.io/audio/salamander/",
+}).toDestination();
+
+function playNotesAndHarmony(notes: string[], harmonies: string[]) {
+  Tone.loaded().then(() => {
+    const now = Tone.now()
+
+    // PLACE NOTES
+    let curr = now
+    for (let note of notes) {
+      let noteQL = _triggerNotes(note, curr)
+      curr += noteQL
+    }
+
+    // PLACE HARMONIES
+    curr = now
+    for (let harmony of harmonies) {
+      let noteQL = 0;
+      for (let note of harmony) {
+        noteQL = _triggerNotes(note, curr)
+      }
+      curr += noteQL
+    }
+  })
+}
+
+function _triggerNotes(note: string, curr: number) {
+  let noteName = _getNoteName(note)
+  let noteQL = _getNoteQuarterlen(note) / 2
+  sampler.triggerAttack(noteName, curr)
+  sampler.triggerRelease(noteName, curr + noteQL)
+  return noteQL
+}
+
+function _getNoteName(noteString: string) {
+  return noteString.split(": ")[0]
+}
+
+function _getNoteQuarterlen(noteString: string) {
+  return eval(noteString.split(": ")[1])
 }
 </script>
 

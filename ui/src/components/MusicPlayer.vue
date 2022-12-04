@@ -28,7 +28,10 @@ async function generateAll() {
   console.log(notes)
   console.log(harmonies)
 
+  playNotesAndHarmony(notes, harmonies)
+}
 
+function playNotesAndHarmony(notes: string[], harmonies: string[]) {
   Tone.loaded().then(() => {
     const now = Tone.now()
 

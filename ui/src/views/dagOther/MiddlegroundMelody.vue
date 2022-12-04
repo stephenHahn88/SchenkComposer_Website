@@ -58,6 +58,7 @@ let harmonies = ref({})
 let durations = ref({})
 let glyphs = ref([])
 let flattenedHarmonies = ref([])
+let flattenedPhrase = ref([])
 let notesCMajor = {
   "I": ["C","E","G"],
   "ii": ["D","F","A"],
@@ -91,12 +92,17 @@ onMounted(async () => {
 })
 
 async function getRhythmAndProgression() {
+  let phraseStructure = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/phrase-structure")).json()
   let mgRhythm = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm")).json()
   let hp = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/harmonicProgression")).json()
 
+  flattenedPhrase.value = phraseStructure
+      .filter((s: string) => s.at(0) !== "[")
+      .map((s: string) => s.at(0))
+
   let mgRhythmFlattened = []
   let hpFlattened = []
-  for (let letter in mgRhythm) {
+  for (let letter of flattenedPhrase.value) {
     for (let measureString of mgRhythm[letter]) {
       mgRhythmFlattened.push(measureString)
     }
@@ -166,7 +172,7 @@ function drawStaff() {
   div = document.getElementById('boo') as HTMLDivElement
   renderer = new Renderer(div, Renderer.Backends.SVG)
 
-  renderer.resize(4000, 250)
+  renderer.resize(6000, 250)
   context = renderer.getContext()
   context.scale(1.4, 1.4)
   context.setFont('Arial', 32)
