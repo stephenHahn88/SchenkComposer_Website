@@ -27,7 +27,9 @@ const logger = pino({
 })
 app.use(expressPinoLogger({ logger }))
 
-// APP ROUTES
+////// APP ROUTES
+
+//// GET ROUTES
 
 // returns all melodies of a composer
 app.get("/api/composer/:composerId", async (req, res) => {
@@ -181,6 +183,8 @@ app.get("/api/composer/:composerId/melody/:melodyId/middleground-melody", async 
     console.log(result)
     res.status(200).json(result)
 })
+
+//// PUT ROUTES
 
 // puts a particular hypermeter
 app.put("/api/composer/:composerId/melody/:melodyId/hypermeter", async (req, res) => {
@@ -374,7 +378,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/middleground-melody", async 
     res.status(200).json({status:"ok"})
 })
 
-// LOGIN AND USER CREATION
+///// LOGIN AND USER CREATION
 
 // check whether a username exists in the database
 app.get("/api/user-exists/:username", async (req, res) => {

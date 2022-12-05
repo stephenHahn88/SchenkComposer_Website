@@ -44,7 +44,7 @@
 import {computed, defineEmits, inject, onMounted, ref, Ref} from "vue";
 import Vex from "vexflow"
 
-const emit = defineEmits(['mgmanimate'])
+const emit = defineEmits(['mgmelodyanimate'])
 
 let {composerId, updateComposerId}: any = inject("composerId")
 let {melodyId, updateMelodyId}: any = inject("melodyId")
@@ -156,7 +156,7 @@ async function saveMelodyNotes() {
   let response = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/middleground-melody", requestOptions)
   let json = await response.json()
   console.log(json)
-  emit('mgmanimate')
+  emit('mgmelodyanimate')
 }
 
 function getSrc(availableNote: string) {

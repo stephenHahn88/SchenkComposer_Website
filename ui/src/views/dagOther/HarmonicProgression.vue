@@ -169,16 +169,18 @@
 </template>
 
 <script setup>
-import {ref, onMounted, watch, computed, inject} from "vue";
+import {ref, onMounted, watch, computed, inject, defineEmits} from "vue";
 import _ from "lodash";
 import { ForceSimulation } from "@livereader/graphly-d3";
 import "@livereader/graphly-d3/style.css";
-
 import Hexagon from "../../static/hexagon"
+
+const emit = defineEmits(['mgharmonyanimate'])
 
 let {composerId, updateComposerId} = inject("composerId")
 let {melodyId, updateMelodyId} = inject("melodyId")
 
+// Color codes for harmonies
 let harmonies = ref({
   'I': 'green',
   'II': 'navy',
@@ -189,8 +191,10 @@ let harmonies = ref({
   "VII": 'black'
 })
 
+// Preset matrices from Flask server
 let presetMatrices = ["Classical Major", "Rock"]
 
+// Transition matrix values
 let transitions = ref({
   'I': ref({'I': 0, 'II': 2, 'III': 1, 'IV': 2, "V": 2, "VI": 2, "VII": 1}),
   'II': ref({'I': 0, 'II': 0, 'III': 0, 'IV': 0, "V": 1, "VI": 0, "VII": 0}),
@@ -200,9 +204,6 @@ let transitions = ref({
   'VI': ref({'I': 0, 'II': 5, 'III': 1, 'IV': 3, "V": 1, "VI": 0, "VII": 0}),
   'VII': ref({'I': 1, 'II': 0, 'III': 0, 'IV': 0, "V": 0, "VI": 0, "VII": 0})
 })
-
-let mySVG;
-let simulation;
 
 //Maximum of maxLen
 let max = computed(() => {
@@ -214,6 +215,8 @@ let max = computed(() => {
   }
   return m
 })
+
+//
 let sequences = ref({
   "a": ref({"sequenceReverse": [], "maxLen": 6, 'selected': 'inactive'}),
   "b": ref({"sequenceReverse": [], "maxLen": 4, 'selected': 'inactive'}),
@@ -236,6 +239,11 @@ watch(mgRhythm, () => {
   }
 })
 
+// requirements for the graph
+let mySVG;
+let simulation;
+
+// gather information for the length of harmonic progressions
 onMounted(async () => {
   harmonies = ref({
     'I': 'green',
@@ -260,12 +268,14 @@ onMounted(async () => {
   redraw()
 })
 
+// get middleground rhythm
 async function getMgRhythm() {
   let temp = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/mg-rhythm")
   if (!temp.ok) return
   mgRhythm.value = await temp.json()
 }
 
+// get previously saved matrix
 async function getSavedMatrix() {
   let temp = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/matrix")
   if (!temp.ok) return
@@ -278,6 +288,7 @@ async function getSavedMatrix() {
   }
 }
 
+// get previously saved harmonic progressions
 async function getSavedProgressions() {
   let temp = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/harmonicProgression")
   if (!temp.ok) return
@@ -287,6 +298,7 @@ async function getSavedProgressions() {
   }
 }
 
+// get preset matrix from model
 async function getPresetMatrix(preset) {
   preset = preset.replaceAll(" ", "_")
   let matrix = await fetch(`/model/matrix/${preset}`)
@@ -321,6 +333,7 @@ async function getPresetMatrix(preset) {
   redraw()
 }
 
+// save current matrix parameters
 async function saveMatrix() {
   let matrix = _getMatrixAsArray()
   const requestOptions = {
@@ -333,6 +346,7 @@ async function saveMatrix() {
   console.log(response)
 }
 
+// helper to turn transition refs to array
 function _getMatrixAsArray() {
   let matrix = []
   for (let rowName in transitions.value) {
@@ -345,6 +359,7 @@ function _getMatrixAsArray() {
   return matrix
 }
 
+// save current harmonic progression input
 async function saveProgression() {
   let progressions = {}
   for (let letter in sequences.value) {
@@ -358,8 +373,10 @@ async function saveProgression() {
   let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/harmonicProgression", requestOptions)
   response = await response.json()
   console.log(response)
+  emit("mgharmonyanimate")
 }
 
+// generate harmonic progressions from model
 async function handleGenerate() {
   let letter = _findActiveLetter()
   let phraseEndsForCadences = _findPhraseEndHarmonies()
@@ -383,6 +400,7 @@ async function handleGenerate() {
   sequences.value[letter]["sequenceReverse"] = progression["progression"].reverse()
 }
 
+// helper function to find the ending harmony for each phrase
 function _findPhraseEndHarmonies() {
   let answers = {}
   let curr;
@@ -402,6 +420,7 @@ function _findPhraseEndHarmonies() {
   return answers
 }
 
+// updates ref to show selected row
 function selectRow(letter) {
   for (let l in sequences.value) {
     if (l === letter) {
@@ -412,6 +431,7 @@ function selectRow(letter) {
   }
 }
 
+// helper to find the currently active letter
 function _findActiveLetter() {
   for (let l in sequences.value) {
     if (sequences.value[l]['selected'] === 'active') {
@@ -420,24 +440,29 @@ function _findActiveLetter() {
   }
 }
 
+// add harmony to sequence
 function addHarmony(harmony) {
   let letter = _findActiveLetter()
   if (sequences.value[letter]['sequenceReverse'].length >= sequences.value[letter]['maxLen']) return
   sequences.value[letter]['sequenceReverse'].push(harmony)
 }
 
+// remove harmony from sequence
 function backspace() {
   let letter = _findActiveLetter()
   if (sequences.value[letter]['sequenceReverse'].length === 0) return
   sequences.value[letter]['sequenceReverse'].pop()
 }
 
+// erase sequence of current letter
 function erase() {
   let letter = _findActiveLetter()
   sequences.value[letter]['sequenceReverse'] = []
 }
 
+// redraw entire graph
 function redraw() {
+  // build array of nodes, one for each harmony
   let nodes = []
   for (let harmony in harmonies.value) {
     nodes.push({
@@ -453,18 +478,22 @@ function redraw() {
     })
   }
 
+  // build array of links based on probabilites
   let links = []
   for (let from in transitions.value) {
     for (let to in transitions.value[from]) {
+      // does not support arrows to self unfortunately
       if (from === to || transitions.value[from][to] === 0) {
         continue
       }
+      // turn numbers in row of matrix into probability distribution
       let distribution = {...transitions.value[from]}
       distribution = _.mapValues(distribution, parseFloat)
       let total = _.sum(Object.values(distribution))
       let percent = _.round(_.round(
           parseFloat(transitions.value[from][to]) / total, 3
       ) * 100, 1)
+      // add link with proper percentage and size
       links.push({
         source: from,
         target: to,
@@ -484,6 +513,7 @@ function redraw() {
   simulation.render(graph)
 }
 
+// clear transition matrix values
 function clear() {
   for (let from in transitions.value) {
     for (let to in transitions.value[from]) {

@@ -41,12 +41,13 @@
         </b-container>
       </b-col>
       <b-col class="mt-5">
-        <div class="p-2" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px; overflow: auto">
-          <MusicPlayer></MusicPlayer>
+        <b-container class="p-5" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px; overflow: auto">
+          <h1 style="color: white">Tutorial Placeholder</h1>
+          <MusicPlayer style="width: 100%"></MusicPlayer>
           <router-view
             name="tutorial"
           />
-        </div>
+        </b-container>
       </b-col>
     </b-row>
     <!--      ROUTER VIEW-->
@@ -68,7 +69,7 @@
 
 <script setup lang="ts">
 import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
-import {ref, Ref, watch, provide, onMounted} from 'vue'
+import {ref, Ref, watch, provide, onMounted, computed} from 'vue'
 import {router} from '@/main'
 import MusicPlayer from "@/components/MusicPlayer.vue";
 import {_makeid, delay} from "../../server/data"
@@ -99,6 +100,7 @@ async function createNewMelody() {
   }
   melodyId.value = (max + 1).toString()
   await putMelody()
+  resetAnimation()
 }
 
 onMounted(async () => {
@@ -148,6 +150,14 @@ function mgmelodyAnimate() {
 }
 function fgrhythmAnimate() {
   fgrhythm_anim.value = !fgrhythm_anim.value
+}
+function resetAnimation() {
+  phrase_anim.value = false
+  meter_anim.value = false
+  mgrhythm_anim.value = false
+  mgharmony_anim.value = false
+  mgmelody_anim.value = false
+  fgrhythm_anim.value = false
 }
 </script>
 

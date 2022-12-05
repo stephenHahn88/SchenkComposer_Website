@@ -112,13 +112,22 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 watch(() => props.phraseAnim, () => {
-  activateAnimation(['psMh', 'psMghr', 'psMghp'])
+  activateAnimation(['psMh', 'psMghr', 'psMghp'], props.phraseAnim)
 })
 watch(() => props.meterAnim, () => {
-  activateAnimation(['mhMghr', 'mhFgmr'])
+  activateAnimation(['mhMghr', 'mhFgmr'], props.meterAnim)
 })
 watch(() => props.mgrhythmAnim, () => {
-  activateAnimation(['mghrFgmr', 'mghrMghp', 'mghrMgm'])
+  activateAnimation(['mghrFgmr', 'mghrMghp', 'mghrMgm'], props.mgrhythmAnim)
+})
+watch(() => props.mgharmonyAnim, () => {
+  activateAnimation(['mghpMgm'], props.mgharmonyAnim)
+})
+watch(() => props.mgmelodyAnim, () => {
+  activateAnimation(['mgmFgm'], props.mgmelodyAnim)
+})
+watch(() => props.fgrhythmAnim, () => {
+  activateAnimation(['fgmrFgm'], props.fgrhythmAnim)
 })
 
 let psMh = ref(false);
