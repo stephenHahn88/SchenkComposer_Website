@@ -1,8 +1,6 @@
 {
   "teamMembers": [{"name": "Stephen Hahn", "netId": "sh597"}],
-  "panoptoVideoUrl": "https://duke.hosted.panopto.com/...",
-  "gitLabRepositoryUrl": "https://coursework.cs.duke.edu/...",
-  "commentsForGrader": "This project was based around my research, for which I'm building a website. The project is relatively large, but incomplete. It involves connections to a Python Flask server, but the code for that is not included here. All my code is on Github rather than Gitlab."
-
-
+  "panoptoVideoUrl": "https://duke.hosted.panopto.com/Panopto/Pages/Viewer.aspx?pid=7e5c1568-2c2a-450e-9ba0-af62001ffbc2",
+  "gitLabRepositoryUrl": "https://github.com/stephenHahn88/SchenkComposer_Website",
+  "commentsForGrader": "There are two videos in the panopto link. The first is an overview of the website, and the second is a more in-depth look at a couple source files. This project was based around my research, for which I'm building a website. The project is relatively large, but incomplete. It involves connections to a Python Flask server, but the code for that is not included here. All my code is on Github rather than Gitlab."
 }
