@@ -27,6 +27,22 @@ const logger = pino({
 })
 app.use(expressPinoLogger({ logger }))
 
+// HELPERS
+
+async function _getMel(composerId: string, melodyId: string) {
+    const db = client.db("test")
+    const melodies = db.collection("melodies")
+    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
+    return mel[0]
+}
+
+function _determineStatus(composerId: string, melodyId: string, mel: any, component: string) {
+    if (mel == null || mel[component] == null) {
+        return {"status": 404, "result": {composerId, melodyId}}
+    }
+    return {"status": 200, "result": mel[component]}
+}
+
 ////// APP ROUTES
 
 //// GET ROUTES
@@ -51,17 +67,9 @@ app.get("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (re
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
-
-    if (mel == null || mel[0]["phraseStructure"] == null) {
-        res.status(404).json({composerId, melodyId})
-        return
-    }
-    // @ts-ignore
-    let result = mel[0]["phraseStructure"]
-    res.status(200).json(result)
+    const mel = await _getMel(composerId, melodyId)
+    let result = _determineStatus(composerId, melodyId, mel, "phraseStructure")
+    res.status(result.status).json(result.result)
 })
 
 // gets a particular meter
@@ -69,16 +77,9 @@ app.get("/api/composer/:composerId/melody/:melodyId/meter", async (req, res) => 
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
-
-    if (mel == null || mel[0]["meter"] == null) {
-        res.status(404).json({composerId, melodyId})
-        return
-    }
-    let result = mel[0]["meter"]
-    res.status(200).json(result)
+    const mel = await _getMel(composerId, melodyId)
+    let result = _determineStatus(composerId, melodyId, mel, "meter")
+    res.status(result.status).json(result.result)
 })
 
 // gets a particular hypermeter
@@ -86,16 +87,9 @@ app.get("/api/composer/:composerId/melody/:melodyId/hypermeter", async (req, res
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
-
-    if (mel == null || mel[0]["hypermeter"] == null) {
-        res.status(404).json({composerId, melodyId})
-        return
-    }
-    let result = mel[0]["hypermeter"]
-    res.status(200).json(result)
+    const mel = await _getMel(composerId, melodyId)
+    let result = _determineStatus(composerId, melodyId, mel, "hypermeter")
+    res.status(result.status).json(result.result)
 })
 
 // gets a particular middleground rhythm
@@ -103,16 +97,9 @@ app.get("/api/composer/:composerId/melody/:melodyId/mg-rhythm", async (req, res)
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
-
-    if (mel == null || mel[0]["mgRhythm"] == null) {
-        res.status(404).json({composerId, melodyId})
-        return
-    }
-    let result = mel[0]["mgRhythm"]
-    res.status(200).json(result)
+    const mel = await _getMel(composerId, melodyId)
+    let result = _determineStatus(composerId, melodyId, mel, "mgRhythm")
+    res.status(result.status).json(result.result)
 })
 
 // gets a particular foreground rhythm
@@ -120,16 +107,9 @@ app.get("/api/composer/:composerId/melody/:melodyId/fg-rhythm", async (req, res)
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
-
-    if (mel == null || mel[0]["fgRhythm"] == null) {
-        res.status(404).json({composerId, melodyId})
-        return
-    }
-    let result = mel[0]["fgRhythm"]
-    res.status(200).json(result)
+    const mel = await _getMel(composerId, melodyId)
+    let result = _determineStatus(composerId, melodyId, mel, "fgRhythm")
+    res.status(result.status).json(result.result)
 })
 
 // gets a particular harmony transition matrix
@@ -137,16 +117,9 @@ app.get("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) =>
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
-
-    if (mel == null || mel[0]["transitionMatrix"] == null) {
-        res.status(404).json({composerId, melodyId})
-        return
-    }
-    let result = mel[0]["transitionMatrix"]
-    res.status(200).json(result)
+    const mel = await _getMel(composerId, melodyId)
+    let result = _determineStatus(composerId, melodyId, mel, "transitionMatrix")
+    res.status(result.status).json(result.result)
 })
 
 // gets a particular harmonic progression
@@ -154,16 +127,9 @@ app.get("/api/composer/:composerId/melody/:melodyId/harmonicProgression", async 
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
-
-    if (mel == null || mel[0]["harmonicProgression"] == null) {
-        res.status(404).json({composerId, melodyId})
-        return
-    }
-    let result = mel[0]["harmonicProgression"]
-    res.status(200).json(result)
+    const mel = await _getMel(composerId, melodyId)
+    let result = _determineStatus(composerId, melodyId, mel, "harmonicProgression")
+    res.status(result.status).json(result.result)
 })
 
 // gets a particular middleground melody
@@ -171,17 +137,9 @@ app.get("/api/composer/:composerId/melody/:melodyId/middleground-melody", async 
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const mel = await melodies.find({ composerId: composerId, melodyId: melodyId }).toArray()
-
-    if (mel == null || mel[0]["mgMelody"] == null) {
-        res.status(404).json({composerId, melodyId})
-        return
-    }
-    let result = mel[0]["mgMelody"]
-    console.log(result)
-    res.status(200).json(result)
+    const mel = await _getMel(composerId, melodyId)
+    let result = _determineStatus(composerId, melodyId, mel, "mgMelody")
+    res.status(result.status).json(result.result)
 })
 
 //// PUT ROUTES

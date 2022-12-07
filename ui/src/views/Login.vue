@@ -63,7 +63,6 @@
           <h2 v-else-if="status.at(0) === 'U'" style="color: red">{{status}}</h2>
           <h2 v-else>{{status}}</h2>
         </b-col>
-
       </b-row>
     </b-container>
   </div>

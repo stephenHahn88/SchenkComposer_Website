@@ -144,13 +144,24 @@
             <b-button
                 class="m-2"
                 variant="info"
-                @click="handleGenerate()"
-            >Generate</b-button>
+                @click="handleGenerate(_findActiveLetter())"
+            >Generate Row</b-button>
+            <b-button
+              class="m-2"
+              variant="info"
+              @click="generateAll"
+            >Generate All</b-button>
             <b-button
                 class="m-2"
                 variant="success"
                 @click="saveProgression"
             >Save all</b-button>
+          </b-row>
+          <b-row>
+            <b-button
+              variant="info"
+              @click="generateMelody"
+            >Generate Melody</b-button>
           </b-row>
         </b-container>
 
@@ -174,6 +185,7 @@ import _ from "lodash";
 import { ForceSimulation } from "@livereader/graphly-d3";
 import "@livereader/graphly-d3/style.css";
 import Hexagon from "../../static/hexagon"
+import {playNotesAndHarmony, flattenPhrase, flattenHarmony, flattenMgRhythm, flattenMgRhythmLetter} from "@/data";
 
 const emit = defineEmits(['mgharmonyanimate'])
 
@@ -359,12 +371,17 @@ function _getMatrixAsArray() {
   return matrix
 }
 
-// save current harmonic progression input
-async function saveProgression() {
+function _harmonicSequencesToObject() {
   let progressions = {}
   for (let letter in sequences.value) {
     progressions[letter] = sequences.value[letter]["sequenceReverse"].slice().reverse()
   }
+  return progressions
+}
+
+// save current harmonic progression input
+async function saveProgression() {
+  let progressions = _harmonicSequencesToObject()
   const requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
@@ -377,8 +394,7 @@ async function saveProgression() {
 }
 
 // generate harmonic progressions from model
-async function handleGenerate() {
-  let letter = _findActiveLetter()
+async function handleGenerate(letter) {
   let phraseEndsForCadences = _findPhraseEndHarmonies()
   let len = sequences.value[letter]["maxLen"]
   let endHarmony;
@@ -398,6 +414,12 @@ async function handleGenerate() {
   progression = await progression.json()
   console.log(progression)
   sequences.value[letter]["sequenceReverse"] = progression["progression"].reverse()
+}
+
+function generateAll() {
+  for (let letter of ['a','b','c','d']) {
+    handleGenerate(letter)
+  }
 }
 
 // helper function to find the ending harmony for each phrase
@@ -520,6 +542,43 @@ function clear() {
       transitions.value[from][to] = 0
     }
   }
+}
+
+async function generateMelody() {
+  let ts = await (await fetch(`/api/composer/${encodeURIComponent(composerId.value)}/melody/${encodeURIComponent(melodyId.value)}/meter`)).json()
+  let hp = _harmonicSequencesToObject()
+  let phraseFlat = flattenPhrase(phraseStructure.value)
+
+  let tsComponent = ts.split("/").join("-")
+
+  let storedPhraseUnits = {}
+  let notes = []
+  let harmonies = []
+  for (let letter of phraseFlat) {
+    if (Object.keys(storedPhraseUnits).includes(letter)) {
+      notes = notes.concat(storedPhraseUnits[letter]["notes"])
+      harmonies = harmonies.concat(storedPhraseUnits[letter]["harmonies"])
+      continue
+    }
+    let mgRhythmComponent = flattenMgRhythmLetter(mgRhythm.value, letter)
+        .join("-")
+        .replaceAll(" ", "s")
+    let mgHarmonyComponent = hp[letter].join("-")
+    let mel = await (await fetch(`
+        /model/generate-melody/partial/
+        ${encodeURIComponent(tsComponent)}/
+        ${encodeURIComponent(mgRhythmComponent)}/
+        ${encodeURIComponent(mgHarmonyComponent)}
+    `.replaceAll(" ", ""))).json()
+
+    notes = notes.concat(mel.notes)
+    harmonies = harmonies.concat(mel.harmony)
+
+    storedPhraseUnits[letter] = {}
+    storedPhraseUnits[letter]["notes"] = mel.notes
+    storedPhraseUnits[letter]["harmonies"] = mel.harmony
+  }
+  playNotesAndHarmony(notes, harmonies)
 }
 </script>
 

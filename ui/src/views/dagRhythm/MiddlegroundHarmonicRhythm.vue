@@ -136,7 +136,9 @@ async function getPhraseInfo() {
 }
 
 async function getSavedRhythm() {
-  let temp = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm")).json()
+  let temp = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm")
+  if (temp.status === 404) return
+  temp = await temp.json()
   if (Object.keys(temp).every((key) => {return temp[key].length === 0})) return
   for (let letter of ['a','b','c','d']) {
     while (noteGroups[letter].length > 0) backspace(letter)
@@ -207,6 +209,8 @@ function _parseRhythms(rhythms) {
   let finalRhythms = []
   glyphs.forEach((glyph) => {
     switch (glyph) {
+      case '♪': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '8'})); break;
+      case '♪.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '8'}))); break;
       case '♩': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '4'})); break;
       case '♩.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '4'}))); break;
       case '𝅗𝅥': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '2'})); break;
