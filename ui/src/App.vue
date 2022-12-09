@@ -28,7 +28,7 @@
       <b-col class="mt-5">
 <!--        DAG-->
         <b-container style="overflow: auto">
-          <div class="p-2 ml-3" style="width: 650px; background-color: rgba(0, 0, 0, 0.6); border-radius: 30px;">
+          <div class="p-2 ml-3" style="width: 650px; height: 500px; background-color: rgba(0, 0, 0, 0.6); border-radius: 30px;">
             <SchenkComposerDAG
                 :phrase-anim="phrase_anim"
                 :meter-anim="meter_anim"
@@ -41,12 +41,14 @@
         </b-container>
       </b-col>
       <b-col class="mt-5">
-        <b-container class="p-5" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px; overflow: auto">
-          <h1 style="color: white">Tutorial Placeholder</h1>
-          <MusicPlayer style="width: 100%"></MusicPlayer>
-          <router-view
-            name="tutorial"
-          />
+        <b-container style="overflow: auto; height: 500px;">
+          <b-container class="p-5" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px;">
+            <h1 style="color: white">Tutorial</h1>
+            <!--          <MusicPlayer style="width: 100%"></MusicPlayer>-->
+            <router-view
+                name="tutorial"
+            />
+          </b-container>
         </b-container>
       </b-col>
     </b-row>

@@ -1,11 +1,8 @@
 <template>
   <div>
-
-    <div class="my-3 fixed-bottom text-center">
-      <Keyboard
-          :notes="[61, 64, 67]"
-      />
-    </div>
+    <b-row class="m-3">
+      <h1>Welcome to SchenkComposer</h1>
+    </b-row>
   </div>
 </template>
 
@@ -16,5 +13,7 @@ import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
 </script>
 
 <style scoped>
-
+h1 {
+  color: white;
+}
 </style>

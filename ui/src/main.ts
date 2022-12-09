@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 
 import App from '@/App.vue'
 import Home from "@/views/Home.vue"
+import HomeTutorial from "@/tutorials/HomeTutorial.vue"
 import Login from "@/views/Login.vue"
 import PhraseStructure from "@/views/dagOther/PhraseStructure.vue"
 import MeterAndHypermeter from "@/views/dagRhythm/MeterAndHypermeter.vue"
@@ -27,7 +28,7 @@ export const router = new VueRouter({
   routes: [
     {
       path: "/",
-      component: Home
+      components: {default: Home, tutorial: HomeTutorial}
     },
     {
       path: "/login",

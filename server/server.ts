@@ -2,9 +2,9 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import pino from 'pino'
 import expressPinoLogger from 'express-pino-logger'
-import { Collection, Db, MongoClient, ObjectId } from 'mongodb'
-import {Melody, _makeid} from "./data";
-import {hash, codec} from "sjcl"
+import {Collection, Db, MongoClient} from 'mongodb'
+import {_makeid} from "./data";
+import {codec, hash} from "sjcl"
 
 // set up Mongo
 const mongoUrl = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017'
@@ -41,6 +41,23 @@ function _determineStatus(composerId: string, melodyId: string, mel: any, compon
         return {"status": 404, "result": {composerId, melodyId}}
     }
     return {"status": 200, "result": mel[component]}
+}
+
+async function _putComponent(composerId: string, melodyId: string, setObj: any) {
+    const db = client.db("test")
+    const melodies = db.collection("melodies")
+    return melodies.updateOne(
+        {
+            composerId: composerId,
+            melodyId: melodyId
+        },
+        {
+            $set: setObj
+        },
+        {
+            upsert: true
+        }
+    )
 }
 
 ////// APP ROUTES
@@ -149,22 +166,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/hypermeter", async (req, res
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const result = melodies.updateOne(
-        {
-            composerId: composerId,
-            melodyId: melodyId
-        },
-        {
-            $set: {
-                hypermeter: req.body.hypermeter
-            }
-        },
-        {
-            upsert: true
-        }
-    )
+    let result = await _putComponent(composerId, melodyId, {hypermeter: req.body.hypermeter})
     res.status(200).json({status:"ok"})
 })
 
@@ -173,22 +175,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/meter", async (req, res) => 
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const result = melodies.updateOne(
-        {
-            composerId: composerId,
-            melodyId: melodyId
-        },
-        {
-            $set: {
-                meter: req.body.meter
-            }
-        },
-        {
-            upsert: true
-        }
-    )
+    let result = await _putComponent(composerId, melodyId, {meter: req.body.meter})
     res.status(200).json({status:"ok"})
 })
 
@@ -197,22 +184,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/mg-rhythm", async (req, res)
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const result = melodies.updateOne(
-        {
-            composerId: composerId,
-            melodyId: melodyId
-        },
-        {
-            $set: {
-                mgRhythm: req.body.mgRhythm
-            }
-        },
-        {
-            upsert: true
-        }
-    )
+    let result = await _putComponent(composerId, melodyId, {mgRhythm: req.body.mgRhythm})
     res.status(200).json({status:"ok"})
 })
 
@@ -221,22 +193,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/fg-rhythm", async (req, res)
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const result = melodies.updateOne(
-        {
-            composerId: composerId,
-            melodyId: melodyId
-        },
-        {
-            $set: {
-                fgRhythm: req.body.fgRhythm
-            }
-        },
-        {
-            upsert: true
-        }
-    )
+    let result = await _putComponent(composerId, melodyId, {fgRhythm: req.body.fgRhythm})
     res.status(200).json({status:"ok"})
 })
 
@@ -245,22 +202,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) =>
   const composerId = req.params.composerId.toString()
   const melodyId = req.params.melodyId.toString()
 
-  const db = client.db("test")
-  const melodies = db.collection("melodies")
-  const result = melodies.updateOne(
-      {
-        composerId: composerId,
-        melodyId: melodyId
-      },
-      {
-        $set: {
-          transitionMatrix: req.body.matrix
-        }
-      },
-      {
-        upsert: true
-      }
-  )
+  let result = await _putComponent(composerId, melodyId, {transitionMatrix: req.body.matrix})
   res.status(200).json({status:"ok"})
 })
 
@@ -269,22 +211,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/phrase-structure", async (re
   const composerId = req.params.composerId.toString()
   const melodyId = req.params.melodyId.toString()
 
-  const db = client.db("test")
-  const melodies = db.collection("melodies")
-  const result = melodies.updateOne(
-      {
-        composerId: composerId,
-        melodyId: melodyId
-      },
-      {
-        $set: {
-          phraseStructure: req.body.phraseStructure
-        }
-      },
-      {
-        upsert: true
-      }
-  )
+  let result = await _putComponent(composerId, melodyId, {phraseStructure: req.body.phraseStructure})
   res.status(200).json({status:"ok"})
 })
 
@@ -293,22 +220,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/harmonicProgression", async 
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const result = melodies.updateOne(
-        {
-            composerId: composerId,
-            melodyId: melodyId
-        },
-        {
-            $set: {
-                harmonicProgression: req.body.harmonicProgression
-            }
-        },
-        {
-            upsert: true
-        }
-    )
+    let result = await _putComponent(composerId, melodyId, {harmonicProgression: req.body.harmonicProgression})
     res.status(200).json({status:"ok"})
 })
 
@@ -317,22 +229,7 @@ app.put("/api/composer/:composerId/melody/:melodyId/middleground-melody", async 
     const composerId = req.params.composerId.toString()
     const melodyId = req.params.melodyId.toString()
 
-    const db = client.db("test")
-    const melodies = db.collection("melodies")
-    const result = melodies.updateOne(
-        {
-            composerId: composerId,
-            melodyId: melodyId
-        },
-        {
-            $set: {
-                mgMelody: req.body.mgMelody
-            }
-        },
-        {
-            upsert: true
-        }
-    )
+    let result = await _putComponent(composerId, melodyId, {mgMelody: req.body.mgMelody})
     res.status(200).json({status:"ok"})
 })
 
