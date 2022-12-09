@@ -15,14 +15,14 @@ const sampler = new Tone.Sampler({
     baseUrl: "https://tonejs.github.io/audio/salamander/",
 }).toDestination();
 
-export function playNotesAndHarmony(notes: string[], harmonies: string[]) {
+export function playNotesAndHarmony(notes: string[], harmonies: string[], tempo: number = 120) {
     Tone.loaded().then(() => {
         const now = Tone.now()
 
         // PLACE NOTES
         let curr = now
         for (let note of notes) {
-            let noteQL = _triggerNotes(note, curr)
+            let noteQL = _triggerNotes(note, curr, tempo)
             curr += noteQL
         }
 
@@ -31,16 +31,16 @@ export function playNotesAndHarmony(notes: string[], harmonies: string[]) {
         for (let harmony of harmonies) {
             let noteQL = 0;
             for (let note of harmony) {
-                noteQL = _triggerNotes(note, curr)
+                noteQL = _triggerNotes(note, curr, tempo)
             }
             curr += noteQL
         }
     })
 }
 
-function _triggerNotes(note: string, curr: number) {
+function _triggerNotes(note: string, curr: number, tempo: number) {
     let noteName = _getNoteName(note)
-    let noteQL = _getNoteQuarterlen(note) / 2
+    let noteQL = _getNoteQuarterlen(note) / 2 * (60 / tempo)
     sampler.triggerAttack(noteName, curr)
     sampler.triggerRelease(noteName, curr + noteQL)
     return noteQL

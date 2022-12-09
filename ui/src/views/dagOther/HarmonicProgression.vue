@@ -157,11 +157,27 @@
                 @click="saveProgression"
             >Save all</b-button>
           </b-row>
-          <b-row>
+          <b-row class="mt-4" style="height: 150px">
             <b-button
-              variant="info"
+              variant="primary"
+              class="m-4"
               @click="generateMelody"
+              :disabled="disableGenerate"
+              style="width: 100%; font-size: 32px"
             >Generate Melody</b-button>
+          </b-row>
+          <b-row class="mt-2">
+            <b-col>
+              <b-row><h3>Tempo</h3></b-row>
+              <b-row>
+                <input class="slider" type="range" min="20" max="120" v-model="tempo" style="width: 100%">
+                <datalist id="tickmarks" class="mt-2">
+                  <option value="20">Slow</option>
+                  <option value="70">Moderate</option>
+                  <option value="120">Fast</option>
+                </datalist>
+              </b-row>
+            </b-col>
           </b-row>
         </b-container>
 
@@ -235,8 +251,19 @@ let sequences = ref({
   "c": ref({"sequenceReverse": [], "maxLen": 5, 'selected': 'inactive'}),
   "d": ref({"sequenceReverse": [], "maxLen": 3, 'selected': 'inactive'}),
 })
-let mgRhythm = ref({})
 
+let disableGenerate = computed(() => {
+  for (let letter of ['a','b','c','d']) {
+    if (phraseMeasures.value[letter] <= 0) continue
+    if (sequences.value[letter]["sequenceReverse"].length !== sequences.value[letter]["maxLen"]) {
+      return true
+    }
+  }
+  return false
+})
+let tempo = ref(60)
+
+let mgRhythm = ref({})
 let phraseMeasures = ref({})
 let phraseStructure = ref([])
 
@@ -578,7 +605,7 @@ async function generateMelody() {
     storedPhraseUnits[letter]["notes"] = mel.notes
     storedPhraseUnits[letter]["harmonies"] = mel.harmony
   }
-  playNotesAndHarmony(notes, harmonies)
+  playNotesAndHarmony(notes, harmonies, tempo.value)
 }
 </script>
 
@@ -604,4 +631,50 @@ p, h1, h2, h3, col {
   background-color: rgba(255, 255, 255, 0.3);
 }
 
+.btn {
+  font-size: 18px;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #FF00FF;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #FF00FF;
+  cursor: pointer;
+}
+
+datalist {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  writing-mode: vertical-lr;
+  width: 100%;
+  color: white
+}
+
+option {
+  padding: 0;
+}
 </style>

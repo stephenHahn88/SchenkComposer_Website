@@ -3,7 +3,8 @@
     "@livereader/graphly-d3": "^1.1.4",
     "@livereader/graphly-d3-vue": "^1.1.2",
     "gojs-vue": "^1.0.1",
-    "jointjs": "^3.6.1"
+    "jointjs": "^3.6.1",
+    "vue-slider-component": "^4.1.0-beta.6"
   },
   "devDependencies": {
     "@playwright/test": "^1.28.1",
