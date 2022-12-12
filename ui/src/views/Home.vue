@@ -7,8 +7,6 @@
 </template>
 
 <script setup lang="ts">
-import Keyboard from '@/components/Keyboard.vue'
-import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
 
 </script>
 
