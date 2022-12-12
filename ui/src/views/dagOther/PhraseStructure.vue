@@ -16,7 +16,7 @@
           </b-button>
         </b-col>
       </b-row>
-
+<!-- SUBPHRASE LETTERS -->
       <h2>Subphrases</h2>
       <b-row>
         <b-col v-for="(letter, i) in letters" class="m-1">
@@ -42,7 +42,7 @@
           </b-button>
         </b-col>
       </b-row>
-
+<!-- CADENCES -->
       <h2>Cadences</h2>
       <b-row>
         <b-col>
@@ -64,7 +64,6 @@
           </b-button>
         </b-col>
       </b-row>
-
 <!--      OUTPUT-->
       <b-row class="mb-1 mt-3">
         <b-col cols="10"></b-col>
@@ -80,15 +79,16 @@
         </b-col>
       </b-row>
       <b-row
-          class="mb-5 mt-2 mx-1 p-2"
-          style="height: 75px; border: 1px solid; border-radius: 5px; background-color: rgba(255, 255, 255, 0.5)">
+          class="mb-5 mt-2 mx-1 p-2 white-background radius-5 small-border"
+          style="height: 75px;">
         <p>{{ phrase.join(" ") }}</p>
       </b-row>
+<!--      GENERATE AND SAVE -->
       <b-row class="mb-5">
         <b-col>
           <b-button
               variant="info"
-              style="height:100px;"
+              class="height-100"
               @click="generatePhrase"
           >
             Generate
@@ -96,8 +96,8 @@
         </b-col>
         <b-col>
           <b-button
-              id="confirm"
-              style="height:100px;"
+              variant="success"
+              class="height-100"
               @click="savePhrase"
           >
             Save
@@ -114,16 +114,22 @@ import {BButton} from "bootstrap-vue";
 
 const emit = defineEmits(['psanimate'])
 
-let {composerId, updateComposerId}: any = inject("composerId");
-let {melodyId, updateMelodyId}: any = inject("melodyId")
-
-let letters = ['a', 'b', 'c', 'd']
-
+// Define types
 export type PhraseUnit = 'a' | 'b' | 'c' | 'd' | `a'` | `b'` | `c'` | `d'`
 export type Cadence = '[AC]' | '[HC]'
 export type Phrase = (PhraseUnit | Cadence)[]
 
+// Load composer and melody info
+let {composerId, updateComposerId}: any = inject("composerId");
+let {melodyId, updateMelodyId}: any = inject("melodyId")
+
+// Possible letters
+let letters = ['a', 'b', 'c', 'd']
+
+// Output phrase
 let phrase: Ref<Phrase> = ref([])
+
+// Keep track of which buttons are disabled
 let letter_disabled: Ref<boolean[]> = ref([
     false, true, true, true,
     true, true, true, true
@@ -131,6 +137,7 @@ let letter_disabled: Ref<boolean[]> = ref([
 let cadence_disabled: Ref<boolean[]> = ref([true, true])
 let backspace_disabled = ref(true)
 
+// Load phrase if already saved
 onMounted(async () => {
   let ps = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/phrase-structure")
   if (ps.status === 404) return
@@ -138,12 +145,14 @@ onMounted(async () => {
   checkButtonDisability()
 })
 
+// Remove all output
 function erasePhrase() {
   phrase.value = []
   letter_disabled.value = [false, true, true, true, true, true, true, true]
   cadence_disabled.value = [true, true]
 }
 
+// Sets letter and backspace disability based on current phrase value
 function checkButtonDisability() {
   backspace_disabled.value = phrase.value.length === 0
   if (phrase.value.includes('d')) {
@@ -165,6 +174,7 @@ function checkButtonDisability() {
   letter_disabled.value = [false, true, true, true, true, true, true, true]
 }
 
+// Place letter into output
 function letterPress(letter: string) {
   let unit = letter as PhraseUnit
   backspace_disabled.value = false
@@ -181,12 +191,14 @@ function letterPress(letter: string) {
   }
 }
 
+// Place cadence into output
 function cadencePress(cadence: string) {
   let cad = cadence as Cadence
   phrase.value.push(cad)
   cadence_disabled.value = [true, true]
 }
 
+// Remove last phrase unit
 function backspace() {
   phrase.value = phrase.value.slice(0, -1)
 
@@ -202,6 +214,7 @@ function backspace() {
   }
 }
 
+// Save phrase to database
 async function savePhrase() {
   const requestOptions = {
     method: "PUT",
@@ -214,6 +227,7 @@ async function savePhrase() {
   emit('psanimate')
 }
 
+// Generate phrase from model
 async function generatePhrase() {
   let modelPhrase = await (await fetch("/model/phrase-structure")).json()
   phrase.value = modelPhrase["phrase"]
@@ -230,15 +244,24 @@ p {
   font-size: 32px;
 }
 
+.white-background {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.radius-5 {
+  border-radius: 5px;
+}
+
+.small-border {
+  border: 1px solid;
+}
+
+.height-100 {
+  height: 100px;
+}
+
 .btn {
   width: 100%;
   font-size: 28px;
-}
-
-#confirm {
-  background-color: rgb(0, 150, 0);
-}
-#confirm:hover, #confirm:disabled {
-  background-color: rgb(0, 100, 0);
 }
 </style>

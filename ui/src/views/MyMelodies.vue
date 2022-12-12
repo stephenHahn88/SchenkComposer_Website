@@ -19,7 +19,6 @@
       >
       </b-table>
     </b-container>
-    <b-button class="m-2" @click="" variant="success">Load</b-button>
   </div>
 </template>
 
@@ -30,6 +29,10 @@ import {Melody} from '../../../server/data'
 const {composerId, updateComposerId}: any = inject("composerId")
 const {melodyId, updateMelodyId}: any = inject("melodyId")
 const melodies: Ref<Melody[]> = ref([])
+
+onMounted(refresh)
+
+// Formatting for the table
 const fields = [
   {
     key: "melodyId",
@@ -113,17 +116,13 @@ function handleRowClick(item: string) {
   updateMelodyId(item)
 }
 
+// Retrieve melodies of current composer
 async function refresh() {
   let data = await fetch(`/api/composer/${composerId.value}`)
   melodies.value = await data.json()
   console.log(melodies.value)
 }
-
-onMounted(refresh)
-
 </script>
 
 <style scoped>
-
-
 </style>
