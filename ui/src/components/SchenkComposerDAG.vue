@@ -76,10 +76,10 @@
 </template>
 
 <script setup lang="ts">
-import LeaderLine from "leader-line-new"
+import LeaderLine, { SocketType } from "leader-line-new"
 
 import {router} from '@/main'
-import {onMounted, onUpdated, Ref, ref, watch} from "vue";
+import {onMounted, Ref, ref, watch} from "vue";
 
 let ps_mh: LeaderLine;
 let ps_mghr: LeaderLine;
@@ -165,156 +165,42 @@ onMounted(() => {
   drawLines()
 })
 
+// HELPERS
+
+function createLine(div1: Element, div2: Element, start: SocketType, end: SocketType, gravity: number[], animated: boolean) {
+  return new LeaderLine(
+      div1,
+      div2,
+      {
+        path: 'magnet',
+        startSocket: start,
+        endSocket: end,
+        startSocketGravity: gravity,
+        dash: {animation: animated},
+        size: 3,
+        color: animated ? 'green': 'red'
+      }
+  )
+}
+
 function drawLines() {
   //From phrase structure
-  ps_mh = new LeaderLine(
-      psDiv,
-      mhDiv,
-      {
-        path: 'magnet',
-        startSocket: 'left',
-        endSocket: 'top',
-        startSocketGravity: [-150, 0],
-        dash: {animation: psMh.value},
-        size: 3,
-        color: psMh.value ? 'green': 'red'
-      }
-  )
-  ps_mghr = new LeaderLine(
-      psDiv,
-      mghrDiv,
-      {
-        path: 'magnet',
-        startSocket: 'bottom',
-        endSocket: 'top',
-        startSocketGravity: [0, 0],
-        dash: {animation: psMghr.value},
-        size: 3,
-        color: psMghr.value ? 'green': 'red'
-      }
-  )
-  ps_mghp = new LeaderLine(
-      psDiv,
-      mghpDiv,
-      {
-        path: 'magnet',
-        startSocket: 'right',
-        endSocket: 'top',
-        startSocketGravity: [150, 0],
-        dash: {animation: psMghp.value},
-        size: 3,
-        color: psMghp.value ? 'green': 'red'
-      }
-  )
+  ps_mh = createLine(psDiv, mhDiv, 'left', 'top', [-150, 0], psMh.value)
+  ps_mghr = createLine(psDiv, mghrDiv, 'bottom', 'top', [0, 0], psMghr.value)
+  ps_mghp = createLine(psDiv, mghpDiv, 'right', 'top', [150, 0], psMghp.value)
   //From Meter and Hypermeter
-  mh_mghr = new LeaderLine(
-      mhDiv,
-      mghrDiv,
-      {
-        path: 'magnet',
-        startSocket: 'right',
-        endSocket: 'left',
-        startSocketGravity: [0, 0],
-        dash: {animation: mhMghr.value},
-        size: 3,
-        color: mhMghr.value ? 'green': 'red'
-      }
-  )
-  mh_fgmr = new LeaderLine(
-      mhDiv,
-      fgmrDiv,
-      {
-        path: 'magnet',
-        startSocket: 'bottom',
-        endSocket: 'left',
-        startSocketGravity: [0, 190],
-        dash: {animation: mhFgmr.value},
-        size: 3,
-        color: mhFgmr.value ? 'green': 'red'
-      }
-  )
+  mh_mghr = createLine(mhDiv, mghrDiv, 'right', 'left', [0, 0], mhMghr.value)
+  mh_fgmr = createLine(mhDiv, fgmrDiv, 'bottom','left', [0, 190], mhFgmr.value)
   //From Middleground Harmonic Rhythm
-  mghr_fgmr = new LeaderLine(
-      mghrDiv,
-      fgmrDiv,
-      {
-        path: 'magnet',
-        startSocket: 'bottom',
-        endSocket: 'top',
-        startSocketGravity: [0, 0],
-        dash: {animation: mghrFgmr.value},
-        size: 3,
-        color: mghrFgmr.value ? 'green': 'red'
-      }
-  )
-  mghr_mghp = new LeaderLine(
-      mghrDiv,
-      mghpDiv,
-      {
-        path: 'magnet',
-        startSocket: 'right',
-        endSocket: 'left',
-        startSocketGravity: [0, 0],
-        dash: {animation: mghrMghp.value},
-        size: 3,
-        color: mghrMghp.value ? 'green': 'red'
-      }
-  )
-  mghr_mgm = new LeaderLine(
-      mghrDiv,
-      mgmDiv,
-      {
-        path: 'magnet',
-        startSocket: 'bottom',
-        endSocket: 'left',
-        startSocketGravity: [50, 70],
-        dash: {animation: mghrMgm.value},
-        size: 3,
-        color: mghrMgm.value ? 'green': 'red'
-      }
-  )
+  mghr_fgmr = createLine(mghrDiv, fgmrDiv, 'bottom', 'top', [0, 0], mghrFgmr.value)
+  mghr_mghp = createLine(mghrDiv, mghpDiv, 'right', 'left', [0, 0], mghrMghp.value)
+  mghr_mgm = createLine(mghrDiv, mgmDiv, 'bottom', 'left', [50, 70], mghrMgm.value)
   //From Middleground Harmonic Progression
-  mghp_mgm = new LeaderLine(
-      mghpDiv,
-      mgmDiv,
-      {
-        path: 'magnet',
-        startSocket: 'bottom',
-        endSocket: 'top',
-        startSocketGravity: [0, 0],
-        dash: {animation: mghpMgm.value},
-        size: 3,
-        color: mghpMgm.value ? 'green': 'red'
-      }
-  )
+  mghp_mgm = createLine(mghpDiv, mgmDiv, 'bottom', 'top', [0, 0], mghpMgm.value)
   //From Middleground Melody
-  mgm_fgm = new LeaderLine(
-      mgmDiv,
-      fgmDiv,
-      {
-        path: 'magnet',
-        startSocket: 'bottom',
-        endSocket: 'top',
-        startSocketGravity: [0, 0],
-        dash: {animation: mgmFgm.value},
-        size: 3,
-        color: mgmFgm.value ? 'green': 'red'
-      }
-  )
+  mgm_fgm = createLine(mgmDiv, fgmDiv, 'bottom', 'top', [0, 0], mgmFgm.value)
   //From Foreground Melodic Rhythm
-  fgmr_fgm = new LeaderLine(
-      fgmrDiv,
-      fgmDiv,
-      {
-        path: 'magnet',
-        startSocket: 'right',
-        endSocket: 'left',
-        startSocketGravity: [0, 0],
-        dash: {animation: fgmrFgm.value},
-        size: 3,
-        color: fgmrFgm.value ? 'green': 'red'
-      }
-  )
+  fgmr_fgm = createLine(fgmrDiv, fgmDiv, 'right','left',[0, 0], fgmrFgm.value)
 }
 
 function activateAnimation(refNames: string[], activate: boolean = true) {

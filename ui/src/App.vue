@@ -1,9 +1,8 @@
 <template>
   <div class="background">
 <!--    NAVBAR-->
-    <b-navbar toggleable="lg" style="background-color: rgba(255, 255, 255, 0.2)">
+    <b-navbar class="white-background" toggleable="lg">
       <b-navbar-brand @click="router.push({path: '/'})">
-<!--        NAVBAR IMAGE-->
         <img
             src="@/static/schenkcomposer_logo.svg"
             alt="SchenkComposer"
@@ -26,9 +25,9 @@
     </b-navbar>
     <b-row>
       <b-col class="mt-5">
-<!--        DAG-->
+<!--        DAG FLOWCHART-->
         <b-container style="overflow: auto">
-          <div class="p-2 ml-3" style="width: 650px; height: 500px; background-color: rgba(0, 0, 0, 0.6); border-radius: 30px;">
+          <div class="p-2 ml-3 black-background radius-30" style="width: 650px; height: 500px;">
             <SchenkComposerDAG
                 :phrase-anim="phrase_anim"
                 :meter-anim="meter_anim"
@@ -40,11 +39,11 @@
           </div>
         </b-container>
       </b-col>
+<!--      TUTORIAL-->
       <b-col class="mt-5">
-        <b-container style="overflow: auto; height: 500px;">
-          <b-container class="p-5" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px;">
-            <h1 style="color: white">Tutorial</h1>
-            <!--          <MusicPlayer style="width: 100%"></MusicPlayer>-->
+        <b-container class="overflow-auto" style="height: 500px;">
+          <b-container class="p-5 black-background radius-30">
+            <h1>Tutorial</h1>
             <router-view
                 name="tutorial"
             />
@@ -54,7 +53,7 @@
     </b-row>
     <!--      ROUTER VIEW-->
     <b-row>
-      <b-col class="m-4 p-3" style="background-color: rgba(0, 0, 0, 0.6); border-radius: 30px">
+      <b-col class="m-4 p-3 black-background" style="border-radius: 30px">
         <router-view
             @psanimate="phraseStructureAnimate($event)"
             @meteranimate="meterAnimate($event)"
@@ -73,12 +72,21 @@
 import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
 import {ref, Ref, watch, provide, onMounted, computed} from 'vue'
 import {router} from '@/main'
-import MusicPlayer from "@/components/MusicPlayer.vue";
 import {_makeid, delay} from "../../server/data"
 
+// References for animation of the DAG Flowchart
+let phrase_anim = ref(false)
+let meter_anim = ref(false)
+let mgrhythm_anim = ref(false)
+let mgharmony_anim = ref(false)
+let mgmelody_anim = ref(false)
+let fgrhythm_anim = ref(false)
+
+// Info to access and update particular melodies
 let username: Ref<string> = ref("Anonymous")
 let composerId: Ref<string> = ref("")
 let melodyId: Ref<string> = ref("")
+
 function updateUsername(newUsername: string) {
   username.value = newUsername
 }
@@ -88,26 +96,16 @@ function updateComposerId(newComposerId: string) {
 function updateMelodyId(newMelodyId: string) {
   melodyId.value = newMelodyId
 }
+
 provide("username", {username, updateUsername})
 provide("composerId", {composerId, updateComposerId})
 provide("melodyId", {melodyId, updateMelodyId})
 
-async function createNewMelody() {
-  let result = await (await fetch("/api/composer/" + composerId.value)).json()
-  let max = 0
-  for (let mel of result) {
-    if (parseInt(mel["melodyId"]) > max) {
-      max = parseInt(mel["melodyId"])
-    }
-  }
-  melodyId.value = (max + 1).toString()
-  await putMelody()
-  resetAnimation()
-}
-
+// Create anonymous melody upon opening the page
 onMounted(async () => {
   await putMelody()
 })
+
 async function putMelody() {
   await delay(500)
   let mel = {
@@ -125,16 +123,23 @@ async function putMelody() {
   console.log(response)
 }
 
+async function createNewMelody() {
+  let result = await (await fetch("/api/composer/" + composerId.value)).json()
+  let max = 0
+  for (let mel of result) {
+    if (parseInt(mel["melodyId"]) > max) {
+      max = parseInt(mel["melodyId"])
+    }
+  }
+  melodyId.value = (max + 1).toString()
+  await putMelody()
+  resetAnimation()
+}
+
 updateComposerId(_makeid(32))
 updateMelodyId("1")
 
-let phrase_anim = ref(false)
-let meter_anim = ref(false)
-let mgrhythm_anim = ref(false)
-let mgharmony_anim = ref(false)
-let mgmelody_anim = ref(false)
-let fgrhythm_anim = ref(false)
-
+// Animation toggles //TODO find cleaner way to do all this?
 function phraseStructureAnimate() {
   phrase_anim.value = !phrase_anim.value
 }
@@ -164,11 +169,24 @@ function resetAnimation() {
 </script>
 
 <style scoped>
-.center-content {
-  justify-content: space-evenly;
-  justify-items: center;
-  align-content: space-evenly;
-  align-items: center;
+h1 {
+  color: white
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.black-background {
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.white-background {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.radius-30 {
+  border-radius: 30px;
 }
 
 .background {
