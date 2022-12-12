@@ -11,9 +11,8 @@
       <b-tab
           v-for="letter in ['a','b','c','d']"
           :title="letter.toUpperCase()"
-          v-if="phraseMeasures[letter] > 0"
+          v-if="hypermeter[letter] > 0"
       >
-
         <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
           <b-button variant="warning" @click="backspace(letter)" class="m-2">&#8592</b-button>
           <div :id="`boo_${letter}`" style="overflow: auto;"></div>
@@ -47,7 +46,7 @@
 </template>
 
 <script setup>
-import {onMounted, defineProps, ref, inject, watch} from 'vue'
+import {onMounted, ref, inject} from 'vue'
 import Vex from 'vexflow'
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
@@ -57,18 +56,7 @@ const emit = defineEmits(['mgrhythmanimate'])
 let {composerId, updateComposerId} = inject("composerId")
 let {melodyId, updateMelodyId} = inject("melodyId")
 
-async function saveAll() {
-  let requestOptions = {
-    method: "PUT",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ "mgRhythm": storedMeasures })
-  }
-  let response = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm", requestOptions)
-  let json = await response.json()
-  console.log(json)
-  emit('mgrhythmanimate')
-}
-
+// TODO: gather from data
 let possibleRhythms = {
   //Simple subdivision
   "2/2": ['𝅗𝅥 𝅗𝅥', '𝅝'],
@@ -97,10 +85,13 @@ let possibleRhythms = {
   "12/8": ['𝅝.', '𝅗𝅥. 𝅗𝅥.', '♩. ♩. ♩. ♩.'],
 }
 
-
+// For vexflow notation
 let renderers = []
 let contexts = []
 let measures = []
+let defaultWidth;
+
+// Middleground stored and retrieved from database
 let storedMeasures = {
   'a': [],
   'b': [],
@@ -116,9 +107,9 @@ let noteGroups = {
 }
 
 let totalMeasures;
+
 let phrase;
-let phraseMeasures = ref({});
-let defaultWidth;
+let hypermeter = ref({});
 let meter = ref('4/4');
 let harmonicRhythm = ref({})
 
@@ -129,26 +120,31 @@ onMounted(async () => {
   await getSavedRhythm()
 })
 
+// Retrieves phrase, meter, and hypermeter
 async function getPhraseInfo() {
   phrase = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/phrase-structure")).json()
-  phraseMeasures.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")).json()
+  hypermeter.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")).json()
   meter.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/meter")).json()
 }
 
+// Get saved middleground rhythms if existing
 async function getSavedRhythm() {
-  let temp = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm")
-  if (temp.status === 404) return
-  temp = await temp.json()
-  if (Object.keys(temp).every((key) => {return temp[key].length === 0})) return
+  let mgRhythm = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm")
+  if (mgRhythm.status === 404) return
+  mgRhythm = await mgRhythm.json()
+  // Return if saved mgRhythm is empty
+  if (Object.keys(mgRhythm).every((key) => {return mgRhythm[key].length === 0})) return
+  // Empty all notes
   for (let letter of ['a','b','c','d']) {
     while (noteGroups[letter].length > 0) backspace(letter)
   }
+  // Place notes from database
   for (let letter of ['a','b','c','d']) {
-    for (let rhythm of temp[letter]) {
+    for (let rhythm of mgRhythm[letter]) {
       placeNotes(rhythm, letter)
     }
   }
-  storedMeasures = temp
+  storedMeasures = mgRhythm
 }
 
 function drawStaves() {
@@ -158,8 +154,8 @@ function drawStaves() {
   let height = 0
 
   for (let [l, letter] of ["a","b","c","d"].entries()) {
-    if (phraseMeasures.value[letter] <= 0) continue
-    totalMeasures = phraseMeasures.value[letter]
+    if (hypermeter.value[letter] <= 0) continue
+    totalMeasures = hypermeter.value[letter]
     const div = document.getElementById(`boo_${letter}`)
     renderers[l] = new Renderer(div, Renderer.Backends.SVG)
 
@@ -168,6 +164,7 @@ function drawStaves() {
     contexts[l].scale(1.4, 1.4)
     contexts[l].setFont('Arial', 18)
 
+    // Create number of measures based on hypermeter
     let measures_l = []
     for (let i = 0; i < totalMeasures; i++) {
       if (i===0) {
@@ -183,6 +180,7 @@ function drawStaves() {
   }
 }
 
+// Removes last measure of rhythms
 function backspace(letter) {
   let l = ['a','b','c','d'].indexOf(letter)
   if (currMeasures[l] === 0) return
@@ -192,8 +190,9 @@ function backspace(letter) {
   currMeasures[l]--;
 }
 
+// Places rhythms in the context for the given letter
 function placeNotes(rhythms, letter) {
-  if (storedMeasures[letter].length === phraseMeasures.value[letter]) return
+  if (storedMeasures[letter].length === hypermeter.value[letter]) return
   let l = ['a','b','c','d'].indexOf(letter)
   let notes = _parseRhythms(rhythms)
 
@@ -204,6 +203,7 @@ function placeNotes(rhythms, letter) {
   contexts[l].closeGroup()
 }
 
+// Translates array of note glyphs to array of Vexflow StaveNote objects
 function _parseRhythms(rhythms) {
   let glyphs = rhythms.split(" ")
   let finalRhythms = []
@@ -226,6 +226,7 @@ function _parseRhythms(rhythms) {
   return finalRhythms
 }
 
+// Attaches a rhythmic dot to a StaveNote
 function _dotted(staveNote, noteIndex = -1) {
   if (noteIndex < 0) {
     Dot.buildAndAttach([staveNote], {
@@ -239,6 +240,18 @@ function _dotted(staveNote, noteIndex = -1) {
   return staveNote;
 }
 
+// Save middleground rhythm to database
+async function saveAll() {
+  let requestOptions = {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ "mgRhythm": storedMeasures })
+  }
+  let response = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm", requestOptions)
+  let json = await response.json()
+  console.log(json)
+  emit('mgrhythmanimate')
+}
 </script>
 
 

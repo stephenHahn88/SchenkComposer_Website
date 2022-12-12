@@ -16,14 +16,14 @@
 <!--      METER-->
       <b-col class="p-3">
         <b-row class="mb-1">
-          <b-col style="text-align: center">
+          <b-col class="center-text">
             <b-dropdown :text="numerator" variant="danger" size="lg">
               <b-dropdown-item v-for="num in [2, 3, 4, 6, 9, 12]" v-on:click="numerator=num.toString()"> {{ num }} </b-dropdown-item>
             </b-dropdown>
           </b-col>
         </b-row>
         <b-row>
-          <b-col style="text-align: center">
+          <b-col class="center-text">
             <b-dropdown :text="denominator" variant="danger" size="lg">
               <b-dropdown-item v-for="num in [2, 4, 8]" v-on:click="denominator=num.toString()"> {{ num }} </b-dropdown-item>
             </b-dropdown>
@@ -49,8 +49,9 @@
       <b-col></b-col>
       <b-col>
         <b-button
-            style="width: 100%; background-color: green"
+            style="width: 100%;"
             @click="saveMeter"
+            variant="success"
         >
           Save
         </b-button>
@@ -66,9 +67,14 @@ import { Phrase, PhraseUnit } from '@/views/dagOther/PhraseStructure.vue'
 let {composerId, updateComposerId}: any = inject("composerId")
 let {melodyId, updateMelodyId}: any = inject("melodyId")
 
+// Phrase structure from database
 let phraseStructure = ref([])
+
+// Meter
 let numerator = ref("4")
 let denominator = ref("4")
+
+// Number of measures for each subphrase
 let hypermeterMeasures = ref({
   "a": 0,
   "b": 0,
@@ -79,6 +85,11 @@ let hypermeterMeasures = ref({
 const emit = defineEmits(['meteranimate'])
 
 onMounted(async () => {
+  await getSavedInfo()
+})
+
+// Retrieve any saved information including phrase info
+async function getSavedInfo() {
   let phrase = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/phrase-structure")
   let json = await phrase.json()
   phraseStructure.value = json
@@ -95,8 +106,9 @@ onMounted(async () => {
     numerator.value = json.split("/")[0]
     denominator.value = json.split("/")[1]
   }
-})
+}
 
+// Save current meter and hypermeter
 async function saveMeter() {
   let requestOptions = {
     method: "PUT",
@@ -151,5 +163,9 @@ h1, p {
 .d, .d:focus {
   color: white;
   background-color: rgba(255, 0, 255, 0.4);
+}
+
+.center-text {
+  text-align: center;
 }
 </style>
