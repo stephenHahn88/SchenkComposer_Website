@@ -135,8 +135,16 @@ app.get("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) =>
     const melodyId = req.params.melodyId.toString()
 
     const mel = await _getMel(composerId, melodyId)
-    let result = _determineStatus(composerId, melodyId, mel, "transitionMatrix")
-    res.status(result.status).json(result.result)
+    let resultMatrix = _determineStatus(composerId, melodyId, mel, "transitionMatrix")
+    let resultLabels = _determineStatus(composerId, melodyId, mel, 'transitionLabels')
+    let resultOpen = _determineStatus(composerId, melodyId, mel, 'openHarmonies')
+    let resultClose = _determineStatus(composerId, melodyId, mel, 'closeHarmonies')
+    res.status(resultMatrix.status).json({
+        matrix: resultMatrix.result,
+        labels: resultLabels.result,
+        openHarmonies: resultOpen.result,
+        closeHarmonies: resultClose.result
+    })
 })
 
 // gets a particular harmonic progression
@@ -202,7 +210,12 @@ app.put("/api/composer/:composerId/melody/:melodyId/matrix", async (req, res) =>
   const composerId = req.params.composerId.toString()
   const melodyId = req.params.melodyId.toString()
 
-  let result = await _putComponent(composerId, melodyId, {transitionMatrix: req.body.matrix})
+  let result = await _putComponent(composerId, melodyId, {
+      transitionMatrix: req.body.matrix,
+      transitionLabels: req.body.matrixLabels,
+      openHarmonies: req.body.openHarmonies,
+      closeHarmonies: req.body.closeHarmonies
+  })
   res.status(200).json({status:"ok"})
 })
 

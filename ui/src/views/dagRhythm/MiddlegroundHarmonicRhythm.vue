@@ -90,14 +90,7 @@ let renderers = []
 let contexts = []
 let measures = []
 let defaultWidth;
-
-// Middleground stored and retrieved from database
-let storedMeasures = {
-  'a': [],
-  'b': [],
-  'c': [],
-  'd': []
-}
+let totalMeasures;
 let currMeasures = [0, 0, 0, 0]
 let noteGroups = {
   'a': [],
@@ -106,13 +99,17 @@ let noteGroups = {
   'd': []
 }
 
-let totalMeasures;
+// Middleground stored and retrieved from database
+let storedMeasures = {
+  'a': [],
+  'b': [],
+  'c': [],
+  'd': []
+}
 
-let phrase;
+let phrase
 let hypermeter = ref({});
 let meter = ref('4/4');
-let harmonicRhythm = ref({})
-
 
 onMounted(async () => {
   await getPhraseInfo()
