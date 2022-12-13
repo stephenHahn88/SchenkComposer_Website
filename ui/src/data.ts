@@ -2,6 +2,11 @@ import * as Tone from "tone";
 
 export type Harmony = "I" | "ii" | "iii" | "IV" | "V" | "vi" | "vii"
 
+export interface ProductionRule {
+    "from": {value: string[], selected: boolean},
+    "to": {value: string[], selected: boolean},
+    "count": {value: number[], selected: boolean}
+}
 
 // GENERATE MUSIC FROM NOTES AND HARMONIES
 const sampler = new Tone.Sampler({
