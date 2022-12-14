@@ -1,4 +1,5 @@
 import * as Tone from "tone";
+import {Dot, StaveNote} from "vexflow";
 
 export type Harmony = "I" | "ii" | "iii" | "IV" | "V" | "vi" | "vii"
 
@@ -6,6 +7,43 @@ export interface ProductionRule {
     "from": {value: string[], selected: boolean},
     "to": {value: string[], selected: boolean},
     "count": {value: number[], selected: boolean}
+}
+
+// Translates array of note glyphs to array of Vexflow StaveNote objects
+export function _parseRhythms(rhythms: string) {
+    let glyphs = rhythms.split(" ")
+    let finalRhythms: StaveNote[] = []
+    glyphs.forEach((glyph) => {
+        switch (glyph) {
+            case '♪': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '8'})); break;
+            case '♪.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '8'}))); break;
+            case '♩': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '4'})); break;
+            case '♩.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '4'}))); break;
+            case '𝅗𝅥': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '2'})); break;
+            case '𝅗𝅥.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '2'}))); break;
+            case '𝅝': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1'})); break;
+            case '𝅝.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1'}))); break;
+            case '𝅜': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1/2'})); break;
+            case '𝅜.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1/2'}))); break;
+            case '𝆷': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1/4'})); break;
+            case '𝆷.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1/4'}))); break;
+        }
+    })
+    return finalRhythms
+}
+
+// Attaches a rhythmic dot to a StaveNote
+function _dotted(staveNote: StaveNote, noteIndex = -1) {
+    if (noteIndex < 0) {
+        Dot.buildAndAttach([staveNote], {
+            all: true,
+        });
+    } else {
+        Dot.buildAndAttach([staveNote], {
+            index: noteIndex,
+        });
+    }
+    return staveNote;
 }
 
 // GENERATE MUSIC FROM NOTES AND HARMONIES

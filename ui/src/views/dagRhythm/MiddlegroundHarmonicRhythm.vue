@@ -47,6 +47,7 @@
 
 <script setup>
 import {onMounted, ref, inject} from 'vue'
+import {_parseRhythms} from "@/data";
 import Vex from 'vexflow'
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
@@ -198,43 +199,6 @@ function placeNotes(rhythms, letter) {
   currMeasures[l]++
   storedMeasures[letter].push(rhythms)
   contexts[l].closeGroup()
-}
-
-// Translates array of note glyphs to array of Vexflow StaveNote objects
-function _parseRhythms(rhythms) {
-  let glyphs = rhythms.split(" ")
-  let finalRhythms = []
-  glyphs.forEach((glyph) => {
-    switch (glyph) {
-      case '♪': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '8'})); break;
-      case '♪.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '8'}))); break;
-      case '♩': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '4'})); break;
-      case '♩.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '4'}))); break;
-      case '𝅗𝅥': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '2'})); break;
-      case '𝅗𝅥.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '2'}))); break;
-      case '𝅝': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1'})); break;
-      case '𝅝.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1'}))); break;
-      case '𝅜': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1/2'})); break;
-      case '𝅜.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1/2'}))); break;
-      case '𝆷': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1/4'})); break;
-      case '𝆷.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1/4'}))); break;
-    }
-  })
-  return finalRhythms
-}
-
-// Attaches a rhythmic dot to a StaveNote
-function _dotted(staveNote, noteIndex = -1) {
-  if (noteIndex < 0) {
-    Dot.buildAndAttach([staveNote], {
-      all: true,
-    });
-  } else {
-    Dot.buildAndAttach([staveNote], {
-      index: noteIndex,
-    });
-  }
-  return staveNote;
 }
 
 // Save middleground rhythm to database

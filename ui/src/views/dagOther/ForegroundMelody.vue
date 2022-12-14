@@ -111,8 +111,6 @@ async function getMelodyInfo() {
 }
 
 async function generateMelody() {
-  //foreground rhythm, middleground melody, middleground harmony, mg rhythm,
-
   let mgMelodyComponent = mgMelody
       .map((s: string) => s.replaceAll("/", ""))
       .join("-")

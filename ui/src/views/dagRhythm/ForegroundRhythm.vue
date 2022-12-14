@@ -55,6 +55,7 @@
 
 <script setup>
 import {computed, onMounted, inject, ref, watch} from 'vue'
+import {_parseRhythms} from "@/data";
 import Vex from 'vexflow'
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
@@ -269,45 +270,6 @@ function drawNotes() {
       }
     }
   }
-}
-
-function _parseRhythms(rhythms) {
-  let glyphs = rhythms.split(" ")
-  let finalRhythms = []
-  glyphs.forEach((glyph) => {
-    switch (glyph) {
-      case '𝅘𝅥𝅰': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '32'})); break;
-      case '𝅘𝅥𝅰.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '32'}))); break;
-      case '𝅘𝅥𝅯': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '16'})); break;
-      case '𝅘𝅥𝅯.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '16'}))); break;
-      case '𝅘𝅥𝅮': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '8'})); break;
-      case '𝅘𝅥𝅮.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '8'}))); break;
-      case '♩': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '4'})); break;
-      case '♩.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '4'}))); break;
-      case '𝅗𝅥': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '2'})); break;
-      case '𝅗𝅥.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '2'}))); break;
-      case '𝅝': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1'})); break;
-      case '𝅝.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1'}))); break;
-      case '𝅜': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1/2'})); break;
-      case '𝅜.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1/2'}))); break;
-      case '𝆷': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1/4'})); break;
-      case '𝆷.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1/4'}))); break;
-    }
-  })
-  return finalRhythms
-}
-
-function _dotted(staveNote, noteIndex = -1) {
-  if (noteIndex < 0) {
-    Dot.buildAndAttach([staveNote], {
-      all: true,
-    });
-  } else {
-    Dot.buildAndAttach([staveNote], {
-      index: noteIndex,
-    });
-  }
-  return staveNote;
 }
 
 async function generate() {
