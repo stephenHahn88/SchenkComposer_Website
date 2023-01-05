@@ -115,7 +115,8 @@ async function newUser() {
 async function login() {
   status.value = "working..."
   // Ensure given user exists
-  let userExists = await (await fetch("/api/find-user-info/" + usernameLocal.value)).json()
+  let userExists = await (await fetch("/api/user-exists/" + usernameLocal.value)).json()
+  console.log(userExists.status)
   if (userExists.status === "not found") {
     status.value = `Username ${usernameLocal.value} does not exist`
     return

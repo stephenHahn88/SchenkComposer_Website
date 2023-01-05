@@ -220,7 +220,7 @@ let sequences = ref({
 
 let disableGenerate = computed(() => {
   for (let letter of ['a','b','c','d']) {
-    if (phraseMeasures.value[letter] <= 0) continue
+    if (phraseMeasures.value[letter] === undefined || phraseMeasures.value[letter] <= 0) continue
     if (sequences.value[letter]["sequenceReverse"].length !== sequences.value[letter]["maxLen"]) {
       return true
     }
@@ -300,7 +300,7 @@ async function getSavedProgressions() {
 // Get preset matrix from model
 async function getPresetMatrix(preset) {
   preset = preset.replaceAll(" ", "_")
-  let matrix = await fetch(`/model/matrix/${preset}`)
+  let matrix = await fetch(`/api/matrix/${preset}`)
   matrix = await matrix.json()
 
   let mat = matrix["matrix"]
@@ -380,7 +380,7 @@ async function handleGenerate(letter) {
       flattenedMatrix.push(e)
     }
   }
-  let progression = await fetch(`/model/harmonic-progression/${endHarmony}/${len}/${flattenedMatrix.join("-")}/${harmonies.value.join("-")}`)
+  let progression = await fetch(`/api/harmonic-progression/${endHarmony}/${len}/${flattenedMatrix.join("-")}/${harmonies.value.join("-")}`)
   progression = await progression.json()
   sequences.value[letter]["sequenceReverse"] = progression["progression"].reverse()
 }
@@ -463,7 +463,7 @@ function redraw() {
         scale: 0.5
       },
       payload: {
-        title: harmonies.value[i],
+        title: harmonies.value[i].split(/[\[o]/)[0],
         color: colors.value[i]
       }
     })
@@ -534,7 +534,7 @@ async function generateMelody() {
         .replaceAll(" ", "s")
     let mgHarmonyComponent = hp[letter].join("-")
     let mel = await (await fetch(`
-        /model/generate-melody/partial/
+        /api/generate-melody/partial/
         ${encodeURIComponent(tsComponent)}/
         ${encodeURIComponent(mgRhythmComponent)}/
         ${encodeURIComponent(mgHarmonyComponent)}

@@ -6,6 +6,7 @@ import Home from "@/views/Home.vue"
 import HomeTutorial from "@/tutorials/HomeTutorial.vue"
 import Login from "@/views/Login.vue"
 import PhraseStructure from "@/views/dagOther/PhraseStructure.vue"
+import PhraseStructureSimplified from "@/views/dagOther/PhraseStructureSimplified.vue"
 import PhraseTutorial from "@/tutorials/PhraseTutorial.vue"
 import MeterAndHypermeter from "@/views/dagRhythm/MeterAndHypermeter.vue"
 import MiddlegroundHarmonicRhythm from "@/views/dagRhythm/MiddlegroundHarmonicRhythm.vue"
@@ -41,7 +42,7 @@ export const router = new VueRouter({
     },
     {
       path: "/phrase-structure",
-      components: {default: PhraseStructure, tutorial: PhraseTutorial}
+      components: {default: PhraseStructureSimplified, tutorial: PhraseTutorial}
     },
     {
       path: "/meter-hypermeter",
