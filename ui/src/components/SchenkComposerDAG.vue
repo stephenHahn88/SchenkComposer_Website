@@ -50,6 +50,7 @@
           <b-button
               variant="warning"
               id="mgm"
+              :disabled="true"
               @click="redirect('/middleground-melody')"
           >Middleground Melody</b-button>
         </b-col>
@@ -60,6 +61,7 @@
           <b-button
               variant="danger"
               id="fgmr"
+              :disabled="true"
               @click="redirect('/foreground-rhythm')"
           >Melodic<br>Rhythm</b-button>
         </b-col>
@@ -67,6 +69,7 @@
           <b-button
               variant="warning"
               id="fgm"
+              :disabled="true"
               @click="redirect('/foreground-melody')"
           >Foreground Melody</b-button>
         </b-col>

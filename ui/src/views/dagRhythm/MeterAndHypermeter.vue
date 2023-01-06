@@ -18,14 +18,14 @@
         <b-row class="mb-1">
           <b-col class="center-text">
             <b-dropdown :text="numerator" variant="danger" size="lg">
-              <b-dropdown-item v-for="num in [2, 3, 4, 6, 9, 12]" v-on:click="numerator=num.toString()"> {{ num }} </b-dropdown-item>
+              <b-dropdown-item v-for="num in possibleNumerators" v-on:click="numerator=num.toString()"> {{ num }} </b-dropdown-item>
             </b-dropdown>
           </b-col>
         </b-row>
         <b-row>
           <b-col class="center-text">
             <b-dropdown :text="denominator" variant="danger" size="lg">
-              <b-dropdown-item v-for="num in [2, 4, 8]" v-on:click="denominator=num.toString()"> {{ num }} </b-dropdown-item>
+              <b-dropdown-item v-for="num in possibleDenominators" v-on:click="denominator=num.toString()"> {{ num }} </b-dropdown-item>
             </b-dropdown>
           </b-col>
         </b-row>
@@ -51,7 +51,7 @@
         <b-button
             style="width: 100%;"
             @click="saveMeter"
-            variant="success"
+            :variant="saveSuccess"
         >
           Save
         </b-button>
@@ -74,6 +74,9 @@ let phraseStructure = ref([])
 let numerator = ref("4")
 let denominator = ref("4")
 
+let possibleNumerators = [4]//[2, 3, 4, 6, 9, 12]
+let possibleDenominators = [4]//[2, 4, 8]
+
 // Number of measures for each subphrase
 let hypermeterMeasures = ref({
   "a": 0,
@@ -81,6 +84,8 @@ let hypermeterMeasures = ref({
   "c": 0,
   "d": 0
 })
+
+let saveSuccess = ref("danger")
 
 const emit = defineEmits(['meteranimate'])
 
@@ -92,19 +97,22 @@ onMounted(async () => {
 async function getSavedInfo() {
   let phrase = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/phrase-structure")
   let json = await phrase.json()
-  phraseStructure.value = json
+  if (json.status == 404) return
+  phraseStructure.value = json.result
 
-  let hypermeter = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")
+  let hypermeter = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")).json()
   if (hypermeter.status !== 404) {
-    json = await hypermeter.json()
-    hypermeterMeasures.value = json
+    hypermeterMeasures.value = hypermeter.result
   }
 
-  let meter = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/meter")
+  let meter = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/meter")).json()
   if (meter.status !== 404) {
-    json = await meter.json()
-    numerator.value = json.split("/")[0]
-    denominator.value = json.split("/")[1]
+    numerator.value = meter.result.split("/")[0]
+    denominator.value = meter.result.split("/")[1]
+  }
+
+  if (hypermeter.status === 200 && meter.status === 200) {
+    saveSuccess.value = "success"
   }
 }
 
@@ -127,6 +135,7 @@ async function saveMeter() {
   json = await response.json()
   console.log(json)
 
+  saveSuccess.value = "success"
   emit('meteranimate')
 }
 </script>

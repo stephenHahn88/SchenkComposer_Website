@@ -48,7 +48,7 @@
               <b-row>
                 <b-button
                     class="m-4"
-                    variant="success"
+                    :variant="saveMatrixSuccess"
                     @click="saveMatrix"
                 >Save</b-button>
               </b-row>
@@ -131,7 +131,7 @@
             >Generate All</b-button>
             <b-button
                 class="m-2"
-                variant="success"
+                :variant="saveProgressionSuccess"
                 @click="saveProgression"
             >Save all</b-button>
           </b-row>
@@ -199,6 +199,9 @@ for (let i = 0; i < Object.keys(harmonies.value).length; i++) {
   transitions.push(new Array(Object.keys(harmonies.value).length).fill(0))
 }
 
+let saveMatrixSuccess = ref("danger")
+let saveProgressionSuccess = ref("danger")
+
 // Maximum of maxLen
 let max = computed(() => {
   let m = 0
@@ -220,7 +223,7 @@ let sequences = ref({
 
 let disableGenerate = computed(() => {
   for (let letter of ['a','b','c','d']) {
-    if (phraseMeasures.value[letter] <= 0) continue
+    if (phraseMeasures.value[letter] === undefined || phraseMeasures.value[letter] <= 0) continue
     if (sequences.value[letter]["sequenceReverse"].length !== sequences.value[letter]["maxLen"]) {
       return true
     }
@@ -257,8 +260,10 @@ onMounted(async () => {
   simulation.templateStore.add("hexagon", Hexagon)
 
   await getMgRhythm()
-  phraseMeasures.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")).json()
-  phraseStructure.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/phrase-structure")).json()
+  let pm = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")).json()
+  phraseMeasures.value = pm.result
+  let ps = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/phrase-structure")).json()
+  phraseStructure.value = ps.result
   await getSavedProgressions()
   await getSavedMatrix()
   await saveMatrix()
@@ -267,16 +272,15 @@ onMounted(async () => {
 
 // get middleground rhythm
 async function getMgRhythm() {
-  let temp = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/mg-rhythm")
-  if (!temp.ok) return
-  mgRhythm.value = await temp.json()
+  let temp = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/mg-rhythm")).json()
+  if (temp.status !== 200) return
+  mgRhythm.value = temp.result
 }
 
 // Get previously saved matrix
 async function getSavedMatrix() {
-  let temp = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/matrix")
-  if (!temp.ok) return
-  let results = await temp.json()
+  let results = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/matrix")).json()
+  if (results.status !== 200) return
   harmonies.value = results.labels
   openHarmonies.value = results.openHarmonies
   closeHarmonies.value = results.closeHarmonies
@@ -285,22 +289,24 @@ async function getSavedMatrix() {
       transitions[i][j] = parseFloat(results.matrix[i][j])
     }
   }
+  saveMatrixSuccess.value = "success"
 }
 
 // Get previously saved harmonic progressions
 async function getSavedProgressions() {
-  let temp = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/harmonicProgression")
-  if (!temp.ok) return
-  let progressions = await temp.json()
+  let temp = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/harmonicProgression")).json()
+  if (temp.status !== 200) return
+  let progressions = temp.result
   for (let letter in sequences.value) {
     sequences.value[letter]["sequenceReverse"] = progressions[letter].slice().reverse()
   }
+  saveProgressionSuccess.value = "success"
 }
 
 // Get preset matrix from model
 async function getPresetMatrix(preset) {
   preset = preset.replaceAll(" ", "_")
-  let matrix = await fetch(`/model/matrix/${preset}`)
+  let matrix = await fetch(`/api/matrix/${preset}`)
   matrix = await matrix.json()
 
   let mat = matrix["matrix"]
@@ -314,7 +320,6 @@ async function getPresetMatrix(preset) {
 
   // TRANSPOSE MATRIX
   mat = _.zip(...mat)
-  console.log(mat)
   while (transitions.length > 0) transitions.pop()
   // PLACE VALUES INCLUDED IN RETRIEVED MATRIX
   for (let i = 0; i < harmonies.value.length; i++) {
@@ -340,6 +345,7 @@ async function saveMatrix() {
   let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/matrix", requestOptions)
   response = await response.json()
   console.log(response)
+  saveMatrixSuccess.value = "success"
 }
 
 function _harmonicSequencesToObject() {
@@ -362,6 +368,7 @@ async function saveProgression() {
   response = await response.json()
   console.log(response)
   emit("mgharmonyanimate")
+  saveProgressionSuccess.value = "success"
 }
 
 // generate harmonic progressions from model
@@ -380,7 +387,7 @@ async function handleGenerate(letter) {
       flattenedMatrix.push(e)
     }
   }
-  let progression = await fetch(`/model/harmonic-progression/${endHarmony}/${len}/${flattenedMatrix.join("-")}/${harmonies.value.join("-")}`)
+  let progression = await fetch(`/api/harmonic-progression/${endHarmony}/${len}/${flattenedMatrix.join("-")}/${harmonies.value.join("-")}`)
   progression = await progression.json()
   sequences.value[letter]["sequenceReverse"] = progression["progression"].reverse()
 }
@@ -447,8 +454,9 @@ function backspace() {
 
 // erase sequence of current letter
 function erase() {
-  let letter = _findActiveLetter()
-  sequences.value[letter]['sequenceReverse'] = []
+  for (let letter of ['a', 'b','c','d']) {
+      sequences.value[letter]['sequenceReverse'] = []
+  }
 }
 
 // redraw entire graph
@@ -463,7 +471,7 @@ function redraw() {
         scale: 0.5
       },
       payload: {
-        title: harmonies.value[i],
+        title: harmonies.value[i].split(/[\[o]/)[0],
         color: colors.value[i]
       }
     })
@@ -515,6 +523,7 @@ function clear() {
 
 async function generateMelody() {
   let ts = await (await fetch(`/api/composer/${encodeURIComponent(composerId.value)}/melody/${encodeURIComponent(melodyId.value)}/meter`)).json()
+  ts = ts.result
   let hp = _harmonicSequencesToObject()
   let phraseFlat = flattenPhrase(phraseStructure.value)
 
@@ -534,7 +543,7 @@ async function generateMelody() {
         .replaceAll(" ", "s")
     let mgHarmonyComponent = hp[letter].join("-")
     let mel = await (await fetch(`
-        /model/generate-melody/partial/
+        /api/generate-melody/partial/
         ${encodeURIComponent(tsComponent)}/
         ${encodeURIComponent(mgRhythmComponent)}/
         ${encodeURIComponent(mgHarmonyComponent)}
@@ -548,6 +557,14 @@ async function generateMelody() {
     storedPhraseUnits[letter]["harmonies"] = mel.harmony
   }
   playNotesAndHarmony(notes, harmonies, tempo.value)
+  const requestOptions = {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ "notes": notes, "harmonies": harmonies, "tempo": tempo.value })
+  }
+  let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/notes-harmonies-tempo", requestOptions)
+  response = await response.json()
+  console.log(response)
 }
 </script>
 

@@ -224,13 +224,20 @@ function drawTree() {
   )
 
   nodeDataArray = ref([
-    { key: 1, text: up + sub[4], fill: variableColor, stroke: strokeColor },
+
+    { key: 1, text: up + sub[4], fill: variableColor, stroke: strokeColor, parent: 8 },
     { key: 2, text: up + sub[2], fill: variableColor, stroke: strokeColor, parent: 1 },
     { key: 3, text: down + sub[2], fill: variableColor, stroke: strokeColor, parent: 1 },
     { key: 4, text: up + sub[1], fill: terminalColor, stroke: strokeColor, parent: 2 },
     { key: 5, text: up + sub[1], fill: terminalColor, stroke: strokeColor, parent: 2 },
     { key: 6, text: up + sub[1], fill: terminalColor, stroke: strokeColor, parent: 3 },
     { key: 7, text: down + sub[1], fill: terminalColor, stroke: strokeColor, parent: 3 },
+
+    { key: 8, text: down + sub[7], fill: variableColor, stroke: strokeColor },
+    { key: 9, text: down + sub[3], fill: variableColor, stroke: strokeColor, parent: 8 },
+    { key: 10, text: down + sub[1], fill: terminalColor, stroke: strokeColor, parent: 9},
+    { key: 11, text: down + sub[1], fill: terminalColor, stroke: strokeColor, parent: 9},
+    { key: 12, text: down + sub[1], fill: terminalColor, stroke: strokeColor, parent: 9},
   ])
 
   myDiagram.model = new go.TreeModel({
@@ -252,6 +259,14 @@ function test() {
 </script>
 
 <style scoped>
+* {
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 32px;
+}
+
 .gojs-diagram {
   position: absolute;
   width: 1000px;

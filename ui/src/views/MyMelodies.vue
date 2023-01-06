@@ -2,11 +2,19 @@
   <div>
     <b-button class="m-2" @click="refresh" variant="info">&#8635; Refresh</b-button>
     <h2 style="color: white">Currently selected melody: {{melodyId}}</h2>
+    <b-button
+        class="m-2"
+        @click="playSelectedMelody"
+        :disabled="playMelodyDisabled"
+        variant="success"
+    >
+      &#9654 Play Selected Melody
+    </b-button>
     <b-container
         style="overflow: auto; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
       <b-table
           class="mt-3"
-          style="width: 2500px;"
+          style="width: 4500px;"
           :items="melodies"
           :fields="fields"
           id="my-table"
@@ -15,7 +23,7 @@
           bordered
           head-variant="dark"
           table-variant="info"
-          @row-clicked="(item) => handleRowClick(item['melodyId'])"
+          @row-clicked="(item) => handleRowClick(item)"
       >
       </b-table>
     </b-container>
@@ -23,8 +31,9 @@
 </template>
 
 <script setup lang="ts">
-import {inject, onMounted, Ref, ref} from "vue";
+import {computed, inject, onMounted, Ref, ref} from "vue";
 import {Melody} from '../../../server/data'
+import {playNotesAndHarmony} from "@/data";
 
 const {composerId, updateComposerId}: any = inject("composerId")
 const {melodyId, updateMelodyId}: any = inject("melodyId")
@@ -77,7 +86,8 @@ const fields = [
     }
   },
   {
-    key: "transitionMatrix",
+    key: "matrix",
+    label: "Transition Matrix Counts",
     formatter: (mat: number[][] | null) => {
       if (mat === null) return
       let answer = ''
@@ -87,6 +97,31 @@ const fields = [
       }
 
       return answer
+    }
+  },
+  {
+    key: "matrixLabels",
+    formatter: (harmonies: string[] | null) => {
+      if (harmonies === null) return
+      let answer = ""
+      for (let i = 1; i < harmonies.length + 1; i++) {
+        answer += `(${i}: ${harmonies[i-1]}) `
+      }
+      return answer.slice(0, answer.length-1)
+    }
+  },
+  {
+    key: "openHarmonies",
+    formatter: (harmonies: string[] | null) => {
+      if (harmonies === null) return
+      return harmonies.join(", ")
+    }
+  },
+  {
+    key: "closeHarmonies",
+    formatter: (harmonies: string[] | null) => {
+      if (harmonies === null) return
+      return harmonies.join(", ")
     }
   },
   {
@@ -109,17 +144,48 @@ const fields = [
         d: (${obj.d.join(" | ").replaceAll(",", " ")})
       `
     }
+  },
+  {
+    key: "notes",
+    label: "Notes"
+  },
+  {
+    key: "harmonies",
+    label: "Harmonies"
+  },
+  {
+    key: "tempo",
+    label: "Tempo"
   }
 ]
 
-function handleRowClick(item: string) {
-  updateMelodyId(item)
+
+let playMelodyDisabled = ref(true)
+let currNotes = ref([])
+let currHarmonies = ref([])
+let currTempo = ref(0)
+
+function handleRowClick(item: any) {
+  updateMelodyId(item["melodyId"])
+  if (item["notes"] === undefined || item["harmonies"] === undefined || item["tempo"] === undefined) {
+    playMelodyDisabled.value = true
+    return
+  }
+  currNotes.value = item["notes"]
+  currHarmonies.value = item["harmonies"]
+  currTempo.value = item["tempo"]
+  playMelodyDisabled.value = false
+}
+
+function playSelectedMelody() {
+  playNotesAndHarmony(currNotes.value, currHarmonies.value, currTempo.value)
 }
 
 // Retrieve melodies of current composer
 async function refresh() {
-  let data = await fetch(`/api/composer/${composerId.value}`)
-  melodies.value = await data.json()
+  let data = await (await fetch(`/api/composer/${composerId.value}`)).json()
+  console.log(data)
+  melodies.value = data
   console.log(melodies.value)
 }
 </script>

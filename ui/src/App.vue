@@ -12,7 +12,7 @@
       </b-navbar-brand>
       <b-navbar-brand>
         <b-button variant="success" @click="createNewMelody">
-          Create New Melody
+          Create New Melody Skeleton
         </b-button>
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -54,15 +54,15 @@
     <!--      ROUTER VIEW-->
     <b-row>
       <b-col class="m-4 p-3 black-background" style="border-radius: 30px">
-        <router-view
-            @psanimate="phraseStructureAnimate($event)"
-            @meteranimate="meterAnimate($event)"
-            @mgrhythmanimate="mgrhythmAnimate($event)"
-            @mgharmonyanimate="mgharmonyAnimate($event)"
-            @mgmelodyanimate="mgmelodyAnimate($event)"
-            @fgrhythmanimate="fgrhythmAnimate($event)"
-            name="default"
-        />
+        <router-view/>
+<!--            @psanimate="phraseStructureAnimate($event)"-->
+<!--            @meteranimate="meterAnimate($event)"-->
+<!--            @mgrhythmanimate="mgrhythmAnimate($event)"-->
+<!--            @mgharmonyanimate="mgharmonyAnimate($event)"-->
+<!--            @mgmelodyanimate="mgmelodyAnimate($event)"-->
+<!--            @fgrhythmanimate="fgrhythmAnimate($event)"-->
+<!--            name="default"-->
+<!--        />-->
       </b-col>
     </b-row>
   </div>
@@ -73,6 +73,7 @@ import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
 import {ref, Ref, watch, provide, onMounted, computed} from 'vue'
 import {router} from '@/main'
 import {_makeid, delay} from "../../server/data"
+
 
 // References for animation of the DAG Flowchart
 let phrase_anim = ref(false)
@@ -103,6 +104,12 @@ provide("melodyId", {melodyId, updateMelodyId})
 
 // Create anonymous melody upon opening the page
 onMounted(async () => {
+  document.title = "SchenkComposer"
+  let link = document.createElement('link')
+  link.type = "image/png"
+  link.rel = "shortcut icon"
+  link.href = "src/static/favicon/android-chrome-512x512.png"
+  document.head.appendChild(link)
   await putMelody()
 })
 
