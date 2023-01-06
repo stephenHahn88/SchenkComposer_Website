@@ -14,7 +14,7 @@
             <b-list-group-item variant="info">Press a series of letter buttons to develop a sequence of phrase units.</b-list-group-item>
             <b-list-group-item variant="info">You must have at least one cadence, including one at the very end.</b-list-group-item>
             <b-list-group-item variant="danger">The red X button clears your sequence.</b-list-group-item>
-            <b-list-group-item variant="warning">The yellow back arrow removes the last phrase unit.</b-list-group-item>
+<!--            <b-list-group-item variant="warning">The yellow back arrow removes the last phrase unit.</b-list-group-item>-->
             <b-list-group-item variant="primary">The Generate button asks SchenkComposer to generate the phrase structure for you. This replaces whatever is currently typed in.</b-list-group-item>
             <b-list-group-item variant="success">The Save button saves the current input for when you return to the page. <span style="color: red">This is necessary to move on to the next section</span>.</b-list-group-item>
           </b-list-group>

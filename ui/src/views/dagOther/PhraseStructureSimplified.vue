@@ -46,7 +46,7 @@
       <b-row class="mb-5">
         <b-col>
           <b-button
-              variant="success"
+              :variant="saveSuccess"
               class="height-100"
               @click="savePhrase"
           >
@@ -79,17 +79,18 @@ let letters = ['a', 'b', 'c', 'd']
 // Output phrase
 let phrase: Ref<Phrase> = ref([])
 
+let saveSuccess = ref("danger")
+
 // Load phrase if already saved
 onMounted(async () => {
-  let ps = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/phrase-structure")
+  let ps = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/phrase-structure")).json()
   if (ps.status === 404) return
-  phrase.value = await ps.json()
-
-  checkButtonDisability()
+  phrase.value = ps.result
+  saveSuccess.value = "success"
 })
 
 function handleSentence() {
-  phrase.value = ["a", "a'", "b"]
+  phrase.value = ["a", "a", "b"]
   let random_bool = Math.random() < 0.5
   if (random_bool) {phrase.value.push("[HC]")}
   else {phrase.value.push("[AC]")}
@@ -103,10 +104,6 @@ function erasePhrase() {
   phrase.value = []
 }
 
-function checkButtonDisability() {
-
-}
-
 // Save phrase to database
 async function savePhrase() {
   const requestOptions = {
@@ -117,6 +114,7 @@ async function savePhrase() {
   let response = await fetch(`/api/composer/${composerId.value}/melody/${melodyId.value}/phrase-structure`, requestOptions)
   let json = await response.json()
   console.log(json)
+  saveSuccess.value = "success"
   emit('psanimate')
 }
 </script>

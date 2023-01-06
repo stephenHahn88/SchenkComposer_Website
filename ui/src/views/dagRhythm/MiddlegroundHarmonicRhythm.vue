@@ -36,7 +36,7 @@
         <b-button
           @click="saveAll"
           style="width: 100%"
-          variant="success"
+          :variant="saveSuccess"
         >
           Save all
         </b-button>
@@ -112,6 +112,8 @@ let phrase
 let hypermeter = ref({});
 let meter = ref('4/4');
 
+let saveSuccess = ref("danger")
+
 onMounted(async () => {
   await getPhraseInfo()
   drawStaves()
@@ -120,16 +122,18 @@ onMounted(async () => {
 
 // Retrieves phrase, meter, and hypermeter
 async function getPhraseInfo() {
-  phrase = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/phrase-structure")).json()
-  hypermeter.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")).json()
-  meter.value = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/meter")).json()
+  let p = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/phrase-structure")).json()
+  phrase = p.result
+  let h = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")).json()
+  hypermeter.value = h.result
+  let m = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/meter")).json()
+  meter.value = m.result
 }
 
 // Get saved middleground rhythms if existing
 async function getSavedRhythm() {
-  let mgRhythm = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm")
-  if (mgRhythm.status === 404) return
-  mgRhythm = await mgRhythm.json()
+  let mgRhythm = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm")).json()
+  if (mgRhythm.status !== 200) return
   // Return if saved mgRhythm is empty
   if (Object.keys(mgRhythm).every((key) => {return mgRhythm[key].length === 0})) return
   // Empty all notes
@@ -138,11 +142,12 @@ async function getSavedRhythm() {
   }
   // Place notes from database
   for (let letter of ['a','b','c','d']) {
-    for (let rhythm of mgRhythm[letter]) {
+    for (let rhythm of mgRhythm.result[letter]) {
       placeNotes(rhythm, letter)
     }
   }
-  storedMeasures = mgRhythm
+  storedMeasures = mgRhythm.result
+  saveSuccess.value = "success"
 }
 
 function drawStaves() {
@@ -212,6 +217,7 @@ async function saveAll() {
   let json = await response.json()
   console.log(json)
   emit('mgrhythmanimate')
+  saveSuccess.value = "success"
 }
 </script>
 

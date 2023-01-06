@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import VueMeta from 'vue-meta'
 
 import App from '@/App.vue'
 import Home from "@/views/Home.vue"
@@ -24,11 +25,13 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 Vue.use(BootstrapVueIcons)
 Vue.use(VueRouter)
+Vue.use(VueMeta)
 
 export const router = new VueRouter({
   mode: "history",
   routes: [
     {
+      meta: {title: "home"},
       path: "/",
       components: {default: Home, tutorial: HomeTutorial}
     },
@@ -73,6 +76,11 @@ export const router = new VueRouter({
 
 Vue.config.productionTip = false
 Vue.config.devtools = true
+Vue.config.warnHandler = (msg, instance, trace) =>
+    ![
+      'Avoid using Array as root value for reactive()'
+    ].some((warning) => msg.includes(warning)) &&
+    console.warn('[Vue warn]: '.concat(msg).concat(trace))
 
 /* eslint-disable no-new */
 new Vue({
