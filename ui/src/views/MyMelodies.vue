@@ -183,8 +183,9 @@ function playSelectedMelody() {
 
 // Retrieve melodies of current composer
 async function refresh() {
-  let data = await fetch(`/api/composer/${composerId.value}`)
-  melodies.value = await data.json()
+  let data = await (await fetch(`/api/composer/${composerId.value}`)).json()
+  console.log(data)
+  melodies.value = data
   console.log(melodies.value)
 }
 </script>

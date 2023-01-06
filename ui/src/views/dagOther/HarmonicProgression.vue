@@ -523,6 +523,7 @@ function clear() {
 
 async function generateMelody() {
   let ts = await (await fetch(`/api/composer/${encodeURIComponent(composerId.value)}/melody/${encodeURIComponent(melodyId.value)}/meter`)).json()
+  ts = ts.result
   let hp = _harmonicSequencesToObject()
   let phraseFlat = flattenPhrase(phraseStructure.value)
 
