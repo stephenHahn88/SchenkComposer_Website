@@ -23,7 +23,7 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <b-row>
+    <b-row class="m-2">
       <b-col class="mt-5">
 <!--        DAG FLOWCHART-->
         <b-container style="overflow: auto">
@@ -51,18 +51,14 @@
         </b-container>
       </b-col>
     </b-row>
+<!--    MELODY GENERATION-->
+    <b-row class="m-2" style="width: 100%">
+      <MusicGeneration></MusicGeneration>
+    </b-row>
     <!--      ROUTER VIEW-->
     <b-row>
       <b-col class="m-4 p-3 black-background" style="border-radius: 30px">
         <router-view/>
-<!--            @psanimate="phraseStructureAnimate($event)"-->
-<!--            @meteranimate="meterAnimate($event)"-->
-<!--            @mgrhythmanimate="mgrhythmAnimate($event)"-->
-<!--            @mgharmonyanimate="mgharmonyAnimate($event)"-->
-<!--            @mgmelodyanimate="mgmelodyAnimate($event)"-->
-<!--            @fgrhythmanimate="fgrhythmAnimate($event)"-->
-<!--            name="default"-->
-<!--        />-->
       </b-col>
     </b-row>
   </div>
@@ -73,6 +69,7 @@ import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
 import {ref, Ref, watch, provide, onMounted, computed} from 'vue'
 import {router} from '@/main'
 import {_makeid, delay} from "../../server/data"
+import MusicGeneration from "@/components/MusicGeneration.vue";
 
 
 // References for animation of the DAG Flowchart

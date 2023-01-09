@@ -1,5 +1,6 @@
 import * as Tone from "tone";
 import {Dot, StaveNote} from "vexflow";
+import {router} from "@/main"
 
 export type Harmony = "I" | "ii" | "iii" | "IV" | "V" | "vi" | "vii"
 
@@ -8,6 +9,11 @@ export interface ProductionRule {
     "to": {value: string[], selected: boolean},
     "count": {value: number[], selected: boolean}
 }
+
+export async function pushRouter(path: string) {
+    setTimeout(() => {router.push({path: path})}, 200)
+}
+
 
 // Translates array of note glyphs to array of Vexflow StaveNote objects
 export function _parseRhythms(rhythms: string) {

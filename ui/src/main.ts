@@ -52,7 +52,7 @@ export const router = new VueRouter({
       component: MeterAndHypermeter
     },
     {
-      path: "/mg-harmonic-dagRhythm",
+      path: "/harmonic-rhythm",
       component: MiddlegroundHarmonicRhythm
     },
     {

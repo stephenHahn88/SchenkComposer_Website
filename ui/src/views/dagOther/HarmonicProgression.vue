@@ -1,6 +1,20 @@
 <template>
   <div>
-    <h1>Harmonic Progression</h1>
+    <b-row style="height: 100px;">
+      <b-col>
+        <h1>Harmonic Progression</h1>
+      </b-col>
+      <b-col class="mr-3 p-4 ml-5">
+        <b-button
+          variant="info"
+          @click="pushRouter('/harmonic-rhythm')"
+          class="m-2"
+          style="width: 100%;"
+        >
+          Return to Harmonic Rhythm
+        </b-button>
+      </b-col>
+    </b-row>
     <b-row class="ml-2">
 <!--      TRANSITION MATRIX BLOCK-->
       <b-col
@@ -135,35 +149,13 @@
                 @click="saveProgression"
             >Save all</b-button>
           </b-row>
-          <b-row class="mt-4" style="height: 150px">
-            <b-button
-              variant="primary"
-              class="m-4"
-              @click="generateMelody"
-              :disabled="disableGenerate"
-              style="width: 100%; font-size: 32px"
-            >Generate Melody</b-button>
-          </b-row>
-          <b-row class="mt-2">
-            <b-col>
-              <b-row><h3>Tempo</h3></b-row>
-              <b-row>
-                <input class="slider" type="range" min="20" max="120" v-model="tempo" style="width: 100%">
-                <datalist id="tickmarks" class="mt-2">
-                  <option value="20">Slow</option>
-                  <option value="70">Moderate</option>
-                  <option value="120">Fast</option>
-                </datalist>
-              </b-row>
-            </b-col>
-          </b-row>
         </b-container>
-
       </b-col>
     </b-row>
 <!--      MARKOV CHAIN GRAPH-->
     <b-row class="ml-2 mt-5 mb-2">
       <b-button @click="redraw" style="background-color: purple">Refresh</b-button>
+      <h2 class="ml-5">Play around with the nodes below!</h2>
     </b-row>
     <b-row
         class="mx-2 mb-2"
@@ -179,8 +171,8 @@ import _ from "lodash";
 import { ForceSimulation } from "@livereader/graphly-d3";
 import "@livereader/graphly-d3/style.css";
 import Hexagon from "../../static/hexagon"
-import {playNotesAndHarmony, flattenPhrase, flattenHarmony, flattenMgRhythm, flattenMgRhythmLetter} from "@/data";
 import PresetMatrices from "@/views/dagOther/HPComponents/PresetMatrices.vue";
+import {pushRouter} from "@/data";
 
 const emit = defineEmits(['mgharmonyanimate'])
 
@@ -196,7 +188,7 @@ let colors = ref(['green', 'navy', 'rgb(255, 130, 200)', 'orange', 'red', 'purpl
 // Transition matrix values
 let transitions = reactive([])
 for (let i = 0; i < Object.keys(harmonies.value).length; i++) {
-  transitions.push(new Array(Object.keys(harmonies.value).length).fill(0))
+  transitions.push(new Array(Object.keys(harmonies.value).length).fill(1))
 }
 
 let saveMatrixSuccess = ref("danger")
@@ -221,15 +213,6 @@ let sequences = ref({
   "d": ref({"sequenceReverse": [], "maxLen": 3, 'selected': 'inactive'}),
 })
 
-let disableGenerate = computed(() => {
-  for (let letter of ['a','b','c','d']) {
-    if (phraseMeasures.value[letter] === undefined || phraseMeasures.value[letter] <= 0) continue
-    if (sequences.value[letter]["sequenceReverse"].length !== sequences.value[letter]["maxLen"]) {
-      return true
-    }
-  }
-  return false
-})
 let tempo = ref(60)
 
 let mgRhythm = ref({})
@@ -521,51 +504,7 @@ function clear() {
   }
 }
 
-async function generateMelody() {
-  let ts = await (await fetch(`/api/composer/${encodeURIComponent(composerId.value)}/melody/${encodeURIComponent(melodyId.value)}/meter`)).json()
-  ts = ts.result
-  let hp = _harmonicSequencesToObject()
-  let phraseFlat = flattenPhrase(phraseStructure.value)
 
-  let tsComponent = ts.split("/").join("-")
-
-  let storedPhraseUnits = {}
-  let notes = []
-  let harmonies = []
-  for (let letter of phraseFlat) {
-    if (Object.keys(storedPhraseUnits).includes(letter)) {
-      notes = notes.concat(storedPhraseUnits[letter]["notes"])
-      harmonies = harmonies.concat(storedPhraseUnits[letter]["harmonies"])
-      continue
-    }
-    let mgRhythmComponent = flattenMgRhythmLetter(mgRhythm.value, letter)
-        .join("-")
-        .replaceAll(" ", "s")
-    let mgHarmonyComponent = hp[letter].join("-")
-    let mel = await (await fetch(`
-        /api/generate-melody/partial/
-        ${encodeURIComponent(tsComponent)}/
-        ${encodeURIComponent(mgRhythmComponent)}/
-        ${encodeURIComponent(mgHarmonyComponent)}
-    `.replaceAll(" ", ""))).json()
-
-    notes = notes.concat(mel.notes)
-    harmonies = harmonies.concat(mel.harmony)
-
-    storedPhraseUnits[letter] = {}
-    storedPhraseUnits[letter]["notes"] = mel.notes
-    storedPhraseUnits[letter]["harmonies"] = mel.harmony
-  }
-  playNotesAndHarmony(notes, harmonies, tempo.value)
-  const requestOptions = {
-    method: "PUT",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ "notes": notes, "harmonies": harmonies, "tempo": tempo.value })
-  }
-  let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/notes-harmonies-tempo", requestOptions)
-  response = await response.json()
-  console.log(response)
-}
 </script>
 
 <style scoped>
@@ -579,19 +518,6 @@ p {
 
 p, h1, h2, h3, col {
   color: white;
-}
-
-datalist {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  writing-mode: vertical-lr;
-  width: 100%;
-  color: white
-}
-
-option {
-  padding: 0;
 }
 
 .font-32 {
