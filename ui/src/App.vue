@@ -23,7 +23,7 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <b-row>
+    <b-row class="m-2">
       <b-col class="mt-5">
 <!--        DAG FLOWCHART-->
         <b-container style="overflow: auto">
@@ -55,15 +55,11 @@
     <b-row>
       <b-col class="m-4 p-3 black-background" style="border-radius: 30px">
         <router-view/>
-<!--            @psanimate="phraseStructureAnimate($event)"-->
-<!--            @meteranimate="meterAnimate($event)"-->
-<!--            @mgrhythmanimate="mgrhythmAnimate($event)"-->
-<!--            @mgharmonyanimate="mgharmonyAnimate($event)"-->
-<!--            @mgmelodyanimate="mgmelodyAnimate($event)"-->
-<!--            @fgrhythmanimate="fgrhythmAnimate($event)"-->
-<!--            name="default"-->
-<!--        />-->
       </b-col>
+    </b-row>
+    <!--    MELODY GENERATION-->
+    <b-row class="m-2" style="width: 100%">
+      <MusicGeneration></MusicGeneration>
     </b-row>
   </div>
 </template>
@@ -73,6 +69,8 @@ import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
 import {ref, Ref, watch, provide, onMounted, computed} from 'vue'
 import {router} from '@/main'
 import {_makeid, delay} from "../../server/data"
+import MusicGeneration from "@/components/MusicGeneration.vue";
+import {pushRouter} from "@/data";
 
 
 // References for animation of the DAG Flowchart
@@ -87,6 +85,7 @@ let fgrhythm_anim = ref(false)
 let username: Ref<string> = ref("Anonymous")
 let composerId: Ref<string> = ref("")
 let melodyId: Ref<string> = ref("")
+let currPage: Ref<string> = ref("/")
 
 function updateUsername(newUsername: string) {
   username.value = newUsername
@@ -97,10 +96,14 @@ function updateComposerId(newComposerId: string) {
 function updateMelodyId(newMelodyId: string) {
   melodyId.value = newMelodyId
 }
+function updateCurrPage(newPage: string) {
+  currPage.value = newPage
+}
 
 provide("username", {username, updateUsername})
 provide("composerId", {composerId, updateComposerId})
 provide("melodyId", {melodyId, updateMelodyId})
+provide("currPage", {currPage, updateCurrPage})
 
 // Create anonymous melody upon opening the page
 onMounted(async () => {
@@ -140,39 +143,11 @@ async function createNewMelody() {
   }
   melodyId.value = (max + 1).toString()
   await putMelody()
-  resetAnimation()
+  await pushRouter("/phrase-structure")
 }
 
 updateComposerId(_makeid(32))
 updateMelodyId("1")
-
-// Animation toggles //TODO find cleaner way to do all this?
-function phraseStructureAnimate() {
-  phrase_anim.value = !phrase_anim.value
-}
-function meterAnimate() {
-  meter_anim.value = !meter_anim.value
-}
-function mgrhythmAnimate() {
-  mgrhythm_anim.value = !mgrhythm_anim.value
-}
-function mgharmonyAnimate() {
-  mgharmony_anim.value = !mgharmony_anim.value
-}
-function mgmelodyAnimate() {
-  mgmelody_anim.value = !mgmelody_anim.value
-}
-function fgrhythmAnimate() {
-  fgrhythm_anim.value = !fgrhythm_anim.value
-}
-function resetAnimation() {
-  phrase_anim.value = false
-  meter_anim.value = false
-  mgrhythm_anim.value = false
-  mgharmony_anim.value = false
-  mgmelody_anim.value = false
-  fgrhythm_anim.value = false
-}
 </script>
 
 <style scoped>

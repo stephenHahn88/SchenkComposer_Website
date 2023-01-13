@@ -46,11 +46,20 @@
       <b-row class="mb-5">
         <b-col>
           <b-button
+            variant="info"
+            class="height-100"
+            @click="pushRouter('/')"
+          >
+            Return to Home
+          </b-button>
+        </b-col>
+        <b-col>
+          <b-button
               :variant="saveSuccess"
               class="height-100"
               @click="savePhrase"
           >
-            Save
+            Save and Continue
           </b-button>
         </b-col>
       </b-row>
@@ -61,6 +70,7 @@
 <script setup lang="ts">
 import {computed, defineEmits, ref, Ref, onMounted, inject, watch} from 'vue';
 import {BButton} from "bootstrap-vue";
+import {pushRouter} from "@/data"
 
 const emit = defineEmits(['psanimate'])
 
@@ -106,6 +116,7 @@ function erasePhrase() {
 
 // Save phrase to database
 async function savePhrase() {
+  if (phrase.value.length === 0) return
   const requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
@@ -114,8 +125,11 @@ async function savePhrase() {
   let response = await fetch(`/api/composer/${composerId.value}/melody/${melodyId.value}/phrase-structure`, requestOptions)
   let json = await response.json()
   console.log(json)
+  if (json.status !== 200) return
+
   saveSuccess.value = "success"
-  emit('psanimate')
+  // emit('psanimate')
+  await pushRouter("/meter-hypermeter")
 }
 </script>
 

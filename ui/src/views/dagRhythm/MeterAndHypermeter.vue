@@ -41,12 +41,20 @@
             class="text"
             v-model="hypermeterMeasures[subphrase.at(0)]"
             :number="true"
+            placeholder="# measures"
         ></b-form-input>
       </b-col>
     </b-row>
-    <b-row>
-      <b-col></b-col>
-      <b-col></b-col>
+    <b-row class="mt-3">
+      <b-col>
+        <b-button
+            style="width: 100%"
+            @click="pushRouter('/phrase-structure')"
+            variant="info"
+        >
+          Return to Phrase Structure
+        </b-button>
+      </b-col>
       <b-col>
         <b-button
             style="width: 100%;"
@@ -63,12 +71,14 @@
 <script setup lang="ts">
 import {defineEmits, inject, onMounted, ref, Ref} from 'vue'
 import { Phrase, PhraseUnit } from '@/views/dagOther/PhraseStructure.vue'
+import {pushRouter} from "@/data"
 
 let {composerId, updateComposerId}: any = inject("composerId")
 let {melodyId, updateMelodyId}: any = inject("melodyId")
+let {currPage, updateCurrPage}: any = inject("currPage")
 
 // Phrase structure from database
-let phraseStructure = ref([])
+let phraseStructure: Ref<string[]> = ref([])
 
 // Meter
 let numerator = ref("4")
@@ -79,10 +89,10 @@ let possibleDenominators = [4]//[2, 4, 8]
 
 // Number of measures for each subphrase
 let hypermeterMeasures = ref({
-  "a": 0,
-  "b": 0,
-  "c": 0,
-  "d": 0
+  "a": "# measures",
+  "b": "# measures",
+  "c": "# measures",
+  "d": "# measures"
 })
 
 let saveSuccess = ref("danger")
@@ -90,6 +100,7 @@ let saveSuccess = ref("danger")
 const emit = defineEmits(['meteranimate'])
 
 onMounted(async () => {
+  updateCurrPage("/meter-hypermeter")
   await getSavedInfo()
 })
 
@@ -116,8 +127,30 @@ async function getSavedInfo() {
   }
 }
 
+function lettersInPhrase() {
+  let answer: Set<string> = new Set()
+  for (let subphrase of phraseStructure.value) {
+    if (subphrase.at(0) === "[") continue
+    answer.add(subphrase.at(0) as string)
+  }
+  return Array.from(answer)
+}
+
+function checkValidInput() {
+  for (let letter of lettersInPhrase()) {
+    if (hypermeterMeasures.value[letter] == "# measures" ||
+        hypermeterMeasures.value[letter] == "" ||
+        isNaN(hypermeterMeasures.value[letter])
+    ) {
+      return {status: "invalid"}
+    }
+  }
+  return {status: "valid"}
+}
+
 // Save current meter and hypermeter
 async function saveMeter() {
+  if (checkValidInput().status === "invalid") return
   let requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
@@ -134,9 +167,11 @@ async function saveMeter() {
   response = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter", requestOptions)
   json = await response.json()
   console.log(json)
+  if (json.status !== 200) return
 
   saveSuccess.value = "success"
-  emit('meteranimate')
+  // emit('meteranimate')
+  await pushRouter("/harmonic-rhythm")
 }
 </script>
 
