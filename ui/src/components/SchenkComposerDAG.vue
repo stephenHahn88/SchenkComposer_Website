@@ -1,85 +1,83 @@
 <template>
-  <div>
-    <b-container class="text-center">
-      <b-row class="my-4 myRow">
-        <b-col></b-col>
-        <b-col>
-          <b-button
-              variant="success"
-              id="ps"
-              class="border border-light"
-          >
-            Phrase<br>Structure
-          </b-button>
-        </b-col>
-        <b-col></b-col>
-      </b-row>
-      <b-row class="my-4 myRow">
-        <b-col>
-          <b-button
-              variant="danger"
-              id="mh"
-              class="border border-light"
-          >
-            Meter and <br>Hypermeter
-          </b-button>
-        </b-col>
-        <b-col>
-          <b-button
-              variant="danger"
-              id="mghr"
-              class="border border-light"
-          >
-            Harmonic<br>Rhythm
-          </b-button>
-        </b-col>
-        <b-col>
-          <b-button
-              variant="info"
-              id="mghp"
-              class="border border-light"
-          >
-            Harmonic Progression
-          </b-button>
-        </b-col>
-      </b-row>
-      <b-row class="my-4 myRow">
-        <b-col></b-col>
-        <b-col></b-col>
-        <b-col>
-          <b-button
-              variant="warning"
-              id="mgm"
-              class="border border-light"
-          >Middleground Melody</b-button>
-        </b-col>
-      </b-row>
-      <b-row class="my-4 myRow">
-        <b-col></b-col>
-        <b-col>
-          <b-button
-              variant="danger"
-              id="fgmr"
-              class="border border-light"
-          >Melodic<br>Rhythm</b-button>
-        </b-col>
-        <b-col>
-          <b-button
-              variant="warning"
-              id="fgm"
-              class="border border-light"
-          >Foreground Melody</b-button>
-        </b-col>
-      </b-row>
-    </b-container>
-  </div>
+  <b-container class="text-center">
+    <b-row class="my-4 myRow">
+      <b-col></b-col>
+      <b-col>
+        <b-button
+            variant="success"
+            id="ps"
+            class="border border-light"
+        >
+          Phrase<br>Structure
+        </b-button>
+      </b-col>
+      <b-col></b-col>
+    </b-row>
+    <b-row class="my-4 myRow">
+      <b-col>
+        <b-button
+            variant="danger"
+            id="mh"
+            class="border border-light"
+        >
+          Meter and <br>Hypermeter
+        </b-button>
+      </b-col>
+      <b-col>
+        <b-button
+            variant="danger"
+            id="mghr"
+            class="border border-light"
+        >
+          Harmonic<br>Rhythm
+        </b-button>
+      </b-col>
+      <b-col>
+        <b-button
+            variant="info"
+            id="mghp"
+            class="border border-light"
+        >
+          Harmonic Progression
+        </b-button>
+      </b-col>
+    </b-row>
+    <b-row class="my-4 myRow">
+      <b-col></b-col>
+      <b-col></b-col>
+      <b-col>
+        <b-button
+            variant="warning"
+            id="mgm"
+            class="border border-light"
+        >Middleground Melody</b-button>
+      </b-col>
+    </b-row>
+    <b-row class="my-4 myRow">
+      <b-col></b-col>
+      <b-col>
+        <b-button
+            variant="danger"
+            id="fgmr"
+            class="border border-light"
+        >Melodic<br>Rhythm</b-button>
+      </b-col>
+      <b-col>
+        <b-button
+            variant="warning"
+            id="fgm"
+            class="border border-light"
+        >Foreground Melody</b-button>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script setup lang="ts">
 import LeaderLine, { SocketType } from "leader-line-new"
 
 import {router} from '@/main'
-import {onMounted, onUpdated, Ref, ref, watch} from "vue";
+import {onMounted, onUnmounted, onUpdated, Ref, ref, watch} from "vue";
 
 let psDiv: Element;
 let mhDiv: Element;
@@ -88,6 +86,8 @@ let mgmDiv: Element;
 let mghpDiv: Element;
 let fgmDiv: Element;
 let fgmrDiv: Element;
+
+let lines: LeaderLine[] = [];
 
 function redirect(path:string) {
   router.push({path: path})
@@ -104,6 +104,12 @@ onMounted(() => {
   drawLines()
 })
 
+onUnmounted(() => {
+  for (let line of lines) {
+    line.hide("none")
+  }
+})
+
 
 
 // HELPERS
@@ -118,29 +124,30 @@ function createLine(div1: Element, div2: Element, start: SocketType, end: Socket
         endSocket: end,
         startSocketGravity: gravity,
         size: 3,
-        color: 'green'
+        color: 'green',
+        dash: {animation: true}
       }
   )
 }
 
 function drawLines() {
   //From phrase structure
-  createLine(psDiv, mhDiv, 'left', 'top', [-150, 0])
-  createLine(psDiv, mghrDiv, 'bottom', 'top', [0, 0])
-  createLine(psDiv, mghpDiv, 'right', 'top', [150, 0])
+  lines.push(createLine(psDiv, mhDiv, 'left', 'top', [-150, 0]))
+  lines.push(createLine(psDiv, mghrDiv, 'bottom', 'top', [0, 0]))
+  lines.push(createLine(psDiv, mghpDiv, 'right', 'top', [150, 0]))
   //From Meter and Hypermeter
-  createLine(mhDiv, mghrDiv, 'right', 'left', [0, 0])
-  createLine(mhDiv, fgmrDiv, 'bottom','left', [0, 190])
+  lines.push(createLine(mhDiv, mghrDiv, 'right', 'left', [0, 0]))
+  lines.push(createLine(mhDiv, fgmrDiv, 'bottom','left', [0, 190]))
   //From Middleground Harmonic Rhythm
-  createLine(mghrDiv, fgmrDiv, 'bottom', 'top', [0, 0])
-  createLine(mghrDiv, mghpDiv, 'right', 'left', [0, 0])
-  createLine(mghrDiv, mgmDiv, 'bottom', 'left', [50, 70])
+  lines.push(createLine(mghrDiv, fgmrDiv, 'bottom', 'top', [0, 0]))
+  lines.push(createLine(mghrDiv, mghpDiv, 'right', 'left', [0, 0]))
+  lines.push(createLine(mghrDiv, mgmDiv, 'bottom', 'left', [50, 70]))
   //From Middleground Harmonic Progression
-  createLine(mghpDiv, mgmDiv, 'bottom', 'top', [0, 0])
+  lines.push(createLine(mghpDiv, mgmDiv, 'bottom', 'top', [0, 0]))
   //From Middleground Melody
-  createLine(mgmDiv, fgmDiv, 'bottom', 'top', [0, 0])
+  lines.push(createLine(mgmDiv, fgmDiv, 'bottom', 'top', [0, 0]))
   //From Foreground Melodic Rhythm
-  createLine(fgmrDiv, fgmDiv, 'right','left',[0, 0])
+  lines.push(createLine(fgmrDiv, fgmDiv, 'right','left',[0, 0]))
 }
 </script>
 
