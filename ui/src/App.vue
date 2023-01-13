@@ -70,6 +70,7 @@
 
 <script setup lang="ts">
 import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
+import Modal from "@/components/Modal.vue";
 import {ref, Ref, watch, provide, onMounted, computed} from 'vue'
 import {router} from '@/main'
 import {_makeid, delay} from "../../server/data"
