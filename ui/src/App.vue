@@ -20,27 +20,24 @@
         <b-navbar-nav>
           <b-nav-item @click="router.push({path: '/login'})">Login</b-nav-item>
           <b-nav-item @click="router.push({path: '/my-melodies'})">{{username}}'s Melodies</b-nav-item>
+          <b-nav-item @click="router.push({path: '/flowchart'})">Flowchart</b-nav-item>
+          <b-nav-item><QuestionHover></QuestionHover></b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
+<!--      ROUTER VIEW-->
     <b-row>
-      <b-col class="mt-5">
-<!--        DAG FLOWCHART-->
-        <b-container style="overflow: auto">
-          <div class="p-2 ml-3 black-background radius-30" style="width: 650px; height: 500px;">
-            <SchenkComposerDAG
-                :phrase-anim="phrase_anim"
-                :meter-anim="meter_anim"
-                :mgrhythm-anim="mgrhythm_anim"
-                :mgharmony-anim="mgharmony_anim"
-                :fgrhythm-anim="fgrhythm_anim"
-                :mgmelody-anim="mgmelody_anim"
-            ></SchenkComposerDAG>
-          </div>
-        </b-container>
+      <b-col class="m-4 p-3 black-background" style="border-radius: 30px">
+        <router-view/>
+      </b-col>
+    </b-row>
+<!--    MELODY GENERATION-->
+    <b-row class="m-2">
+      <b-col class="">
+        <MusicGeneration></MusicGeneration>
       </b-col>
 <!--      TUTORIAL-->
-      <b-col class="mt-5">
+      <b-col class="">
         <b-container class="overflow-auto" style="height: 500px;">
           <b-container class="p-5 black-background radius-30">
             <h1>Tutorial</h1>
@@ -49,20 +46,6 @@
             />
           </b-container>
         </b-container>
-      </b-col>
-    </b-row>
-    <!--      ROUTER VIEW-->
-    <b-row>
-      <b-col class="m-4 p-3 black-background" style="border-radius: 30px">
-        <router-view/>
-<!--            @psanimate="phraseStructureAnimate($event)"-->
-<!--            @meteranimate="meterAnimate($event)"-->
-<!--            @mgrhythmanimate="mgrhythmAnimate($event)"-->
-<!--            @mgharmonyanimate="mgharmonyAnimate($event)"-->
-<!--            @mgmelodyanimate="mgmelodyAnimate($event)"-->
-<!--            @fgrhythmanimate="fgrhythmAnimate($event)"-->
-<!--            name="default"-->
-<!--        />-->
       </b-col>
     </b-row>
   </div>
@@ -74,7 +57,9 @@ import Modal from "@/components/Modal.vue";
 import {ref, Ref, watch, provide, onMounted, computed} from 'vue'
 import {router} from '@/main'
 import {_makeid, delay} from "../../server/data"
-
+import MusicGeneration from "@/components/MusicGeneration.vue";
+import {pushRouter} from "@/data";
+import QuestionHover from "@/components/QuestionHover.vue"
 
 // References for animation of the DAG Flowchart
 let phrase_anim = ref(false)
@@ -88,6 +73,7 @@ let fgrhythm_anim = ref(false)
 let username: Ref<string> = ref("Anonymous")
 let composerId: Ref<string> = ref("")
 let melodyId: Ref<string> = ref("")
+let currPage: Ref<string> = ref("/")
 
 function updateUsername(newUsername: string) {
   username.value = newUsername
@@ -98,10 +84,14 @@ function updateComposerId(newComposerId: string) {
 function updateMelodyId(newMelodyId: string) {
   melodyId.value = newMelodyId
 }
+function updateCurrPage(newPage: string) {
+  currPage.value = newPage
+}
 
 provide("username", {username, updateUsername})
 provide("composerId", {composerId, updateComposerId})
 provide("melodyId", {melodyId, updateMelodyId})
+provide("currPage", {currPage, updateCurrPage})
 
 // Create anonymous melody upon opening the page
 onMounted(async () => {
@@ -141,39 +131,11 @@ async function createNewMelody() {
   }
   melodyId.value = (max + 1).toString()
   await putMelody()
-  resetAnimation()
+  await pushRouter("/phrase-structure")
 }
 
 updateComposerId(_makeid(32))
 updateMelodyId("1")
-
-// Animation toggles //TODO find cleaner way to do all this?
-function phraseStructureAnimate() {
-  phrase_anim.value = !phrase_anim.value
-}
-function meterAnimate() {
-  meter_anim.value = !meter_anim.value
-}
-function mgrhythmAnimate() {
-  mgrhythm_anim.value = !mgrhythm_anim.value
-}
-function mgharmonyAnimate() {
-  mgharmony_anim.value = !mgharmony_anim.value
-}
-function mgmelodyAnimate() {
-  mgmelody_anim.value = !mgmelody_anim.value
-}
-function fgrhythmAnimate() {
-  fgrhythm_anim.value = !fgrhythm_anim.value
-}
-function resetAnimation() {
-  phrase_anim.value = false
-  meter_anim.value = false
-  mgrhythm_anim.value = false
-  mgharmony_anim.value = false
-  mgmelody_anim.value = false
-  fgrhythm_anim.value = false
-}
 </script>
 
 <style scoped>

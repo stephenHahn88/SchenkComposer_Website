@@ -1,15 +1,34 @@
 <template>
   <div>
-    <b-button class="m-2" @click="refresh" variant="info">&#8635; Refresh</b-button>
-    <h2 style="color: white">Currently selected melody: {{melodyId}}</h2>
-    <b-button
-        class="m-2"
-        @click="playSelectedMelody"
-        :disabled="playMelodyDisabled"
-        variant="success"
-    >
-      &#9654 Play Selected Melody
-    </b-button>
+    <b-row class="m-2">
+      <b-button
+        @click="pushRouter(currPage)"
+        variant="info"
+      >
+        Return To Current Melody
+      </b-button>
+    </b-row>
+    <b-row>
+      <b-col>
+        <b-button
+            class="m-2"
+            @click="playSelectedMelody"
+            :disabled="playMelodyDisabled"
+            variant="success"
+        >
+          &#9654 Play Selected Melody
+        </b-button>
+        <b-button
+            class="m-2"
+            @click="refresh"
+            variant="primary"
+        >&#8635; Refresh</b-button>
+      </b-col>
+      <b-col>
+        <h2 style="color: white">Currently selected melody: {{melodyId}}</h2>
+      </b-col>
+    </b-row>
+
     <b-container
         style="overflow: auto; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px;">
       <b-table
@@ -33,10 +52,11 @@
 <script setup lang="ts">
 import {computed, inject, onMounted, Ref, ref} from "vue";
 import {Melody} from '../../../server/data'
-import {playNotesAndHarmony} from "@/data";
+import {playNotesAndHarmony, pushRouter} from "@/data";
 
 const {composerId, updateComposerId}: any = inject("composerId")
 const {melodyId, updateMelodyId}: any = inject("melodyId")
+const {currPage, updateCurrPage}: any = inject("currPage")
 const melodies: Ref<Melody[]> = ref([])
 
 onMounted(refresh)
@@ -167,6 +187,7 @@ let currTempo = ref(0)
 
 function handleRowClick(item: any) {
   updateMelodyId(item["melodyId"])
+  _rowClickUpdateCurrPage(item)
   if (item["notes"] === undefined || item["harmonies"] === undefined || item["tempo"] === undefined) {
     playMelodyDisabled.value = true
     return
@@ -175,6 +196,22 @@ function handleRowClick(item: any) {
   currHarmonies.value = item["harmonies"]
   currTempo.value = item["tempo"]
   playMelodyDisabled.value = false
+}
+
+function _rowClickUpdateCurrPage(item: any) {
+  if (item["mgRhythm"]) {
+    updateCurrPage("/harmonic-progression")
+    return
+  }
+  if (item["hypermeter"]) {
+    updateCurrPage("/harmonic-rhythm")
+    return
+  }
+  if (item["phraseStructure"]) {
+    updateCurrPage("/meter-hypermeter")
+    return
+  }
+  updateCurrPage("/phrase-structure")
 }
 
 function playSelectedMelody() {

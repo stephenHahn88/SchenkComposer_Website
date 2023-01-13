@@ -30,15 +30,22 @@
       </b-tab>
     </b-tabs>
     <b-row>
-      <b-col></b-col>
-      <b-col></b-col>
+      <b-col>
+        <b-button
+          @click="pushRouter('/meter-hypermeter')"
+          style="width: 100%"
+          variant="info"
+        >
+          Return to Meter and Hypermeter
+        </b-button>
+      </b-col>
       <b-col>
         <b-button
           @click="saveAll"
           style="width: 100%"
           :variant="saveSuccess"
         >
-          Save all
+          Save and Continue
         </b-button>
       </b-col>
     </b-row>
@@ -47,7 +54,7 @@
 
 <script setup>
 import {onMounted, ref, inject} from 'vue'
-import {_parseRhythms} from "@/data";
+import {_parseRhythms, pushRouter} from "@/data";
 import Vex from 'vexflow'
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
@@ -56,6 +63,7 @@ const emit = defineEmits(['mgrhythmanimate'])
 
 let {composerId, updateComposerId} = inject("composerId")
 let {melodyId, updateMelodyId} = inject("melodyId")
+let {currPage, updateCurrPage} = inject("currPage")
 
 // TODO: gather from data
 let possibleRhythms = {
@@ -115,6 +123,7 @@ let meter = ref('4/4');
 let saveSuccess = ref("danger")
 
 onMounted(async () => {
+  updateCurrPage("/harmonic-rhythm")
   await getPhraseInfo()
   drawStaves()
   await getSavedRhythm()
@@ -206,8 +215,17 @@ function placeNotes(rhythms, letter) {
   contexts[l].closeGroup()
 }
 
+function checkValidInput() {
+  for (let letter in storedMeasures) {
+    if (hypermeter.value[letter] <= 0 || hypermeter.value[letter] === "# measures") continue
+    if (storedMeasures[letter].length !== hypermeter.value[letter]) return {status: "invalid"}
+  }
+  return {status: "valid"}
+}
+
 // Save middleground rhythm to database
 async function saveAll() {
+  if (checkValidInput().status === "invalid") return
   let requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
@@ -216,8 +234,11 @@ async function saveAll() {
   let response = await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/mg-rhythm", requestOptions)
   let json = await response.json()
   console.log(json)
+  if (json.status !== 200) return
+
   emit('mgrhythmanimate')
   saveSuccess.value = "success"
+  await pushRouter("/harmonic-progression")
 }
 </script>
 

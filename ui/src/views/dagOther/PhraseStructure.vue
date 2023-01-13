@@ -111,6 +111,7 @@
 <script setup lang="ts">
 import {computed, defineEmits, ref, Ref, onMounted, inject, watch} from 'vue';
 import {BButton} from "bootstrap-vue";
+import QuestionHover from "@/components/QuestionHover.vue"
 
 const emit = defineEmits(['psanimate'])
 
@@ -122,6 +123,7 @@ export type Phrase = (PhraseUnit | Cadence)[]
 // Load composer and melody info
 let {composerId, updateComposerId}: any = inject("composerId");
 let {melodyId, updateMelodyId}: any = inject("melodyId")
+let {currPage, updateCurrPage}: any = inject("currPage")
 
 // Possible letters
 let letters = ['a', 'b', 'c', 'd']
@@ -139,6 +141,7 @@ let backspace_disabled = ref(true)
 
 // Load phrase if already saved
 onMounted(async () => {
+  updateCurrPage("/phrase-structure")
   let ps = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/phrase-structure")
   if (ps.status === 404) return
   phrase.value = await ps.json()
