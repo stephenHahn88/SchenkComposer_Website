@@ -20,27 +20,24 @@
         <b-navbar-nav>
           <b-nav-item @click="router.push({path: '/login'})">Login</b-nav-item>
           <b-nav-item @click="router.push({path: '/my-melodies'})">{{username}}'s Melodies</b-nav-item>
+          <b-nav-item @click="router.push({path: '/flowchart'})">Flowchart</b-nav-item>
+          <b-nav-item><QuestionHover></QuestionHover></b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
+<!--      ROUTER VIEW-->
+    <b-row>
+      <b-col class="m-4 p-3 black-background" style="border-radius: 30px">
+        <router-view/>
+      </b-col>
+    </b-row>
+<!--    MELODY GENERATION-->
     <b-row class="m-2">
-      <b-col class="mt-5">
-<!--        DAG FLOWCHART-->
-        <b-container style="overflow: auto">
-          <div class="p-2 ml-3 black-background radius-30" style="width: 650px; height: 500px;">
-            <SchenkComposerDAG
-                :phrase-anim="phrase_anim"
-                :meter-anim="meter_anim"
-                :mgrhythm-anim="mgrhythm_anim"
-                :mgharmony-anim="mgharmony_anim"
-                :fgrhythm-anim="fgrhythm_anim"
-                :mgmelody-anim="mgmelody_anim"
-            ></SchenkComposerDAG>
-          </div>
-        </b-container>
+      <b-col class="">
+        <MusicGeneration></MusicGeneration>
       </b-col>
 <!--      TUTORIAL-->
-      <b-col class="mt-5">
+      <b-col class="">
         <b-container class="overflow-auto" style="height: 500px;">
           <b-container class="p-5 black-background radius-30">
             <h1>Tutorial</h1>
@@ -50,16 +47,6 @@
           </b-container>
         </b-container>
       </b-col>
-    </b-row>
-    <!--      ROUTER VIEW-->
-    <b-row>
-      <b-col class="m-4 p-3 black-background" style="border-radius: 30px">
-        <router-view/>
-      </b-col>
-    </b-row>
-    <!--    MELODY GENERATION-->
-    <b-row class="m-2" style="width: 100%">
-      <MusicGeneration></MusicGeneration>
     </b-row>
   </div>
 </template>
@@ -71,7 +58,7 @@ import {router} from '@/main'
 import {_makeid, delay} from "../../server/data"
 import MusicGeneration from "@/components/MusicGeneration.vue";
 import {pushRouter} from "@/data";
-
+import QuestionHover from "@/components/QuestionHover.vue"
 
 // References for animation of the DAG Flowchart
 let phrase_anim = ref(false)

@@ -111,6 +111,7 @@
 <script setup lang="ts">
 import {computed, defineEmits, ref, Ref, onMounted, inject, watch} from 'vue';
 import {BButton} from "bootstrap-vue";
+import QuestionHover from "@/components/QuestionHover.vue"
 
 const emit = defineEmits(['psanimate'])
 

@@ -1,7 +1,7 @@
 <template>
   <b-container style="background: rgba(0, 0, 0, 0.6); border-radius: 20px">
     <b-overlay :show="loading" style="border-radius: 20px">
-      <b-row class="m-2">
+      <b-row class="p-4">
         <h1>Melody Generation</h1>
       </b-row>
       <b-row class="m-2" id="check-done" style="background: rgba(255, 255, 255, 0.3); border-radius: 10px">
