@@ -75,6 +75,7 @@ import {pushRouter} from "@/data"
 
 let {composerId, updateComposerId}: any = inject("composerId")
 let {melodyId, updateMelodyId}: any = inject("melodyId")
+let {currPage, updateCurrPage}: any = inject("currPage")
 
 // Phrase structure from database
 let phraseStructure: Ref<string[]> = ref([])
@@ -99,6 +100,7 @@ let saveSuccess = ref("danger")
 const emit = defineEmits(['meteranimate'])
 
 onMounted(async () => {
+  updateCurrPage("/meter-hypermeter")
   await getSavedInfo()
 })
 

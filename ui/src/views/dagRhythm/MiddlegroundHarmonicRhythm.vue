@@ -63,6 +63,7 @@ const emit = defineEmits(['mgrhythmanimate'])
 
 let {composerId, updateComposerId} = inject("composerId")
 let {melodyId, updateMelodyId} = inject("melodyId")
+let {currPage, updateCurrPage} = inject("currPage")
 
 // TODO: gather from data
 let possibleRhythms = {
@@ -122,6 +123,7 @@ let meter = ref('4/4');
 let saveSuccess = ref("danger")
 
 onMounted(async () => {
+  updateCurrPage("/harmonic-rhythm")
   await getPhraseInfo()
   drawStaves()
   await getSavedRhythm()

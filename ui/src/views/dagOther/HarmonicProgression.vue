@@ -172,12 +172,13 @@ import { ForceSimulation } from "@livereader/graphly-d3";
 import "@livereader/graphly-d3/style.css";
 import Hexagon from "../../static/hexagon"
 import PresetMatrices from "@/views/dagOther/HPComponents/PresetMatrices.vue";
-import {pushRouter} from "@/data";
+import {pushRouter, _findPhraseEndHarmonies} from "@/data";
 
 const emit = defineEmits(['mgharmonyanimate'])
 
 let {composerId, updateComposerId} = inject("composerId")
 let {melodyId, updateMelodyId} = inject("melodyId")
+let {currPage, updateCurrPage} = inject("currPage")
 
 let harmonies = ref(['I','ii','iii','IV','V','vi','vii'])
 let openHarmonies = ref(['V'])
@@ -207,7 +208,7 @@ let max = computed(() => {
 
 // Store information for generated harmonic sequences
 let sequences = ref({
-  "a": ref({"sequenceReverse": [], "maxLen": 6, 'selected': 'inactive'}),
+  "a": ref({"sequenceReverse": [], "maxLen": 6, 'selected': 'active'}),
   "b": ref({"sequenceReverse": [], "maxLen": 4, 'selected': 'inactive'}),
   "c": ref({"sequenceReverse": [], "maxLen": 5, 'selected': 'inactive'}),
   "d": ref({"sequenceReverse": [], "maxLen": 3, 'selected': 'inactive'}),
@@ -236,6 +237,7 @@ let simulation;
 
 // Gather information for the length of harmonic progressions
 onMounted(async () => {
+  updateCurrPage("/harmonic-progression")
   harmonies.value = ['I','ii','iii','IV','V','vi','vii']
 
   mySVG = document.getElementById("mySVG");
@@ -356,24 +358,29 @@ async function saveProgression() {
 
 // generate harmonic progressions from model
 async function handleGenerate(letter) {
-  let phraseEndsForCadences = _findPhraseEndHarmonies()
+  // gets phrase ends as object e.g. {'a': 'V', 'b': 'I', ...}
+  let phraseEndsForCadences = _findPhraseEndHarmonies(phraseStructure.value, openHarmonies.value, closeHarmonies.value)
   let len = sequences.value[letter]["maxLen"]
-  let endHarmony;
-  if (Object.keys(phraseEndsForCadences).includes(letter)) {
-    endHarmony = phraseEndsForCadences[letter]
-  } else {
-    endHarmony = harmonies.value[Math.floor(Math.random() * harmonies.value.length)]
+  let endHarmony = _getEndHarmony(letter, phraseEndsForCadences)
+  let flattenedMatrix = _flattenMatrix()
+
+  let options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      "endHarmony": endHarmony,
+      "length": len,
+      "flattenedMatrix": flattenedMatrix,
+      "harmonies": harmonies.value
+    })
   }
-  let flattenedMatrix = []
-  for (let r of transitions) {
-    for (let e of r) {
-      flattenedMatrix.push(e)
-    }
-  }
-  let progression = await fetch(`/api/harmonic-progression/${endHarmony}/${len}/${flattenedMatrix.join("-")}/${harmonies.value.join("-")}`)
+  let progression = await fetch("/api/harmonic-progression", options)
   progression = await progression.json()
   sequences.value[letter]["sequenceReverse"] = progression["progression"].reverse()
 }
+
 
 function generateAll() {
   for (let letter of ['a','b','c','d']) {
@@ -381,25 +388,45 @@ function generateAll() {
   }
 }
 
-// helper function to find the ending harmony for each phrase
-function _findPhraseEndHarmonies() {
-  let answers = {}
-  let curr;
-  let prev;
-  let i = 0
-  for (let phraseUnit of phraseStructure.value) {
-    if (i === 0) {curr = phraseUnit; i++; continue;}
-    prev = curr
-    curr = phraseUnit
-    if (curr === "[HC]") {
-      answers[prev.at(0)] = openHarmonies.value[Math.floor(Math.random() * openHarmonies.value.length)]
-    } else if (curr === "[AC]") {
-      answers[prev.at(0)] = closeHarmonies.value[Math.floor(Math.random() * closeHarmonies.value.length)]
-    }
-    i++
+
+function _getEndHarmony(letter, phraseEndsForCadences) {
+  let endHarmony;
+  // If current letter has a cadence afterwards, retrieve it. Otherwise pick a random harmony
+  if (Object.keys(phraseEndsForCadences).includes(letter)) {
+    return phraseEndsForCadences[letter]
   }
-  return answers
+  return harmonies.value[Math.floor(Math.random() * harmonies.value.length)]
 }
+
+function _flattenMatrix() {
+  let flattenedMatrix = []
+  for (let r of transitions) {
+    for (let e of r) {
+      flattenedMatrix.push(e)
+    }
+  }
+  return flattenedMatrix
+}
+
+// helper function to find the ending harmony for each phrase
+// function _findPhraseEndHarmonies(phrase, open, close) {
+//   let answers = {}
+//   let curr;
+//   let prev;
+//   let i = 0
+//   for (let phraseUnit of phrase) {
+//     if (i === 0) {curr = phraseUnit; i++; continue;}
+//     prev = curr
+//     curr = phraseUnit
+//     if (curr === "[HC]") {
+//       answers[prev.at(0)] = open[Math.floor(Math.random() * open.length)]
+//     } else if (curr === "[AC]") {
+//       answers[prev.at(0)] = close[Math.floor(Math.random() * close.length)]
+//     }
+//     i++
+//   }
+//   return answers
+// }
 
 // updates ref to show selected row
 function selectRow(letter) {

@@ -11,7 +11,8 @@ export interface ProductionRule {
 }
 
 export async function pushRouter(path: string) {
-    setTimeout(() => {router.push({path: path})}, 200)
+    // setTimeout(() => {router.push({path: path})}, 200)
+    await router.push({path: path})
 }
 
 
@@ -103,6 +104,45 @@ function _getNoteQuarterlen(noteString: string) {
     return eval(noteString.split(": ")[1])
 }
 
+export function _quarterLengthToGlyph(ql: number) {
+    switch (ql) {
+        case 0.125: return "𝅘𝅥𝅰"
+        case 0.1875: return "𝅘𝅥𝅰."
+        case 0.25: return "𝅘𝅥𝅯"
+        case 0.375: return "𝅘𝅥𝅯."
+        case 0.5: return "𝅘𝅥𝅮"
+        case 0.75: return "𝅘𝅥𝅮."
+        case 1.0: return "♩"
+        case 1.5: return "♩."
+        case 2.0: return "𝅗𝅥"
+        case 3.0: return "𝅗𝅥."
+        case 4.0: return "𝅝"
+        case 6.0: return "𝅝."
+    }
+}
+
+
+// helper function to find the ending harmony for each phrase
+export function _findPhraseEndHarmonies(phrase: string[], open: string[], close: string[]) {
+    let answers = {}
+    let curr;
+    let prev;
+    let i = 0
+    for (let phraseUnit of phrase) {
+        if (i === 0) {curr = phraseUnit; i++; continue;}
+        prev = curr
+        curr = phraseUnit
+        if (curr === "[HC]") {
+            // @ts-ignore
+            answers[prev.at(0)] = open[Math.floor(Math.random() * open.length)]
+        } else if (curr === "[AC]") {
+            // @ts-ignore
+            answers[prev.at(0)] = close[Math.floor(Math.random() * close.length)]
+        }
+        i++
+    }
+    return answers
+}
 
 // FLATTEN RHYTHMS AND HARMONIES
 
@@ -125,11 +165,11 @@ export function flattenMgRhythm(mgRhythm: any, phrase: string[]) {
 }
 
 export function flattenMgRhythmLetter(mgRhythm: any, letter: string) {
-    let mgRhythmFlat = []
-    for (let measureString of mgRhythm[letter]) {
-        mgRhythmFlat.push(measureString)
-    }
-    return mgRhythmFlat
+    // let mgRhythmFlat = []
+    // for (let measureString of mgRhythm[letter]) {
+    //     mgRhythmFlat.push(measureString)
+    // }
+    return mgRhythm[letter]
 }
 
 export function flattenHarmony(harmony: any, phrase: string[]) {
