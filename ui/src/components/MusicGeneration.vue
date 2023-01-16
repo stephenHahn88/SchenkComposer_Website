@@ -23,7 +23,7 @@
         <b-button
             variant="success"
             class="m-4"
-            @click="generateMelody"
+            @click="generateMelody();"
             style="width: 100%; font-size: 32px"
         >Generate Melody</b-button>
       </b-row>
@@ -40,18 +40,28 @@
           </b-row>
         </b-col>
       </b-row>
+      <b-row class="m-1">
+        <b-col class = "modal-container">
+            <h6> Help us improve this website! We'd love to hear your feedback
+            <a href="google.com"> here </a>
+            </h6>
+        </b-col>
+      </b-row>
     </b-overlay>
+    <MelodySurvey ref="melodySurvey"></MelodySurvey>
   </b-container>
 </template>
 
 <script setup>
 import {flattenMgRhythmLetter, flattenPhrase, playNotesAndHarmony, _quarterLengthToGlyph} from "@/data";
 import {inject, ref} from "vue"
+import MelodySurvey from "@/components/MelodySurvey.vue";
 
 let {composerId, updateComposerId} = inject("composerId")
 let {melodyId, updateMelodyId} = inject("melodyId")
 
 let loading = ref(false)
+let melodySurvey = ref()
 
 let options = ref([
   {text: "Phrase", variant: "dark"},
@@ -77,10 +87,11 @@ async function generateMelody() {
   let hp = await getHarmonicProgression(mgr, ps)
 
   let {notes, harmonies} = await generateFromHarmony(ps, mgr, hp)
-
   playNotesAndHarmony(notes, harmonies, tempo.value)
   loading.value = false
   await saveMelody(notes, harmonies)
+  // Once the melody has been saved, open the melody survey
+  melodySurvey.value.openSurvey()
 }
 
 async function getPhraseStructure() {
@@ -274,4 +285,15 @@ datalist {
 option {
   padding: 0;
 }
+
+.modal-container {
+    padding: 30px 30px 30px 30px;
+    margin-bottom: 30px;
+    background-color: #fff;
+    border-radius: 2px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+    transition: all 0.3s ease;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
 </style>

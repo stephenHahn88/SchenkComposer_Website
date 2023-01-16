@@ -1,15 +1,5 @@
 <!-- BASED ON THE VUE2 COMPONENT https://v2.vuejs.org/v2/examples/modal.html -->
 
-<!-- <div>
-    <Modal
-      proptype = "modal-popup"
-      title="Help us improve this website!"
-      body="We'd love to hear your feedback"
-      url="google.com"
-      urlstring="Survey link"
-    ></Modal>
-  </div> -->
-
 <template>
     <transition name="modal">
         <div v-if="!closed" :class="props.proptype">
