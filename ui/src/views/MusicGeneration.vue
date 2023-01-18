@@ -1,31 +1,42 @@
 <template>
-  <b-container style="background: rgba(0, 0, 0, 0.6); border-radius: 20px">
+  <b-container style="border-radius: 20px">
     <b-overlay :show="loading" style="border-radius: 20px">
       <b-row class="p-4">
         <h1>Melody Generation</h1>
       </b-row>
-      <b-row class="m-2" id="check-done" style="background: rgba(255, 255, 255, 0.3); border-radius: 10px">
-        <b-col>
-          <h2>Generating with provided:</h2>
-        </b-col>
-        <b-col>
-          <b-button-group class="m-1">
-            <b-button
-                disabled
-                v-for="{text, variant} in options"
-                :variant="variant"
-            >{{text}}</b-button>
-          </b-button-group>
-        </b-col>
-
-      </b-row>
+<!--      <b-row class="m-2" id="check-done" style="background: rgba(255, 255, 255, 0.3); border-radius: 10px">-->
+<!--        <b-col>-->
+<!--          <h2>Generating with provided:</h2>-->
+<!--        </b-col>-->
+<!--        <b-col>-->
+<!--          <b-button-group class="m-1">-->
+<!--            <b-button-->
+<!--                disabled-->
+<!--                v-for="{text, variant} in options"-->
+<!--                :variant="variant"-->
+<!--            >{{text}}</b-button>-->
+<!--          </b-button-group>-->
+<!--        </b-col>-->
+<!--      </b-row>-->
       <b-row class="m-2" style="height: 150px">
-        <b-button
-            variant="success"
+        <b-col>
+          <b-button
+            variant="info"
             class="m-4"
-            @click="generateMelody();"
+            @click="pushRouter('/harmonic-progression')"
             style="width: 100%; font-size: 32px"
-        >Generate Melody</b-button>
+          >
+            Return to Harmonic Progression
+          </b-button>
+        </b-col>
+        <b-col>
+          <b-button
+              variant="success"
+              class="m-4"
+              @click="generateMelody();"
+              style="width: 100%; font-size: 32px"
+          >Generate Melody</b-button>
+        </b-col>
       </b-row>
       <b-row class="m-2 p-2">
         <b-col>
@@ -54,11 +65,12 @@
 
 <script setup>
 import {flattenMgRhythmLetter, flattenPhrase, playNotesAndHarmony, _quarterLengthToGlyph} from "@/data";
-import {inject, ref} from "vue"
+import {inject, onMounted, ref} from "vue"
 import MelodySurvey from "@/components/MelodySurvey.vue";
 
 let {composerId, updateComposerId} = inject("composerId")
 let {melodyId, updateMelodyId} = inject("melodyId")
+let {currPage, updateCurrPage} = inject("currPage")
 
 let loading = ref(false)
 let melodySurvey = ref()
@@ -71,6 +83,11 @@ let options = ref([
   {text: "Harmonic Progression", variant: "dark"}
 ])
 let tempo = ref(60)
+
+onMounted(() => {
+  updateCurrPage("/generate-melody")
+})
+
 
 function _updateVariant(text, variant) {
   for (let i in options.value) {
@@ -289,8 +306,8 @@ option {
 .modal-container {
     padding: 30px 30px 30px 30px;
     margin-bottom: 30px;
-    background-color: #fff;
-    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     transition: all 0.3s ease;
     font-family: Helvetica, Arial, sans-serif;

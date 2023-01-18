@@ -17,9 +17,17 @@
         </b-col>
       </b-row>
       <!-- PHRASE TYPES -->
-      <h2>Subphrases</h2>
+<!--      <h2>Subphrases</h2>-->
       <b-row>
-        <b-col class="m-1">
+        <b-col>
+          <QuestionHover id="question1" title="Sentence" text="Create a melody based on the 'sentence' phrase structure (a a b [cadence])"></QuestionHover>
+        </b-col>
+        <b-col>
+          <QuestionHover id="question2" title="Period" text="Create a melody based on the 'period' phrase structure (a [cadence] b [cadence])"></QuestionHover>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col class="mx-1 mb-1">
           <b-button
               variant="dark"
               @click="handleSentence"
@@ -27,7 +35,7 @@
             Sentence
           </b-button>
         </b-col>
-        <b-col class="m-1">
+        <b-col class="mx-1 mb-1">
           <b-button
               variant="dark"
               @click="handlePeriod"
@@ -71,6 +79,7 @@
 import {computed, defineEmits, ref, Ref, onMounted, inject, watch} from 'vue';
 import {BButton} from "bootstrap-vue";
 import {pushRouter} from "@/data"
+import QuestionHover from "@/components/QuestionHover.vue"
 
 const emit = defineEmits(['psanimate'])
 
@@ -82,6 +91,7 @@ export type Phrase = (PhraseUnit | Cadence)[]
 // Load composer and melody info
 let {composerId, updateComposerId}: any = inject("composerId");
 let {melodyId, updateMelodyId}: any = inject("melodyId")
+let {currPage, updateCurrPage}: any = inject("currPage")
 
 // Possible letters
 let letters = ['a', 'b', 'c', 'd']
@@ -93,6 +103,7 @@ let saveSuccess = ref("danger")
 
 // Load phrase if already saved
 onMounted(async () => {
+  updateCurrPage("/phrase-structure")
   let ps = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/phrase-structure")).json()
   if (ps.status === 404) return
   phrase.value = ps.result
