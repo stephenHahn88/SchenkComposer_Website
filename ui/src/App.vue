@@ -11,9 +11,27 @@
         >
       </b-navbar-brand>
       <b-navbar-brand>
-        <b-button variant="success" @click="createNewMelody">
+        <b-button
+            variant="success"
+            @click="createNewMelody"
+            class="m-1"
+        >
           Create New Melody Skeleton
         </b-button>
+        <b-button
+            v-b-toggle.collapse-tutorial
+            variant="light"
+            v-if="!tutorialOpen"
+            @click="tutorialOpen = true"
+            class="m-1"
+        >Show Tutorial</b-button>
+        <b-button
+            v-b-toggle.collapse-tutorial
+            variant="light"
+            v-if="tutorialOpen"
+            @click="tutorialOpen = false"
+            class="m-1"
+        >Hide Tutorial</b-button>
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
@@ -48,12 +66,14 @@
 <!--      TUTORIAL-->
       <b-col class="">
         <b-container class="overflow-auto" style="height: 500px;">
-          <b-container class="p-5 black-background radius-30">
-            <h1>Tutorial</h1>
-            <router-view
-                name="tutorial"
-            />
-          </b-container>
+          <b-collapse id="collapse-tutorial">
+            <b-container class="p-5 black-background radius-30">
+              <h1>Tutorial</h1>
+              <router-view
+                  name="tutorial"
+              />
+            </b-container>
+          </b-collapse>
         </b-container>
       </b-col>
     </b-row>
@@ -93,6 +113,8 @@ provide("username", {username, updateUsername})
 provide("composerId", {composerId, updateComposerId})
 provide("melodyId", {melodyId, updateMelodyId})
 provide("currPage", {currPage, updateCurrPage})
+
+let tutorialOpen = ref(false)
 
 let progressSteps = ref([
     "Phrase Structure",
