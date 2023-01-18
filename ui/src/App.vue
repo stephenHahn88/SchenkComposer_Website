@@ -21,21 +21,30 @@
           <b-nav-item @click="router.push({path: '/login'})">Login</b-nav-item>
           <b-nav-item @click="router.push({path: '/my-melodies'})">{{username}}'s Melodies</b-nav-item>
           <b-nav-item @click="router.push({path: '/flowchart'})">Flowchart</b-nav-item>
-          <b-nav-item><QuestionHover></QuestionHover></b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
+    <b-row class="mx-4 mt-5 p-3 black-background radius-30">
+      <b-row>
+        <h1 class="mx-4">Track Your Progress</h1>
+      </b-row>
+      <b-row>
+        <vue-step-progress-indicator
+            style="width: 100%"
+            :steps="progressSteps"
+            :active-step="currentStep"
+            :colors="progressColors"
+            :styles="progressStyles"
+        ></vue-step-progress-indicator>
+      </b-row>
+    </b-row>
 <!--      ROUTER VIEW-->
-    <b-row>
-      <b-col class="m-4 p-3 black-background" style="border-radius: 30px">
+    <b-row class="m-4 p-3 black-background radius-30">
+      <b-col>
         <router-view/>
       </b-col>
     </b-row>
-<!--    MELODY GENERATION-->
     <b-row class="m-2">
-      <b-col class="">
-        <MusicGeneration></MusicGeneration>
-      </b-col>
 <!--      TUTORIAL-->
       <b-col class="">
         <b-container class="overflow-auto" style="height: 500px;">
@@ -51,39 +60,32 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue";
-import {ref, Ref, watch, provide, onMounted, computed} from 'vue'
+import {ref, provide, onMounted, computed} from 'vue'
 import {router} from '@/main'
 import {_makeid, delay} from "../../server/data"
-import MusicGeneration from "@/components/MusicGeneration.vue";
+import MusicGeneration from "@/views/MusicGeneration.vue";
 import {pushRouter} from "@/data";
 import QuestionHover from "@/components/QuestionHover.vue"
-
-// References for animation of the DAG Flowchart
-let phrase_anim = ref(false)
-let meter_anim = ref(false)
-let mgrhythm_anim = ref(false)
-let mgharmony_anim = ref(false)
-let mgmelody_anim = ref(false)
-let fgrhythm_anim = ref(false)
+import VueStepProgressIndicator from "vue-step-progress-indicator"
 
 // Info to access and update particular melodies
-let username: Ref<string> = ref("Anonymous")
-let composerId: Ref<string> = ref("")
-let melodyId: Ref<string> = ref("")
-let currPage: Ref<string> = ref("/")
+let username = ref("Anonymous")
+let composerId = ref("")
+let melodyId = ref("")
+let currPage = ref("/")
 
-function updateUsername(newUsername: string) {
+function updateUsername(newUsername) {
   username.value = newUsername
 }
-function updateComposerId(newComposerId: string) {
+function updateComposerId(newComposerId) {
   composerId.value = newComposerId
 }
-function updateMelodyId(newMelodyId: string) {
+function updateMelodyId(newMelodyId) {
   melodyId.value = newMelodyId
 }
-function updateCurrPage(newPage: string) {
+function updateCurrPage(newPage) {
   currPage.value = newPage
 }
 
@@ -91,6 +93,102 @@ provide("username", {username, updateUsername})
 provide("composerId", {composerId, updateComposerId})
 provide("melodyId", {melodyId, updateMelodyId})
 provide("currPage", {currPage, updateCurrPage})
+
+let progressSteps = ref([
+    "Phrase Structure",
+    "Meter & Hypermeter",
+    "Harmonic Rhythm",
+    "Harmonic Progression",
+    "Generate Melody!"
+])
+let currentStep = computed(() => {
+  switch (currPage.value) {
+    case "/": return 0;
+    case "/phrase-structure": return 0;
+    case "/meter-hypermeter": return 1;
+    case "/harmonic-rhythm": return 2;
+    case "/harmonic-progression": return 3;
+    case "/generate-melody": return 4;
+  }
+})
+let progressColors = {
+  progress__bubble: {
+    active: {
+      color: "#fff",
+      backgroundColor: "rgba(240, 80, 60, 0.5)",
+      borderColor: "#e74c3c",
+    },
+    inactive: {
+      color: "#fff",
+      backgroundColor: "rgba(90, 100, 110, 0.5)",
+      borderColor: "#54697e",
+    },
+    completed: {
+      color: "#fff",
+      borderColor: "rgba(30, 150, 70, 0.3)",
+      backgroundColor: "#27ae60",
+    },
+  },
+  progress__label: {
+    active: {
+      color: "#e74c3c",
+    },
+    inactive: {
+      color: "#54697e",
+    },
+    completed: {
+      color: "#27ae60",
+    },
+  },
+  progress__bridge: {
+    active: {
+      backgroundColor: "#e74c3c",
+    },
+    inactive: {
+      backgroundColor: "#54697e",
+    },
+    completed: {
+      backgroundColor: "#27ae60",
+    },
+  },
+}
+let progressStyles = {
+  progress__wrapper: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    margin: "1rem 1rem",
+  },
+  progress__block: {
+    display: "flex",
+    alignItems: "center",
+  },
+  progress__bridge: {
+    backgroundColor: "grey",
+    height: "2px",
+    flexGrow: "1",
+    width: "1em",
+  },
+  progress__bubble: {
+    margin: "10px",
+    padding: "0",
+    lineHeight: "30px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "50px",
+    width: "50px",
+    borderRadius: "100%",
+    backgroundColor: "transparent",
+    border: "2px grey solid",
+    textAlign: "center",
+    fontSize: "24px"
+  },
+  progress__label: {
+    margin: "0 0.8rem",
+    fontSize: "28px"
+  },
+}
 
 // Create anonymous melody upon opening the page
 onMounted(async () => {

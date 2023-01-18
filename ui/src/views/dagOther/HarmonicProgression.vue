@@ -1,21 +1,11 @@
 <template>
   <div>
-    <b-row style="height: 100px;">
+    <b-row>
       <b-col>
         <h1>Harmonic Progression</h1>
       </b-col>
-      <b-col class="mr-3 p-4 ml-5">
-        <b-button
-          variant="info"
-          @click="pushRouter('/harmonic-rhythm')"
-          class="m-2"
-          style="width: 100%;"
-        >
-          Return to Harmonic Rhythm
-        </b-button>
-      </b-col>
     </b-row>
-    <b-row class="ml-2">
+    <b-row>
 <!--      TRANSITION MATRIX BLOCK-->
       <b-col
           class="p-2"
@@ -59,13 +49,13 @@
                   ></b-form-input>
                 </b-col>
               </b-row>
-              <b-row>
-                <b-button
-                    class="m-4"
-                    :variant="saveMatrixSuccess"
-                    @click="saveMatrix"
-                >Save</b-button>
-              </b-row>
+<!--              <b-row>-->
+<!--                <b-button-->
+<!--                    class="m-4"-->
+<!--                    :variant="saveMatrixSuccess"-->
+<!--                    @click="saveMatrix"-->
+<!--                >Save</b-button>-->
+<!--              </b-row>-->
             </b-container>
           </b-row>
         </b-container>
@@ -143,13 +133,36 @@
               variant="info"
               @click="generateAll"
             >Generate All</b-button>
-            <b-button
-                class="m-2"
-                :variant="saveProgressionSuccess"
-                @click="saveProgression"
-            >Save all</b-button>
+<!--            <b-button-->
+<!--                class="m-2"-->
+<!--                :variant="saveProgressionSuccess"-->
+<!--                @click="saveProgression"-->
+<!--            >Save all</b-button>-->
           </b-row>
         </b-container>
+      </b-col>
+    </b-row>
+<!--    SAVE AND RETURN-->
+    <b-row class="my-4 p-4" style="height: 140px;">
+      <b-col>
+        <b-button
+            variant="info"
+            @click="pushRouter('/harmonic-rhythm')"
+            class="my-2"
+            style="width: 100%; height: 100%; font-size: 28px"
+        >
+          Return to Harmonic Rhythm
+        </b-button>
+      </b-col>
+      <b-col>
+        <b-button
+            :variant="saveSuccess"
+            @click="saveAll"
+            class="my-2"
+            style="width: 100%; height: 100%; font-size: 28px"
+        >
+          Save All and Continue
+        </b-button>
       </b-col>
     </b-row>
 <!--      MARKOV CHAIN GRAPH-->
@@ -192,8 +205,7 @@ for (let i = 0; i < Object.keys(harmonies.value).length; i++) {
   transitions.push(new Array(Object.keys(harmonies.value).length).fill(1))
 }
 
-let saveMatrixSuccess = ref("danger")
-let saveProgressionSuccess = ref("danger")
+let saveSuccess = ref("danger")
 
 // Maximum of maxLen
 let max = computed(() => {
@@ -330,7 +342,6 @@ async function saveMatrix() {
   let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/matrix", requestOptions)
   response = await response.json()
   console.log(response)
-  saveMatrixSuccess.value = "success"
 }
 
 function _harmonicSequencesToObject() {
@@ -352,8 +363,13 @@ async function saveProgression() {
   let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/harmonicProgression", requestOptions)
   response = await response.json()
   console.log(response)
-  emit("mgharmonyanimate")
-  saveProgressionSuccess.value = "success"
+}
+
+async function saveAll() {
+  await saveMatrix()
+  await saveProgression()
+  saveSuccess.value = "success"
+  await pushRouter("/generate-melody")
 }
 
 // generate harmonic progressions from model
