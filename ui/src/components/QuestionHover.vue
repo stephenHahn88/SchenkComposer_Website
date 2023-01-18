@@ -1,30 +1,41 @@
 <template>
-  <b-container>
-    <b-button
-        id="popover"
-        style="border-radius: 100px; background: rgba(255, 0, 255, 0.5)"
+  <b-container style="m-0">
+    <p
+        :id="customId"
     >
       ?
-    </b-button>
+    </p>
     <b-popover
-        target="popover"
+        :target="customId"
         triggers="hover"
         placement="top"
     >
       <template #title>{{customTitle}}</template>
       {{customText}}
     </b-popover>
-
   </b-container>
 </template>
 
 <script setup lang="ts">
 import {ref} from 'vue'
 
-let customTitle = ref("yo")
-let customText = ref("hi")
+const props = defineProps(['title', 'text', 'id'])
+
+let customId = ref(props.id)
+let customTitle = ref(props.title)
+let customText = ref(props.text)
 </script>
 
 <style scoped>
-
+p {
+  padding: 0 0 0 0;
+  margin: 0 0 5px 0;
+  border-radius: 100%;
+  background: rgba(255, 0, 255, 0.5);
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  color: white;
+  text-align: center;
+}
 </style>

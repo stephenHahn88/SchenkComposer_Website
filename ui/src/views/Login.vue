@@ -1,81 +1,87 @@
 <template>
-  <div>
-    <b-container id="form-container" class="px-4 pt-2">
-      <b-row>
-        <h1>Login or Create New User</h1>
-      </b-row>
-      <b-row>
-        <h4 v-if="username">Currently logged in as <span style="color: green">{{username}}</span></h4>
-      </b-row>
+  <b-container id="form-container" class="px-4 pt-2">
+    <b-row>
+      <h1>Login or Create New User</h1>
+    </b-row>
+    <b-row>
+      <h4 v-if="username">Currently logged in as <span style="color: green">{{username}}</span></h4>
+    </b-row>
 <!--      USERNAME FORM-->
-      <b-row>
-          <b-col>
-            <label for="username" class="form-text">Username:</label>
-            <b-form-input
-                type="text"
-                id="username"
-                class="input"
-                v-model="usernameLocal"
-            ></b-form-input>
-          </b-col>
-      </b-row>
-<!--      PASSWORD FORM-->
-      <b-row class="mt-3">
+    <b-row>
         <b-col>
-          <label for="password" class="form-text">Password:</label>
+          <label for="username" class="form-text">Username:</label>
           <b-form-input
-              type="password"
-              id="password"
+              type="text"
+              id="username"
               class="input"
-              v-model="password"
+              v-model="usernameLocal"
           ></b-form-input>
         </b-col>
-      </b-row>
+    </b-row>
+<!--      PASSWORD FORM-->
+    <b-row class="mt-3">
+      <b-col>
+        <label for="password" class="form-text">Password:</label>
+        <b-form-input
+            type="password"
+            id="password"
+            class="input"
+            v-model="password"
+        ></b-form-input>
+      </b-col>
+    </b-row>
 <!--      CREATE NEW VS LOGIN-->
-      <b-row>
-        <b-col class="center-text">
-          <b-form-checkbox
-              id="checkbox-1"
-              v-model="createNew"
-              name="checkbox-1"
-              :value="true"
-              :unchecked-value="false"
-              class="form-control-lg m-5"
-          >
-            Create new user
-          </b-form-checkbox>
-        </b-col>
-        <b-col class="center-text">
-          <b-button
-              variant="success"
-              class="m-5"
-              @click="newUser"
-              v-if="createNew"
-          >Create New User</b-button>
-          <b-button
-              variant="info"
-              class="m-5"
-              @click="login"
-              v-else
-          >Login</b-button>
-        </b-col>
-      </b-row>
+    <b-row>
+      <b-col>
+        <b-button
+            variant="info"
+            class="m-5"
+            @click="returnToCurrPage"
+        >Return to Melody</b-button>
+      </b-col>
+      <b-col class="center-text">
+        <b-form-checkbox
+            id="checkbox-1"
+            v-model="createNew"
+            name="checkbox-1"
+            :value="true"
+            :unchecked-value="false"
+            class="form-control-lg m-5"
+        >
+          Create new user
+        </b-form-checkbox>
+      </b-col>
+      <b-col class="center-text">
+        <b-button
+            variant="success"
+            class="m-5"
+            @click="newUser"
+            v-if="createNew"
+        >Create New User</b-button>
+        <b-button
+            variant="success"
+            class="m-5"
+            @click="login"
+            v-else
+        >Login</b-button>
+      </b-col>
+    </b-row>
 <!--      STATUS UPDATE-->
-      <b-row>
-        <b-col style="text-align: center">
-          <h2 v-if="status === 'Success!'" style="color: green">{{status}}</h2>
-          <h2 v-else-if="status.at(0) === 'U'" style="color: red">{{status}}</h2>
-          <h2 v-else>{{status}}</h2>
-        </b-col>
-      </b-row>
-    </b-container>
-  </div>
+    <b-row>
+      <b-col style="text-align: center">
+        <h2 v-if="status === 'Success!'" style="color: green">{{status}}</h2>
+        <h2 v-else-if="status.at(0) === 'U'" style="color: red">{{status}}</h2>
+        <h2 v-else>{{status}}</h2>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script setup>
 import {ref, inject} from 'vue'
-import {router} from '@/main'
 import {delay} from '../../../server/data'
+import {pushRouter} from "@/data";
+
 
 const usernameLocal = ref('')
 const password = ref('')
@@ -85,6 +91,11 @@ const status = ref("")
 const {composerId, updateComposerId} = inject("composerId")
 const {melodyId, updateMelodyId} = inject("melodyId")
 const {username, updateUsername} = inject("username")
+let {currPage, updateCurrPage} = inject("currPage")
+
+async function returnToCurrPage() {
+  await pushRouter(currPage.value)
+}
 
 // Create new user
 async function newUser() {
@@ -132,6 +143,7 @@ async function login() {
   updateMelodyId("1")
   updateUsername(usernameLocal.value)
   status.value = "Success!"
+  updateCurrPage("/phrase-structure")
 }
 
 // Create new melody with current composer info
@@ -149,6 +161,7 @@ async function createMelody() {
   }
   let response = await (await fetch("/api/create-melody", requestOptions)).json()
   console.log(response)
+  updateCurrPage("/phrase-structure")
 }
 </script>
 

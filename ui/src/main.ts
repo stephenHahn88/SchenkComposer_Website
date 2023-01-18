@@ -16,7 +16,8 @@ import ForegroundMelody from "@/views/dagOther/ForegroundMelody.vue"
 import MyMelodies from "@/views/MyMelodies.vue"
 import MiddlegroundMelody from "@/views/dagOther/MiddlegroundMelody.vue"
 import ForegroundRhythm from "@/views/dagRhythm/ForegroundRhythm.vue"
-import SchenkComposerDAG from "@/components/SchenkComposerDAG.vue"
+import Flowchart from "@/views/Flowchart.vue"
+import MusicGeneration from "@/views/MusicGeneration.vue"
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -46,7 +47,7 @@ export const router = new VueRouter({
     },
     {
       path: "/flowchart",
-      component: SchenkComposerDAG
+      component: Flowchart
     },
     {
       path: "/phrase-structure",
@@ -75,6 +76,10 @@ export const router = new VueRouter({
     {
       path: "/foreground-melody",
       component: ForegroundMelody
+    },
+    {
+      path: "/generate-melody",
+      component: MusicGeneration
     }
   ],
 })

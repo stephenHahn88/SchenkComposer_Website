@@ -1,50 +1,70 @@
 <template>
   <div class="m-5">
-    <h1>Meter And Hypermeter</h1>
-<!--    PHRASE SEQUENCE-->
     <b-row>
-      <b-col></b-col>
-      <b-col
-          v-for="subphrase in phraseStructure"
-      >
-        <b-row class="text"><p>{{ subphrase.at(0) === '[' ? subphrase: '&nbsp;'}}</p></b-row>
-        <b-row class="mb-3 pl-4 text"><p>{{ subphrase.at(0) !== '[' ? subphrase: '&nbsp;'}}</p></b-row>
-      </b-col>
+      <h1>Meter And Hypermeter</h1>
     </b-row>
-<!--    METER AND HYPERMETER-->
+    <b-row class="mb-5">
+      <h2>Choose the number of measures for each subphrase</h2>
+    </b-row>
     <b-row>
-<!--      METER-->
-      <b-col class="p-3">
-        <b-row class="mb-1">
-          <b-col class="center-text">
-            <b-dropdown :text="numerator" variant="danger" size="lg">
-              <b-dropdown-item v-for="num in possibleNumerators" v-on:click="numerator=num.toString()"> {{ num }} </b-dropdown-item>
-            </b-dropdown>
-          </b-col>
+      <b-col class="ml-2 p-3" cols="2" style="background: rgba(255, 255, 255, 0.3); border-radius: 20px">
+        <b-row>
+          <h3 class="ml-3 mb-5">Meter:</h3>
         </b-row>
         <b-row>
-          <b-col class="center-text">
-            <b-dropdown :text="denominator" variant="danger" size="lg">
-              <b-dropdown-item v-for="num in possibleDenominators" v-on:click="denominator=num.toString()"> {{ num }} </b-dropdown-item>
-            </b-dropdown>
+          <b-col>
+            <!--      METER-->
+            <b-col class="p-3">
+              <b-row class="mb-1">
+                <b-col class="center-text">
+                  <b-dropdown :text="numerator" variant="dark" size="lg">
+                    <b-dropdown-item v-for="num in possibleNumerators" v-on:click="numerator=num.toString()"> {{ num }} </b-dropdown-item>
+                  </b-dropdown>
+                </b-col>
+              </b-row>
+              <b-row>
+                <b-col class="center-text">
+                  <b-dropdown :text="denominator" variant="dark" size="lg">
+                    <b-dropdown-item v-for="num in possibleDenominators" v-on:click="denominator=num.toString()"> {{ num }} </b-dropdown-item>
+                  </b-dropdown>
+                </b-col>
+              </b-row>
+            </b-col>
           </b-col>
         </b-row>
       </b-col>
 <!--      HYPERMETER-->
-      <b-col
-        v-for="subphrase in phraseStructure"
-        class="mt-3"
-      >
-        <b-form-input
-            v-if="subphrase.at(0) !== '['"
-            :class="subphrase.at(0)"
-            class="text"
-            v-model="hypermeterMeasures[subphrase.at(0)]"
-            :number="true"
-            placeholder="# measures"
-        ></b-form-input>
+      <b-col class="ml-5 p-3" style="background: rgba(255, 255, 255, 0.3); border-radius: 20px">
+        <b-row>
+          <h3 class="ml-3 mb-5">Hypermeter:</h3>
+        </b-row>
+        <b-row>
+          <b-col
+              v-for="subphrase in phraseStructure"
+          >
+            <b-row class="text m-0"><p>{{ subphrase.at(0) === '[' ? 'Cadence': '&nbsp;'}}</p></b-row>
+            <b-row class="mb-1 mt-0 pl-4 text"><p>{{ subphrase.at(0) !== '[' ? subphrase: '&nbsp;'}}</p></b-row>
+          </b-col>
+        </b-row>
+
+        <b-row>
+          <b-col
+              v-for="subphrase in phraseStructure"
+              class="mt-3"
+          >
+            <b-form-input
+                v-if="subphrase.at(0) !== '['"
+                :class="subphrase.at(0)"
+                class="mt-3 text"
+                v-model="hypermeterMeasures[subphrase.at(0)]"
+                :number="true"
+                placeholder="# measures"
+            ></b-form-input>
+          </b-col>
+        </b-row>
       </b-col>
     </b-row>
+
     <b-row class="mt-3">
       <b-col>
         <b-button
@@ -89,8 +109,8 @@ let possibleDenominators = [4]//[2, 4, 8]
 
 // Number of measures for each subphrase
 let hypermeterMeasures = ref({
-  "a": "# measures",
-  "b": "# measures",
+  "a": 2,
+  "b": 2,
   "c": "# measures",
   "d": "# measures"
 })
@@ -181,7 +201,7 @@ async function saveMeter() {
   text-align: center;
 }
 
-h1, p {
+h1, h2, h3, p {
   color: white;
 }
 
@@ -191,7 +211,7 @@ h1, p {
 
 .a, .a:focus {
   color: white;
-  background-color: rgba(255, 0, 0, 0.4);
+  background-color: rgba(255, 255, 0, 0.4);
 }
 
 .b, .b:focus {
