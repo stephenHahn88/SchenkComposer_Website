@@ -5,6 +5,15 @@
         <h1>Harmonic Progression</h1>
       </b-col>
     </b-row>
+    <b-row class="mb-5">
+      <b-col>
+        <h2>
+          <span :style="`color: ${textEmphasisColor}`">Fill out the transition matrix</span> and have SchenkComposer
+          <span :style="`color: ${textEmphasisColor}`">generate a harmonic progression</span> for you.
+          Or manually provide your own harmonic progressions.
+        </h2>
+      </b-col>
+    </b-row>
     <b-row>
 <!--      TRANSITION MATRIX BLOCK-->
       <b-col
@@ -67,10 +76,9 @@
       >
         <b-container style="width: 700px">
           <b-row class="mb-2">
-            <b-col>
-              <h2>Generation</h2>
+            <b-col cols="8">
+              <h2>Harmonic Progression</h2>
             </b-col>
-            <b-col></b-col>
             <b-col>
               <b-button
                   variant="warning"
@@ -168,7 +176,7 @@
 <!--      MARKOV CHAIN GRAPH-->
     <b-row class="ml-2 mt-5 mb-2">
       <b-button @click="redraw" style="background-color: purple">Refresh</b-button>
-      <h2 class="ml-5">Play around with the nodes below!</h2>
+      <h2 class="ml-5">Play around with the nodes of your matrix below!</h2>
     </b-row>
     <b-row
         class="mx-2 mb-2"
@@ -179,13 +187,14 @@
 </template>
 
 <script setup>
-import {ref, onMounted, watch, computed, inject, defineEmits, reactive} from "vue";
+import {ref, onMounted, watch, computed, inject, defineEmits, reactive, provide} from "vue";
 import _ from "lodash";
 import { ForceSimulation } from "@livereader/graphly-d3";
 import "@livereader/graphly-d3/style.css";
 import Hexagon from "../../static/hexagon"
 import PresetMatrices from "@/views/dagOther/HPComponents/PresetMatrices.vue";
-import {pushRouter, _findPhraseEndHarmonies} from "@/data";
+import {pushRouter, _findPhraseEndHarmonies, textEmphasisColor} from "@/data";
+import QuestionHover from "@/components/QuestionHover.vue"
 
 const emit = defineEmits(['mgharmonyanimate'])
 
@@ -198,6 +207,7 @@ let openHarmonies = ref(['V'])
 let closeHarmonies = ref(['I'])
 let colors = ref(['green', 'navy', 'rgb(255, 130, 200)', 'orange', 'red', 'purple', 'black'])
 
+provide('harmonies', harmonies)
 
 // Transition matrix values
 let transitions = reactive([])
@@ -297,7 +307,6 @@ async function getSavedProgressions() {
   for (let letter in sequences.value) {
     sequences.value[letter]["sequenceReverse"] = progressions[letter].slice().reverse()
   }
-  saveProgressionSuccess.value = "success"
 }
 
 // Get preset matrix from model

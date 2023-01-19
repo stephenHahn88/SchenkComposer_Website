@@ -2,9 +2,15 @@
   <div>
     <b-container text-center>
       <b-row>
-        <b-col cols="10">
-          <h1>Phrase Options</h1>
-        </b-col>
+        <h1>Phrase Options</h1>
+      </b-row>
+      <b-row class="mb-5">
+        <h2>Choose what <span :style="`color: ${textEmphasisColor}`">type of phrase</span> your melody should build into</h2>
+      </b-row>
+      <!-- PHRASE TYPES -->
+<!--      <h2>Subphrases</h2>-->
+      <b-row>
+        <b-col cols="10"></b-col>
         <b-col>
           <b-button
               id="erase"
@@ -16,8 +22,6 @@
           </b-button>
         </b-col>
       </b-row>
-      <!-- PHRASE TYPES -->
-<!--      <h2>Subphrases</h2>-->
       <b-row>
         <b-col>
           <QuestionHover id="question1" title="Sentence" text="Create a melody based on the 'sentence' phrase structure (a a b [cadence])"></QuestionHover>
@@ -78,7 +82,7 @@
 <script setup lang="ts">
 import {computed, defineEmits, ref, Ref, onMounted, inject, watch} from 'vue';
 import {BButton} from "bootstrap-vue";
-import {pushRouter} from "@/data"
+import {pushRouter, textEmphasisColor} from "@/data"
 import QuestionHover from "@/components/QuestionHover.vue"
 
 const emit = defineEmits(['psanimate'])

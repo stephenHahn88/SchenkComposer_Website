@@ -9,7 +9,7 @@
             v-b-toggle.collapse-tutorial
             variant="light"
             v-if="!tutorialOpen"
-            @click="tutorialOpen = true"
+            @click="updateTutorialOpen(true)"
             class="m-1"
             style="width:100%; height: 100%"
         >Show Tutorial</b-button>
@@ -17,7 +17,7 @@
             v-b-toggle.collapse-tutorial
             variant="light"
             v-if="tutorialOpen"
-            @click="tutorialOpen = false"
+            @click="updateTutorialOpen(false)"
             class="m-1"
             style="width:100%; height: 100%"
         >Hide Tutorial</b-button>
@@ -36,9 +36,9 @@
 
 <script setup lang="ts">
 import {pushRouter} from '@/data';
-import {ref} from 'vue'
+import {ref, inject} from 'vue'
 
-let tutorialOpen = ref(false)
+let {tutorialOpen, updateTutorialOpen}: any = inject('tutorialOpen')
 </script>
 
 <style scoped>

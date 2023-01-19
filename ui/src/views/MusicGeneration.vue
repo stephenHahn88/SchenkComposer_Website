@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import {flattenMgRhythmLetter, flattenPhrase, playNotesAndHarmony, _quarterLengthToGlyph} from "@/data";
+import {flattenMgRhythmLetter, flattenPhrase, playNotesAndHarmony, _quarterLengthToGlyph, pushRouter} from "@/data";
 import {inject, onMounted, ref} from "vue"
 import MelodySurvey from "@/components/MelodySurvey.vue";
 

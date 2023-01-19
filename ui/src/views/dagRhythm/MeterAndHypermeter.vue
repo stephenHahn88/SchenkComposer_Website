@@ -4,7 +4,7 @@
       <h1>Meter And Hypermeter</h1>
     </b-row>
     <b-row class="mb-5">
-      <h2>Choose the number of measures for each subphrase</h2>
+      <h2>Choose your <span :style="`color: ${textEmphasisColor}`">time signature</span> and the <span :style="`color: ${textEmphasisColor}`">number of measures</span> for each subphrase</h2>
     </b-row>
     <b-row>
       <b-col class="ml-2 p-3" cols="2" style="background: rgba(255, 255, 255, 0.3); border-radius: 20px">
@@ -91,7 +91,7 @@
 <script setup lang="ts">
 import {defineEmits, inject, onMounted, ref, Ref} from 'vue'
 import { Phrase, PhraseUnit } from '@/views/dagOther/PhraseStructure.vue'
-import {pushRouter} from "@/data"
+import {pushRouter, textEmphasisColor} from "@/data"
 
 let {composerId, updateComposerId}: any = inject("composerId")
 let {melodyId, updateMelodyId}: any = inject("melodyId")

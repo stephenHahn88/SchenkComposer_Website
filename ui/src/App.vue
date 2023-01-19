@@ -95,6 +95,7 @@ let username = ref("Anonymous")
 let composerId = ref("")
 let melodyId = ref("")
 let currPage = ref("/")
+let tutorialOpen = ref(false)
 
 function updateUsername(newUsername) {
   username.value = newUsername
@@ -108,13 +109,16 @@ function updateMelodyId(newMelodyId) {
 function updateCurrPage(newPage) {
   currPage.value = newPage
 }
+function updateTutorialOpen(newTutorialOpen) {
+  tutorialOpen.value = newTutorialOpen
+}
 
 provide("username", {username, updateUsername})
 provide("composerId", {composerId, updateComposerId})
 provide("melodyId", {melodyId, updateMelodyId})
 provide("currPage", {currPage, updateCurrPage})
+provide("tutorialOpen", {tutorialOpen, updateTutorialOpen})
 
-let tutorialOpen = ref(false)
 
 let progressSteps = ref([
     "Phrase Structure",

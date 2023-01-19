@@ -1,22 +1,34 @@
 <template>
   <div>
-    <h1>Harmonic Rhythm</h1>
+    <b-row>
+      <h1>Harmonic Rhythm</h1>
+    </b-row>
+    <b-row class="mb-5">
+      <h2>Determine <span :style="`color: ${textEmphasisColor}`">when the harmony changes</span> in your melody. Be sure to <span :style="`color: ${textEmphasisColor}`">fill in each tab</span> (one for each subphrase)</h2>
+    </b-row>
     <b-tabs
         content-class="mt-3"
-        fill
+        align="center"
         pills
         no-fade
         style="font-size: 32px"
     >
       <b-tab
           v-for="letter in ['a','b','c','d']"
-          :title="letter.toUpperCase()"
+          :title="`<==${letter.toUpperCase()}==>`"
           v-if="hypermeter[letter] > 0"
       >
         <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
-          <b-button variant="warning" @click="backspace(letter)" class="m-2">&#8592</b-button>
+          <b-button variant="warning" @click="backspace(letter)" class="m-2">
+            &#8592
+          </b-button>
           <div :id="`boo_${letter}`" style="overflow: auto;"></div>
           <div class="mt-3">
+            <QuestionHover
+                id="question-rhythm-buttons"
+                title="Rhythmic Buttons"
+                text="The following buttons fill a measure of time. Longer note values are recommended, especially in the measure before a cadence, but there are no wrong answers!"
+            ></QuestionHover>
             <b-button
                 v-for="rhythm in possibleRhythms[meter]"
                 v-on:click="placeNotes(rhythm, letter)"
@@ -54,8 +66,9 @@
 
 <script setup>
 import {onMounted, ref, inject} from 'vue'
-import {_parseRhythms, pushRouter} from "@/data";
+import {_parseRhythms, pushRouter, textEmphasisColor} from "@/data";
 import Vex from 'vexflow'
+import QuestionHover from "@/components/QuestionHover.vue";
 
 const { Renderer, Stave, Formatter, StaveNote, Dot } = Vex.Flow;
 
@@ -68,17 +81,17 @@ let {currPage, updateCurrPage} = inject("currPage")
 // TODO: gather from data
 let possibleRhythms = {
   //Simple subdivision
-  "2/2": ['𝅗𝅥 𝅗𝅥', '𝅝'],
-  "3/2": ['𝅗𝅥 𝅗𝅥 𝅗𝅥', '𝅝.', '𝅗𝅥 𝅗𝅥', '𝅗𝅥 𝅗𝅥'],
-  "4/2": ['𝅗𝅥 𝅗𝅥 𝅗𝅥 𝅗𝅥', '𝅝', '𝅝 𝅝', '𝅝. 𝅗𝅥', '𝅝 𝅗𝅥 𝅗𝅥'],
+  "2/2": ['𝅝', '𝅗𝅥 𝅗𝅥'],
+  "3/2": ['𝅝.', '𝅗𝅥 𝅗𝅥', '𝅗𝅥 𝅗𝅥', '𝅗𝅥 𝅗𝅥 𝅗𝅥'],
+  "4/2": ['𝅝', '𝅝 𝅝', '𝅝. 𝅗𝅥', '𝅝 𝅗𝅥 𝅗𝅥', '𝅗𝅥 𝅗𝅥 𝅗𝅥 𝅗𝅥'],
 
-  "2/4": ['♩ ♩', '𝅗𝅥'],
-  "3/4": ['♩ ♩ ♩', '𝅗𝅥.', '𝅗𝅥 ♩', '♩ 𝅗𝅥'],
-  "4/4": ['♩ ♩ ♩ ♩', '𝅝', '𝅗𝅥 𝅗𝅥', '𝅗𝅥. ♩', '𝅗𝅥 ♩ ♩'],
+  "2/4": ['𝅗𝅥', '♩ ♩'],
+  "3/4": ['𝅗𝅥.', '𝅗𝅥 ♩', '♩ 𝅗𝅥', '♩ ♩ ♩'],
+  "4/4": ['𝅝', '𝅗𝅥 𝅗𝅥', '𝅗𝅥. ♩', '𝅗𝅥 ♩ ♩', '♩ ♩ ♩ ♩'],
 
-  "2/8": ['♪ ♪', '♩'],
-  "3/8": ['♪ ♪ ♪', '♩.', '♩ ♪', '♪ ♩'],
-  "4/8": ['♪ ♪ ♪ ♪', '𝅗𝅥', '♩ ♩', '♩. ♪', '♩ ♪ ♪'],
+  "2/8": ['♩', '♪ ♪'],
+  "3/8": ['♩.', '♩ ♪', '♪ ♩', '♪ ♪ ♪'],
+  "4/8": ['𝅗𝅥', '♩ ♩', '♩. ♪', '♩ ♪ ♪', '♪ ♪ ♪ ♪'],
 
   //Compound subdivision
   "6/2": ['𝅜.', '𝅝. 𝅝.'],
@@ -244,7 +257,7 @@ async function saveAll() {
 
 
 <style scoped>
-h1 {
+h1, h2 {
   color: white;
 }
 
