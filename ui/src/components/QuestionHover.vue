@@ -11,7 +11,9 @@
         placement="top"
     >
       <template #title>{{customTitle}}</template>
-      {{customText}}
+      <ul class="p-3" style="font-size: 16px;">
+        <li v-for="text in customText">{{text}}</li>
+      </ul>
     </b-popover>
   </b-container>
 </template>

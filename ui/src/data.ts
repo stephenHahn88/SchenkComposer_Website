@@ -2,6 +2,9 @@ import * as Tone from "tone";
 import {Dot, StaveNote} from "vexflow";
 import {router} from "@/main"
 
+
+export let textEmphasisColor = 'rgb(200, 50, 255)'
+
 export type Harmony = "I" | "ii" | "iii" | "IV" | "V" | "vi" | "vii"
 
 export interface ProductionRule {

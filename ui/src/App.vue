@@ -11,9 +11,29 @@
         >
       </b-navbar-brand>
       <b-navbar-brand>
-        <b-button variant="success" @click="createNewMelody">
+        <b-button
+            variant="success"
+            @click="createNewMelody"
+            class="m-1"
+        >
           Create New Melody Skeleton
         </b-button>
+        <b-button
+            v-b-toggle.collapse-tutorial
+            variant="light"
+            v-if="!tutorialOpen"
+            @click="tutorialOpen = true"
+            class="m-1"
+            style="width: 180px;"
+        >Show Tutorial</b-button>
+        <b-button
+            v-b-toggle.collapse-tutorial
+            variant="light"
+            v-if="tutorialOpen"
+            @click="tutorialOpen = false"
+            class="m-1"
+            style="width: 180px;"
+        >Hide Tutorial</b-button>
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
@@ -48,12 +68,14 @@
 <!--      TUTORIAL-->
       <b-col class="">
         <b-container class="overflow-auto" style="height: 500px;">
-          <b-container class="p-5 black-background radius-30">
-            <h1>Tutorial</h1>
-            <router-view
-                name="tutorial"
-            />
-          </b-container>
+          <b-collapse id="collapse-tutorial">
+            <b-container class="p-5 black-background radius-30">
+              <h1>Tutorial</h1>
+              <router-view
+                  name="tutorial"
+              />
+            </b-container>
+          </b-collapse>
         </b-container>
       </b-col>
     </b-row>
@@ -75,6 +97,7 @@ let username = ref("Anonymous")
 let composerId = ref("")
 let melodyId = ref("")
 let currPage = ref("/")
+let tutorialOpen = ref(false)
 
 function updateUsername(newUsername) {
   username.value = newUsername
@@ -88,11 +111,16 @@ function updateMelodyId(newMelodyId) {
 function updateCurrPage(newPage) {
   currPage.value = newPage
 }
+function updateTutorialOpen(newTutorialOpen) {
+  tutorialOpen.value = newTutorialOpen
+}
 
 provide("username", {username, updateUsername})
 provide("composerId", {composerId, updateComposerId})
 provide("melodyId", {melodyId, updateMelodyId})
 provide("currPage", {currPage, updateCurrPage})
+provide("tutorialOpen", {tutorialOpen, updateTutorialOpen})
+
 
 let progressSteps = ref([
     "Phrase Structure",

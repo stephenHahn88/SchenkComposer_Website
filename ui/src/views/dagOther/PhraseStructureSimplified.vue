@@ -2,9 +2,15 @@
   <div>
     <b-container text-center>
       <b-row>
-        <b-col cols="10">
-          <h1>Phrase Options</h1>
-        </b-col>
+        <h1>Phrase Options</h1>
+      </b-row>
+      <b-row class="mb-5">
+        <h2>Choose what <span :style="`color: ${textEmphasisColor}`">type of phrase</span> your melody should build into</h2>
+      </b-row>
+      <!-- PHRASE TYPES -->
+<!--      <h2>Subphrases</h2>-->
+      <b-row>
+        <b-col cols="10"></b-col>
         <b-col>
           <b-button
               id="erase"
@@ -16,14 +22,29 @@
           </b-button>
         </b-col>
       </b-row>
-      <!-- PHRASE TYPES -->
-<!--      <h2>Subphrases</h2>-->
       <b-row>
         <b-col>
-          <QuestionHover id="question1" title="Sentence" text="Create a melody based on the 'sentence' phrase structure (a a b [cadence])"></QuestionHover>
+          <QuestionHover
+              id="question1"
+              title="Sentence"
+              :text="[
+                  `A sentence consists of two 'basic ideas' and a 'continuation'`,
+                  `It takes the form of 'a a b' where 'a' represents the basic idea and 'b' represents the continuation`,
+                  `Usually, the 'b' subphrase is twice as long as an individual 'a' section, creating a length ratio of 1:1:2`
+              ]"
+          ></QuestionHover>
         </b-col>
         <b-col>
-          <QuestionHover id="question2" title="Period" text="Create a melody based on the 'period' phrase structure (a [cadence] b [cadence])"></QuestionHover>
+          <QuestionHover
+              id="question2"
+              title="Period"
+              :text="[
+                  `A period consists of an 'antecedent' and a 'consequent' (or 'a' and 'b' here)`,
+                  `Both subphrases ('a' and 'b') are followed by a cadence/phrase ending`,
+                  `The phrase ending for 'b' is 'stronger,' meaning it feels more final or complete`,
+                  `Most often, the 'a' and 'b' sections are the same length`
+              ]"
+          ></QuestionHover>
         </b-col>
       </b-row>
       <b-row>
@@ -78,7 +99,7 @@
 <script setup lang="ts">
 import {computed, defineEmits, ref, Ref, onMounted, inject, watch} from 'vue';
 import {BButton} from "bootstrap-vue";
-import {pushRouter} from "@/data"
+import {pushRouter, textEmphasisColor} from "@/data"
 import QuestionHover from "@/components/QuestionHover.vue"
 
 const emit = defineEmits(['psanimate'])

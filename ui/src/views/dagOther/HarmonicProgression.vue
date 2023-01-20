@@ -5,6 +5,15 @@
         <h1>Harmonic Progression</h1>
       </b-col>
     </b-row>
+    <b-row class="mb-5">
+      <b-col>
+        <h2>
+          <span :style="`color: ${textEmphasisColor}`">Fill out the transition matrix</span> and have SchenkComposer
+          <span :style="`color: ${textEmphasisColor}`">generate a harmonic progression</span> for you.
+          Or manually provide your own harmonic progressions.
+        </h2>
+      </b-col>
+    </b-row>
     <b-row>
 <!--      TRANSITION MATRIX BLOCK-->
       <b-col
@@ -21,7 +30,12 @@
             <b-container style="width: 740px; border-radius: 10px;">
               <b-row>
                 <b-col class="mt-3">
-                  <b-button variant="danger" @click="clear">X</b-button>
+                  <b-button
+                      class="ml-3 mb-2"
+                      variant="danger"
+                      @click="clear"
+                      style="width: 40px; height: 40px"
+                  >X</b-button>
                 </b-col>
                 <b-col
                     v-for="(harmony_label, i) in harmonies"
@@ -33,8 +47,13 @@
                   >{{harmony_label}}</p>
                 </b-col>
               </b-row>
-              <b-row v-for="(harmony_from, i) in harmonies">
-                <b-col style="text-align: center">
+              <b-row
+                  v-for="(harmony_from, i) in harmonies"
+              >
+                <b-col
+                    style="text-align: center"
+                    class="mt-2"
+                >
                   <p
                       :style='{ backgroundColor: colors[i], color: "white", borderRadius: "30px"}'
                   >{{harmony_from}}</p>
@@ -66,19 +85,27 @@
           style="border-radius: 10px; background-color: rgba(0, 0, 0, 0.3); overflow: auto"
       >
         <b-container style="width: 700px">
-          <b-row class="mb-2">
-            <b-col>
-              <h2>Generation</h2>
+          <b-row class="mb-5">
+            <b-col cols="2">
+              <h2>Harmonic Progression</h2>
             </b-col>
-            <b-col></b-col>
-            <b-col>
+            <b-col class="ml-5 mt-3">
+              <QuestionHover
+                id="question-progression"
+                title="Harmonic Progression"
+                :text="[
+                    `hi`
+                ]"
+              ></QuestionHover>
+            </b-col>
+            <b-col cols="3">
               <b-button
                   variant="warning"
                   @click="backspace()"
                   class="font-20 full-width"
               >&#8592</b-button>
             </b-col>
-            <b-col>
+            <b-col cols="2">
               <b-button
                   variant="danger"
                   @click="erase()"
@@ -123,16 +150,16 @@
               class="mt-3 mr-3"
               style="justify-content: end"
           >
-            <b-button
-                class="m-2"
-                variant="info"
-                @click="handleGenerate(_findActiveLetter())"
-            >Generate Row</b-button>
+<!--            <b-button-->
+<!--                class="m-2"-->
+<!--                variant="info"-->
+<!--                @click="handleGenerate(_findActiveLetter())"-->
+<!--            >Generate Row</b-button>-->
             <b-button
               class="m-2"
               variant="info"
               @click="generateAll"
-            >Generate All</b-button>
+            >Generate All Using Transition Matrix</b-button>
 <!--            <b-button-->
 <!--                class="m-2"-->
 <!--                :variant="saveProgressionSuccess"-->
@@ -168,7 +195,7 @@
 <!--      MARKOV CHAIN GRAPH-->
     <b-row class="ml-2 mt-5 mb-2">
       <b-button @click="redraw" style="background-color: purple">Refresh</b-button>
-      <h2 class="ml-5">Play around with the nodes below!</h2>
+      <h2 class="ml-5">Play around with the nodes of your matrix below!</h2>
     </b-row>
     <b-row
         class="mx-2 mb-2"
@@ -179,13 +206,14 @@
 </template>
 
 <script setup>
-import {ref, onMounted, watch, computed, inject, defineEmits, reactive} from "vue";
+import {ref, onMounted, watch, computed, inject, defineEmits, reactive, provide} from "vue";
 import _ from "lodash";
 import { ForceSimulation } from "@livereader/graphly-d3";
 import "@livereader/graphly-d3/style.css";
 import Hexagon from "../../static/hexagon"
 import PresetMatrices from "@/views/dagOther/HPComponents/PresetMatrices.vue";
-import {pushRouter, _findPhraseEndHarmonies} from "@/data";
+import {pushRouter, _findPhraseEndHarmonies, textEmphasisColor} from "@/data";
+import QuestionHover from "@/components/QuestionHover.vue"
 
 const emit = defineEmits(['mgharmonyanimate'])
 
@@ -198,6 +226,7 @@ let openHarmonies = ref(['V'])
 let closeHarmonies = ref(['I'])
 let colors = ref(['green', 'navy', 'rgb(255, 130, 200)', 'orange', 'red', 'purple', 'black'])
 
+provide('harmonies', harmonies)
 
 // Transition matrix values
 let transitions = reactive([])
@@ -286,7 +315,6 @@ async function getSavedMatrix() {
       transitions[i][j] = parseFloat(results.matrix[i][j])
     }
   }
-  saveMatrixSuccess.value = "success"
 }
 
 // Get previously saved harmonic progressions
@@ -297,7 +325,6 @@ async function getSavedProgressions() {
   for (let letter in sequences.value) {
     sequences.value[letter]["sequenceReverse"] = progressions[letter].slice().reverse()
   }
-  saveProgressionSuccess.value = "success"
 }
 
 // Get preset matrix from model
