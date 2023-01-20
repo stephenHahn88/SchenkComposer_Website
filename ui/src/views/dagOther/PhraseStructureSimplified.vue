@@ -24,10 +24,27 @@
       </b-row>
       <b-row>
         <b-col>
-          <QuestionHover id="question1" title="Sentence" text="Create a melody based on the 'sentence' phrase structure (a a b [cadence])"></QuestionHover>
+          <QuestionHover
+              id="question1"
+              title="Sentence"
+              :text="[
+                  `A sentence consists of two 'basic ideas' and a 'continuation'`,
+                  `It takes the form of 'a a b' where 'a' represents the basic idea and 'b' represents the continuation`,
+                  `Usually, the 'b' subphrase is twice as long as an individual 'a' section, creating a length ratio of 1:1:2`
+              ]"
+          ></QuestionHover>
         </b-col>
         <b-col>
-          <QuestionHover id="question2" title="Period" text="Create a melody based on the 'period' phrase structure (a [cadence] b [cadence])"></QuestionHover>
+          <QuestionHover
+              id="question2"
+              title="Period"
+              :text="[
+                  `A period consists of an 'antecedent' and a 'consequent' (or 'a' and 'b' here)`,
+                  `Both subphrases ('a' and 'b') are followed by a cadence/phrase ending`,
+                  `The phrase ending for 'b' is 'stronger,' meaning it feels more final or complete`,
+                  `Most often, the 'a' and 'b' sections are the same length`
+              ]"
+          ></QuestionHover>
         </b-col>
       </b-row>
       <b-row>

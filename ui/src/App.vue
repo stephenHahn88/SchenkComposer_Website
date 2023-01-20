@@ -24,6 +24,7 @@
             v-if="!tutorialOpen"
             @click="tutorialOpen = true"
             class="m-1"
+            style="width: 180px;"
         >Show Tutorial</b-button>
         <b-button
             v-b-toggle.collapse-tutorial
@@ -31,6 +32,7 @@
             v-if="tutorialOpen"
             @click="tutorialOpen = false"
             class="m-1"
+            style="width: 180px;"
         >Hide Tutorial</b-button>
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>

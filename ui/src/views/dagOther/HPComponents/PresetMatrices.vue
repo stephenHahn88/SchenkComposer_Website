@@ -6,10 +6,13 @@
         <QuestionHover
           id="question-transition-matrix"
           title="Harmonic Transition Matrix"
-          :text="`This square matrix defines the probabilities from one harmony to another.
-                The labels on the left are the 'from' harmonies. The labels on top are 'to' harmonies.
-                For instance, the 2nd block in the 1st row represents the proportion of times the music goes from a '${labels[0]}' to a '${labels[1]}'.
-                You don't need to worry about having all rows sum to 1 - we do it for you!`"
+          :text="[
+                  `This square matrix defines the probabilities from one harmony to another`,
+                  `The labels on the left are the 'from' harmonies`,
+                  `The labels on top are 'to' harmonies`,
+                  `For instance, the 2nd block in the 1st row represents the proportion of times the music goes from a '${labels[0]}' to a '${labels[1]}'`,
+                  `You don't need to worry about having all rows sum to 1 - we do it for you!`
+                ]"
         ></QuestionHover>
       </b-col>
       <b-col
@@ -25,8 +28,10 @@
             <QuestionHover
                 id="question-preset-matrices"
                 title="Preset Matrices"
-                text="The following buttons each load a transition matrix that fits a particular style.
-            They are a great starting place if you aren't too familiar with harmony"
+                :text="[
+                        `The following buttons each load a transition matrix that fits a particular style`,
+                        `They are a great starting place if you aren't too familiar with harmony`
+                       ]"
             ></QuestionHover>
           </b-col>
         </b-row>

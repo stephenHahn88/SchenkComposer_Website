@@ -9,7 +9,21 @@
     <b-row>
       <b-col class="ml-2 p-3" cols="2" style="background: rgba(255, 255, 255, 0.3); border-radius: 20px">
         <b-row>
-          <h3 class="ml-3 mb-5">Meter:</h3>
+          <b-col cols="4">
+            <h3 class="ml-3 mb-5">Meter</h3>
+          </b-col>
+          <b-col class="ml-1 mt-1">
+            <QuestionHover
+              id="question-meter"
+              title="Meter/Time Signature"
+              :text="[
+                      'These two numbers describe the rhythmic content of each musical measure',
+                      'The top number describes the number of beats in each measure',
+                      'the bottom describes what kind of note gets the beat',
+                      'For instance, 3/4 means that there are 3 beats per measure, and a quarter note acts as one beat'
+                    ]"
+            ></QuestionHover>
+          </b-col>
         </b-row>
         <b-row>
           <b-col>
@@ -35,8 +49,22 @@
       </b-col>
 <!--      HYPERMETER-->
       <b-col class="ml-5 p-3" style="background: rgba(255, 255, 255, 0.3); border-radius: 20px">
-        <b-row>
-          <h3 class="ml-3 mb-5">Hypermeter:</h3>
+        <b-row class="ml-2 mb-5">
+          <b-col cols="1">
+            <h3>Hypermeter</h3>
+          </b-col>
+          <b-col class="ml-5 mt-1">
+            <QuestionHover
+              id="question-hypermeter"
+              title="Hypermeter"
+              :text="[
+                  `Hypermeter describes a 'deeper' level of rhythm`,
+                  `Just like meter groups beats and subdivisions, hypermeter groups measures together`,
+                  `If you chose a sentence (a a b [cadence]), the most common patterns are (a:1 a:1 b:2) or (a:2 a:2 b:4)`,
+                  `If you chose a period (a [cadence] b [cadence]), the most common patterns are (a:2 b:2) or (a:4 b:4)`
+              ]"
+            ></QuestionHover>
+          </b-col>
         </b-row>
         <b-row>
           <b-col
@@ -92,6 +120,7 @@
 import {defineEmits, inject, onMounted, ref, Ref} from 'vue'
 import { Phrase, PhraseUnit } from '@/views/dagOther/PhraseStructure.vue'
 import {pushRouter, textEmphasisColor} from "@/data"
+import QuestionHover from "@/components/QuestionHover.vue";
 
 let {composerId, updateComposerId}: any = inject("composerId")
 let {melodyId, updateMelodyId}: any = inject("melodyId")

@@ -30,7 +30,12 @@
             <b-container style="width: 740px; border-radius: 10px;">
               <b-row>
                 <b-col class="mt-3">
-                  <b-button variant="danger" @click="clear">X</b-button>
+                  <b-button
+                      class="ml-3 mb-2"
+                      variant="danger"
+                      @click="clear"
+                      style="width: 40px; height: 40px"
+                  >X</b-button>
                 </b-col>
                 <b-col
                     v-for="(harmony_label, i) in harmonies"
@@ -42,8 +47,13 @@
                   >{{harmony_label}}</p>
                 </b-col>
               </b-row>
-              <b-row v-for="(harmony_from, i) in harmonies">
-                <b-col style="text-align: center">
+              <b-row
+                  v-for="(harmony_from, i) in harmonies"
+              >
+                <b-col
+                    style="text-align: center"
+                    class="mt-2"
+                >
                   <p
                       :style='{ backgroundColor: colors[i], color: "white", borderRadius: "30px"}'
                   >{{harmony_from}}</p>
@@ -75,18 +85,27 @@
           style="border-radius: 10px; background-color: rgba(0, 0, 0, 0.3); overflow: auto"
       >
         <b-container style="width: 700px">
-          <b-row class="mb-2">
-            <b-col cols="8">
+          <b-row class="mb-5">
+            <b-col cols="2">
               <h2>Harmonic Progression</h2>
             </b-col>
-            <b-col>
+            <b-col class="ml-5 mt-3">
+              <QuestionHover
+                id="question-progression"
+                title="Harmonic Progression"
+                :text="[
+                    `hi`
+                ]"
+              ></QuestionHover>
+            </b-col>
+            <b-col cols="3">
               <b-button
                   variant="warning"
                   @click="backspace()"
                   class="font-20 full-width"
               >&#8592</b-button>
             </b-col>
-            <b-col>
+            <b-col cols="2">
               <b-button
                   variant="danger"
                   @click="erase()"
@@ -131,16 +150,16 @@
               class="mt-3 mr-3"
               style="justify-content: end"
           >
-            <b-button
-                class="m-2"
-                variant="info"
-                @click="handleGenerate(_findActiveLetter())"
-            >Generate Row</b-button>
+<!--            <b-button-->
+<!--                class="m-2"-->
+<!--                variant="info"-->
+<!--                @click="handleGenerate(_findActiveLetter())"-->
+<!--            >Generate Row</b-button>-->
             <b-button
               class="m-2"
               variant="info"
               @click="generateAll"
-            >Generate All</b-button>
+            >Generate All Using Transition Matrix</b-button>
 <!--            <b-button-->
 <!--                class="m-2"-->
 <!--                :variant="saveProgressionSuccess"-->
@@ -296,7 +315,6 @@ async function getSavedMatrix() {
       transitions[i][j] = parseFloat(results.matrix[i][j])
     }
   }
-  saveMatrixSuccess.value = "success"
 }
 
 // Get previously saved harmonic progressions

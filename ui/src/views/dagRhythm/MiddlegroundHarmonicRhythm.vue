@@ -27,7 +27,10 @@
             <QuestionHover
                 id="question-rhythm-buttons"
                 title="Rhythmic Buttons"
-                text="The following buttons fill a measure of time. Longer note values are recommended, especially in the measure before a cadence, but there are no wrong answers!"
+                :text="[
+                        `The following buttons fill a measure of time`,
+                        `Longer note values are recommended, especially in the measure before a cadence`
+                      ]"
             ></QuestionHover>
             <b-button
                 v-for="rhythm in possibleRhythms[meter]"

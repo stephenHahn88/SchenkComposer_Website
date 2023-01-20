@@ -1,6 +1,16 @@
+const schema = {
+    type: "object",
+    properties: {
+        title: {type: "string"},
+        color: {type: "string"}
+    },
+    required: ["title", "color"]
+}
+
 export default {
     shapeSize: 120,
     shapeBuilder: shapeBuilder,
+    shapePayload: schema
 };
 
 function shapeBuilder(data, TemplateAPI) {

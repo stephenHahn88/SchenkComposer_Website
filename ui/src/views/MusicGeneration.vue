@@ -54,7 +54,7 @@
       <b-row class="m-1">
         <b-col class = "modal-container">
             <h6> Help us improve this website! We'd love to hear your feedback
-            <a href="https://duke.qualtrics.com/jfe/form/SV_ehOrmZJcLQfuq6q"> here </a>
+            <a target="_blank" rel="noopener noreferrer" href="https://duke.qualtrics.com/jfe/form/SV_ehOrmZJcLQfuq6q"> here </a>
             </h6>
         </b-col>
       </b-row>
