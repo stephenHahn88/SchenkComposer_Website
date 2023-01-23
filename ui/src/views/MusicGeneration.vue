@@ -103,8 +103,8 @@ async function generateMelody() {
   let mgr = await getMiddlegroundRhythm(ps)
   let hp = await getHarmonicProgression(mgr, ps)
 
-  let {notes, harmonies} = await generateFromHarmony(ps, mgr, hp)
-  playNotesAndHarmony(notes, harmonies, tempo.value)
+  let {notes, middle, harmonies} = await generateFromHarmony(ps, mgr, hp)
+  playNotesAndHarmony(notes, middle, harmonies, tempo.value)
   loading.value = false
   await saveMelody(notes, harmonies)
   // Once the melody has been saved, open the melody survey
@@ -205,6 +205,7 @@ async function generateFromHarmony(ps, mgr, hp) {
 
   let storedPhraseUnits = {}
   let notes = []
+  let middle = []
   let harmonies = []
   for (let letter of phraseFlat) {
     // If phrase unit has already been generated, append more of the same
@@ -228,6 +229,7 @@ async function generateFromHarmony(ps, mgr, hp) {
 
     // Add new notes and harmonies
     notes = notes.concat(mel.notes)
+    middle = notes.concat(mel.middle)
     harmonies = harmonies.concat(mel.harmony)
 
     // Store new notes and harmonies for repetitions
@@ -235,7 +237,7 @@ async function generateFromHarmony(ps, mgr, hp) {
     storedPhraseUnits[letter]["notes"] = mel.notes
     storedPhraseUnits[letter]["harmonies"] = mel.harmony
   }
-  return {"notes": notes, "harmonies": harmonies}
+  return {"notes": notes, "middle": middle, "harmonies": harmonies}
 }
 
 async function saveMelody(notes, harmonies) {

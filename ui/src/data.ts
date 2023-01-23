@@ -68,7 +68,7 @@ const sampler = new Tone.Sampler({
     baseUrl: "https://tonejs.github.io/audio/salamander/",
 }).toDestination();
 
-export function playNotesAndHarmony(notes: string[], harmonies: string[], tempo: number = 120) {
+export function playNotesAndHarmony(notes: string[], middle: string[], harmonies: string[], tempo: number = 120) {
     Tone.loaded().then(() => {
         const now = Tone.now()
 
@@ -76,6 +76,13 @@ export function playNotesAndHarmony(notes: string[], harmonies: string[], tempo:
         let curr = now
         for (let note of notes) {
             let noteQL = _triggerNotes(note, curr, tempo)
+            curr += noteQL
+        }
+
+        // PLACE ARPEGGIOS
+        curr = now
+        for (let mid of middle) {
+            let noteQL = _triggerNotes(mid, curr, tempo)
             curr += noteQL
         }
 
@@ -88,6 +95,7 @@ export function playNotesAndHarmony(notes: string[], harmonies: string[], tempo:
             }
             curr += noteQL
         }
+
     })
 }
 
