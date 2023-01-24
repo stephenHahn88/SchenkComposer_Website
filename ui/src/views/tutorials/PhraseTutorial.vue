@@ -11,18 +11,18 @@
       <b-tab title="Website">
         <b-row style="overflow: auto">
           <b-list-group>
-            <b-list-group-item variant="info">Press a series of letter buttons to develop a sequence of phrase units.</b-list-group-item>
-            <b-list-group-item variant="info">You must have at least one cadence, including one at the very end.</b-list-group-item>
-            <b-list-group-item variant="danger">The red X button clears your sequence.</b-list-group-item>
+            <b-list-group-item variant="info">Press "Sentence" or "Period" to choose your phrase type.</b-list-group-item>
+            <b-list-group-item variant="danger">The red X button clears your phrase choice.</b-list-group-item>
 <!--            <b-list-group-item variant="warning">The yellow back arrow removes the last phrase unit.</b-list-group-item>-->
-            <b-list-group-item variant="primary">The Generate button asks SchenkComposer to generate the phrase structure for you. This replaces whatever is currently typed in.</b-list-group-item>
-            <b-list-group-item variant="success">The Save button saves the current input for when you return to the page. <span style="color: red">This is necessary to move on to the next section</span>.</b-list-group-item>
+<!--            <b-list-group-item variant="primary">The Generate button asks SchenkComposer to generate the phrase structure for you. This replaces whatever is currently typed in.</b-list-group-item>-->
+            <b-list-group-item variant="success">The "Save and Continue" button saves the current input for when you return to the page. <span style="color: red">This is necessary to move on to the next section</span>.</b-list-group-item>
+            <b-list-group-item variant="warning">The save button will not work until you have selected an option</b-list-group-item>
           </b-list-group>
         </b-row>
       </b-tab>
       <b-tab title="Music">
         <b-row>
-          <img src="src/static/tutorial/form_and_schenker.PNG" class="my-2 rounded">
+          <img src="../../static/tutorial/form_and_schenker.PNG" class="my-2 rounded">
           <b-list-group>
             <b-list-group-item variant="success">Form analysis is a field of study that breaks a musical piece into constituent sections based on similarities in rhythm, melody, and harmony.</b-list-group-item>
             <b-list-group-item variant="info">Generally, sections are broken into phrases, which may be broken further into subphrases (or motifs).</b-list-group-item>

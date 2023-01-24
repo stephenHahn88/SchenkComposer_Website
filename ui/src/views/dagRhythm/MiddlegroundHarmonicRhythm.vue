@@ -4,7 +4,7 @@
       <h1>Harmonic Rhythm</h1>
     </b-row>
     <b-row class="mb-5">
-      <h2>Determine <span :style="`color: ${textEmphasisColor}`">when the harmony changes</span> in your melody. Be sure to <span :style="`color: ${textEmphasisColor}`">fill in each tab</span> (one for each subphrase)</h2>
+      <h2>Determine <span :style="`color: ${textEmphasisColor}`">when the harmony changes</span> in your melody. Be sure to <span :style="`color: ${textEmphasisColor}`" class="animate-color">fill in each tab above the music</span> (one for each subphrase)</h2>
     </b-row>
     <b-tabs
         content-class="mt-3"
@@ -18,6 +18,7 @@
           :title="`<==${letter.toUpperCase()}==>`"
           v-if="hypermeter[letter] > 0"
       >
+
         <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
           <b-button variant="warning" @click="backspace(letter)" class="m-2">
             &#8592
@@ -35,14 +36,14 @@
             <b-button
                 v-for="rhythm in possibleRhythms[meter]"
                 v-on:click="placeNotes(rhythm, letter)"
-                class="mx-3"
+                class="mb-3 ml-3 pl-5"
                 variant="primary"
             >
               <img
                   class="p-0 m-0"
                   v-for="r in rhythm.split(' ')"
                   :src="`src/static/floatingNotes/${rhythmToSVGName[r]}.svg`" :alt="rhythm"
-                  style="width: 96px; filter: invert(100%)"
+                  style="width: 52px; filter: invert(100%)"
 
               >
             </b-button>
@@ -192,7 +193,7 @@ async function getSavedRhythm() {
 }
 
 function drawStaves() {
-  defaultWidth = 800
+  defaultWidth = 440
   let rendererSize = defaultWidth * 6
   let xPart = defaultWidth / 4
   let height = 0
@@ -212,10 +213,10 @@ function drawStaves() {
     let measures_l = []
     for (let i = 0; i < totalMeasures; i++) {
       if (i===0) {
-        measures_l[i] = new Stave(xPart * i, height, xPart + 40)
+        measures_l[i] = new Stave(xPart * i, height, xPart + 50)
         measures_l[i].addClef('percussion').addTimeSignature(meter.value)
       } else {
-        measures_l[i] = new Stave(40 + xPart * i, height, xPart)
+        measures_l[i] = new Stave(50 + xPart * i, height, xPart)
         measures_l[i].measure = i + 1
       }
       measures_l[i].setContext(contexts[l]).draw()
@@ -287,6 +288,39 @@ h1, h2 {
 .letter-group {
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: 10px;
+}
+
+
+/*ADAPTED FROM https://alvarotrigo.com/blog/css-text-animations/*/
+.animate-color {
+  text-transform: uppercase;
+  background-image: linear-gradient(
+      -225deg,
+      #c832ff 0%,
+      #c832ff 35%,
+      #ffffff 40%,
+      #ee11aa 50%,
+      #ffffff 60%,
+      #c832ff 65%,
+      #c832ff 100%
+  );
+  background-size: auto auto;
+  background-clip: border-box;
+  background-size: 200% auto;
+  color: #fff;
+  background-clip: text;
+  text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textclip 1s linear infinite reverse;
+  display: inline-block;
+  /*font-size: 190px;*/
+}
+
+@keyframes textclip {
+  to {
+    background-position: 200% center;
+  }
 }
 
 </style>
