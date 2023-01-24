@@ -29,7 +29,10 @@
             class="m-1"
             @click="placeNextNote(availableNote)"
             style="width: 100%"
-        ><strong>{{availableNote.split('/').join("")}}</strong><img :src="getSrc(availableNote)" style="width:128px;"></b-button>
+        >
+          <strong>{{availableNote.split('/').join("")}}</strong>
+          <img :src="getSrc(availableNote)" style="width:128px;">
+        </b-button>
       </b-col>
       <b-col>
         <b-row><b-button variant="danger" class="mx-3 mb-3" style="width: 20%" @click="erase()">X</b-button></b-row>
