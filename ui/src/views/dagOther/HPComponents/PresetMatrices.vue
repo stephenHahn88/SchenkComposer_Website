@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <b-row class="mb-5" style="height: 100px; width: 800px">
+    <b-row class="mb-5" style="height: 120px; width: 800px">
       <b-col cols="2"><h2>Transition Matrix</h2></b-col>
       <b-col class="ml-2 mt-2">
         <QuestionHover
@@ -16,7 +16,7 @@
         ></QuestionHover>
       </b-col>
       <b-col
-          class="mr-3 white-background"
+          class="mr-5 pr-0 white-background"
           style="border-radius: 10px;"
           cols="7"
       >
@@ -47,6 +47,7 @@
           </b-button>
         </b-row>
       </b-col>
+      <b-col></b-col>
     </b-row>
   </b-container>
 </template>

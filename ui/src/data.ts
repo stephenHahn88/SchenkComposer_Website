@@ -25,17 +25,29 @@ export function _parseRhythms(rhythms: string) {
     let finalRhythms: StaveNote[] = []
     glyphs.forEach((glyph) => {
         switch (glyph) {
+            case '1/8':
             case '♪': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '8'})); break;
+            case '1/8.':
             case '♪.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '8'}))); break;
+            case '1/4':
             case '♩': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '4'})); break;
+            case '1/4.':
             case '♩.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '4'}))); break;
+            case '1/2':
             case '𝅗𝅥': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '2'})); break;
+            case '1/2.':
             case '𝅗𝅥.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '2'}))); break;
+            case '1':
             case '𝅝': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1'})); break;
+            case '1.':
             case '𝅝.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1'}))); break;
+            case '2':
             case '𝅜': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1/2'})); break;
+            case '2.':
             case '𝅜.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1/2'}))); break;
+            case '4':
             case '𝆷': finalRhythms.push(new StaveNote({ keys: ["b/4"], duration: '1/4'})); break;
+            case '4.':
             case '𝆷.':finalRhythms.push(_dotted(new StaveNote({ keys: ["b/4"], duration: '1/4'}))); break;
         }
     })

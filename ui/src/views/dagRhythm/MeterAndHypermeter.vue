@@ -9,8 +9,8 @@
     <b-row>
       <b-col class="ml-2 p-3" cols="2" style="background: rgba(255, 255, 255, 0.3); border-radius: 20px">
         <b-row>
-          <b-col cols="4">
-            <h3 class="ml-3 mb-5">Meter</h3>
+          <b-col cols="5">
+            <h3 class="">Meter</h3>
           </b-col>
           <b-col class="ml-1 mt-1">
             <QuestionHover
@@ -50,10 +50,10 @@
 <!--      HYPERMETER-->
       <b-col class="ml-5 p-3" style="background: rgba(255, 255, 255, 0.3); border-radius: 20px">
         <b-row class="ml-2 mb-5">
-          <b-col cols="1">
+          <b-col>
             <h3>Hypermeter</h3>
           </b-col>
-          <b-col class="ml-5 mt-1">
+          <b-col cols="8">
             <QuestionHover
               id="question-hypermeter"
               title="Hypermeter"
@@ -109,7 +109,7 @@
             @click="saveMeter"
             :variant="saveSuccess"
         >
-          Save
+          Save and Continue
         </b-button>
       </b-col>
     </b-row>

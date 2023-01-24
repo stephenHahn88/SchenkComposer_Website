@@ -17,13 +17,12 @@
     <b-row>
 <!--      TRANSITION MATRIX BLOCK-->
       <b-col
-          class="p-2"
-          cols="6"
+          class="mx-1 py-4"
           style="background-color: rgba(0, 0, 0, 0.3); border-radius: 10px; overflow: auto"
       >
         <b-container>
           <PresetMatrices
-            @get-preset-matrix="(preset) => getPresetMatrix(preset)"
+              @get-preset-matrix="(preset) => getPresetMatrix(preset)"
           ></PresetMatrices>
           <!--        MATRIX-->
           <b-row style="width: 800px">
@@ -80,11 +79,13 @@
         </b-container>
       </b-col>
 <!--      SEQUENCE GENERATION-->
+    </b-row>
+    <b-row class="mt-4">
       <b-col
-          class="mx-4 p-4"
+          class="mx-1 p-4"
           style="border-radius: 10px; background-color: rgba(0, 0, 0, 0.3); overflow: auto"
       >
-        <b-container style="width: 700px">
+        <b-container >
           <b-row class="mb-5">
             <b-col cols="2">
               <h2>Harmonic Progression</h2>
@@ -157,7 +158,7 @@
 <!--            >Generate Row</b-button>-->
             <b-button
               class="m-2"
-              variant="info"
+              variant="success"
               @click="generateAll"
             >Generate All Using Transition Matrix</b-button>
 <!--            <b-button-->

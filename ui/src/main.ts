@@ -4,12 +4,13 @@ import VueMeta from 'vue-meta'
 
 import App from '@/App.vue'
 import Home from "@/views/Home.vue"
-import HomeTutorial from "@/tutorials/HomeTutorial.vue"
+import HomeTutorial from "@/views/tutorials/HomeTutorial.vue"
 import Login from "@/views/Login.vue"
 import PhraseStructure from "@/views/dagOther/PhraseStructure.vue"
 import PhraseStructureSimplified from "@/views/dagOther/PhraseStructureSimplified.vue"
-import PhraseTutorial from "@/tutorials/PhraseTutorial.vue"
+import PhraseTutorial from "@/views/tutorials/PhraseTutorial.vue"
 import MeterAndHypermeter from "@/views/dagRhythm/MeterAndHypermeter.vue"
+import MeterTutorial from "@/views/tutorials/MeterTutorial.vue"
 import MiddlegroundHarmonicRhythm from "@/views/dagRhythm/MiddlegroundHarmonicRhythm.vue"
 import HarmonicProgression from "@/views/dagOther/HarmonicProgression.vue"
 import ForegroundMelody from "@/views/dagOther/ForegroundMelody.vue"
@@ -55,7 +56,7 @@ export const router = new VueRouter({
     },
     {
       path: "/meter-hypermeter",
-      component: MeterAndHypermeter
+      components: {default: MeterAndHypermeter, tutorial: MeterTutorial}
     },
     {
       path: "/harmonic-rhythm",

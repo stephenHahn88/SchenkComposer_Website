@@ -24,16 +24,16 @@
             v-if="!tutorialOpen"
             @click="tutorialOpen = true"
             class="m-1"
-            style="width: 180px;"
-        >Show Tutorial</b-button>
+            style="width: 220px;"
+        >Show Tutorial At Bottom</b-button>
         <b-button
             v-b-toggle.collapse-tutorial
             variant="light"
             v-if="tutorialOpen"
             @click="tutorialOpen = false"
             class="m-1"
-            style="width: 180px;"
-        >Hide Tutorial</b-button>
+            style="width: 220px;"
+        >Hide Tutorial At Bottom</b-button>
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
@@ -61,7 +61,9 @@
 <!--      ROUTER VIEW-->
     <b-row class="m-4 p-3 black-background radius-30">
       <b-col>
-        <router-view/>
+        <router-view
+          name="default"
+        />
       </b-col>
     </b-row>
     <b-row class="m-2">

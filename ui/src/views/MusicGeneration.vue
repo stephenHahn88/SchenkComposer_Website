@@ -53,9 +53,16 @@
       </b-row>
       <b-row class="m-1">
         <b-col class = "modal-container">
-            <h6> Help us improve this website! We'd love to hear your feedback
-            <a target="_blank" rel="noopener noreferrer" href="https://duke.qualtrics.com/jfe/form/SV_ehOrmZJcLQfuq6q"> here </a>
-            </h6>
+            <p style="color: black;">
+              Help us improve this website! We'd love to hear your feedback
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://duke.qualtrics.com/jfe/form/SV_ehOrmZJcLQfuq6q"
+              >
+                here
+              </a>
+            </p>
         </b-col>
       </b-row>
     </b-overlay>
