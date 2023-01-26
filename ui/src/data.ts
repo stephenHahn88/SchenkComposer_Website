@@ -138,6 +138,11 @@ const marimba = new Tone.Sampler({
 	baseUrl: "http://localhost:8090/src/static/samples/",
 }).toDestination();
 
+// Decrease volume switch
+const melodyVol = new Tone.Volume(-12).toDestination();
+const middleVol = new Tone.Volume(-30).toDestination();
+const harmonyVol = new Tone.Volume(-15).toDestination();
+
 export function playNotesAndHarmony(notes: string[], middle: string[], harmonies: string[], instrument: string = "piano", tempo: number = 120) {
     Tone.loaded().then(() => {
 
@@ -177,6 +182,10 @@ export function playNotesAndHarmony(notes: string[], middle: string[], harmonies
                 break;
             }
         }
+
+        sampler.connect(melodyVol);
+        middleSampler.connect(middleVol);
+        harmonySampler.connect(harmonyVol);
 
         const now = Tone.now()
 
