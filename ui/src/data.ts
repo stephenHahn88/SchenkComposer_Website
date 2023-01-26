@@ -69,7 +69,7 @@ function _dotted(staveNote: StaveNote, noteIndex = -1) {
 }
 
 // GENERATE MUSIC FROM NOTES AND HARMONIES
-const sampler = new Tone.Sampler({
+const piano = new Tone.Sampler({
     urls: {
         "C5": "C5.mp3",
         "D#4": "Ds4.mp3",
@@ -80,14 +80,138 @@ const sampler = new Tone.Sampler({
     baseUrl: "https://tonejs.github.io/audio/salamander/",
 }).toDestination();
 
-export function playNotesAndHarmony(notes: string[], harmonies: string[], tempo: number = 120) {
+const casio = new Tone.Sampler({
+    urls: {
+		A1: "A1.mp3",
+		A2: "A2.mp3",
+	},
+    release: 1,
+	baseUrl: "https://tonejs.github.io/audio/casio/",
+}).toDestination();
+
+// Audio files credit: https://github.com/nbrosowsky/tonejs-instruments/tree/master/samples
+const violin = new Tone.Sampler({
+    urls: {
+		A3: "samples_violin_A3.mp3",
+        C4: "samples_violin_C4.mp3",
+		E5: "samples_violin_E5.mp3",
+	},
+    release: 1,
+	baseUrl: "http://localhost:8090/src/static/samples/",
+}).toDestination();
+
+const cello = new Tone.Sampler({
+    urls: {
+		A3: "samples_cello_A3.mp3",
+        C4: "samples_cello_C4.mp3",
+		E4: "samples_cello_E4.mp3",
+	},
+    release: 1,
+	baseUrl: "http://localhost:8090/src/static/samples/",
+}).toDestination();
+
+const flute = new Tone.Sampler({
+    urls: {
+		A4: "samples_flute_A4.mp3",
+        C5: "samples_flute_C5.mp3",
+		E4: "samples_flute_E4.mp3",
+	},
+    release: 1,
+	baseUrl: "http://localhost:8090/src/static/samples/",
+}).toDestination();
+
+const guitar = new Tone.Sampler({
+    urls: {
+		A3: "samples_guitar-electric_A3.mp3",
+		C4: "samples_guitar-electric_C4.mp3",
+        E2: "samples_guitar-electric_E2.mp3",
+	},
+    release: 1,
+	baseUrl: "http://localhost:8090/src/static/samples/",
+}).toDestination();
+
+const saxophone = new Tone.Sampler({
+    urls: {
+		D5: "samples_saxophone_D4.mp3",
+		C6: "samples_saxophone_C5.mp3",
+        A5: "samples_saxophone_A4.mp3",
+	},
+    release: 1,
+	baseUrl: "http://localhost:8090/src/static/samples/",
+}).toDestination();
+
+const marimba = new Tone.Sampler({
+    urls: {
+		C5: "marimba_c5.wav",
+		G5: "marimba_g5.wav",
+        E4: "marimba_e4.wav",
+	},
+    release: 1,
+	baseUrl: "http://localhost:8090/src/static/samples/",
+}).toDestination();
+
+// Decrease volume switch
+const melodyVol = new Tone.Volume(-12).toDestination();
+const middleVol = new Tone.Volume(-30).toDestination();
+const harmonyVol = new Tone.Volume(-15).toDestination();
+
+export function playNotesAndHarmony(notes: string[], middle: string[], harmonies: string[], instrument: string = "piano", tempo: number = 120) {
     Tone.loaded().then(() => {
+
+        let sampler = piano
+        let middleSampler = piano
+        let harmonySampler = piano
+
+        switch(instrument) {
+            case "piano": {
+                sampler = piano;
+                middleSampler = piano;
+                harmonySampler = piano;
+                break;
+            }
+            case "casio": {
+                sampler = casio;
+                middleSampler = casio;
+                harmonySampler = casio;
+                break;
+            }
+            case "strings": {
+                sampler = violin;
+                middleSampler = violin;
+                harmonySampler = cello;
+                break;
+            }
+            case "sawtooth": {
+                sampler = saxophone;
+                middleSampler = guitar;
+                harmonySampler = casio;
+                break;
+            }
+            default: {
+                sampler = piano;
+                middleSampler = piano;
+                harmonySampler = piano;
+                break;
+            }
+        }
+
+        sampler.connect(melodyVol);
+        middleSampler.connect(middleVol);
+        harmonySampler.connect(harmonyVol);
+
         const now = Tone.now()
 
         // PLACE NOTES
         let curr = now
         for (let note of notes) {
-            let noteQL = _triggerNotes(note, curr, tempo)
+            let noteQL = _triggerNotes(note, curr, tempo, sampler)
+            curr += noteQL
+        }
+
+        // PLACE ARPEGGIOS
+        curr = now
+        for (let mid of middle) {
+            let noteQL = _triggerNotes(mid, curr, tempo, middleSampler)
             curr += noteQL
         }
 
@@ -96,14 +220,15 @@ export function playNotesAndHarmony(notes: string[], harmonies: string[], tempo:
         for (let harmony of harmonies) {
             let noteQL = 0;
             for (let note of harmony) {
-                noteQL = _triggerNotes(note, curr, tempo)
+                noteQL = _triggerNotes(note, curr, tempo, harmonySampler)
             }
             curr += noteQL
         }
+
     })
 }
 
-function _triggerNotes(note: string, curr: number, tempo: number) {
+function _triggerNotes(note: string, curr: number, tempo: number, sampler: Tone.Sampler) {
     let noteName = _getNoteName(note)
     let noteQL = _getNoteQuarterlen(note) / 2 * (60 / tempo)
     sampler.triggerAttack(noteName, curr)

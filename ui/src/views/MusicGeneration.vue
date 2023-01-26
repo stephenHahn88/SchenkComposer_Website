@@ -51,6 +51,13 @@
           </b-row>
         </b-col>
       </b-row>
+      <b-row class="m-2 p-2">
+          <h3> Choose your instrument </h3>
+            <b-col class="col-2"> <b-button variant="btn" @click="_setInstrument(0);"> <span style="font-size:30px;"> &#127929; </span> </b-button> </b-col>
+            <b-col class="col-2"> <b-button variant="btn" @click="_setInstrument(1);"> <span style="font-size:30px;"> &#127899; </span> </b-button> </b-col>
+            <b-col class="col-2"> <b-button variant="btn" @click="_setInstrument(2);"> <span style="font-size:30px;"> &#127931; </span> </b-button> </b-col>
+            <b-col class="col-2"> <b-button variant="btn" @click="_setInstrument(3);"> <span style="font-size:30px;"> &#127927; </span> </b-button> </b-col>
+      </b-row>
       <b-row class="m-1">
         <b-col class = "modal-container">
             <p style="color: black;">
@@ -90,11 +97,25 @@ let options = ref([
   {text: "Harmonic Progression", variant: "dark"}
 ])
 let tempo = ref(60)
+let instrument = ref()
 
 onMounted(() => {
   updateCurrPage("/generate-melody")
 })
 
+function _setInstrument(selected) {
+  if (selected === 0) {
+    instrument.value = "piano"
+  } else if (selected === 1) {
+    instrument.value = "casio"
+  } else if (selected === 2) {
+    instrument.value = "strings"
+  } else if (selected === 3) {
+    instrument.value = "sawtooth"
+  } else {
+    instrument.value = "piano"
+  }
+}
 
 function _updateVariant(text, variant) {
   for (let i in options.value) {
@@ -110,8 +131,8 @@ async function generateMelody() {
   let mgr = await getMiddlegroundRhythm(ps)
   let hp = await getHarmonicProgression(mgr, ps)
 
-  let {notes, harmonies} = await generateFromHarmony(ps, mgr, hp)
-  playNotesAndHarmony(notes, harmonies, tempo.value)
+  let {notes, middle, harmonies} = await generateFromHarmony(ps, mgr, hp)
+  playNotesAndHarmony(notes, middle, harmonies, instrument.value, tempo.value)
   loading.value = false
   await saveMelody(notes, harmonies)
   // Once the melody has been saved, open the melody survey
@@ -212,6 +233,7 @@ async function generateFromHarmony(ps, mgr, hp) {
 
   let storedPhraseUnits = {}
   let notes = []
+  let middle = []
   let harmonies = []
   for (let letter of phraseFlat) {
     // If phrase unit has already been generated, append more of the same
@@ -235,6 +257,7 @@ async function generateFromHarmony(ps, mgr, hp) {
 
     // Add new notes and harmonies
     notes = notes.concat(mel.notes)
+    middle = middle.concat(mel.middle)
     harmonies = harmonies.concat(mel.harmony)
 
     // Store new notes and harmonies for repetitions
@@ -242,7 +265,7 @@ async function generateFromHarmony(ps, mgr, hp) {
     storedPhraseUnits[letter]["notes"] = mel.notes
     storedPhraseUnits[letter]["harmonies"] = mel.harmony
   }
-  return {"notes": notes, "harmonies": harmonies}
+  return {"notes": notes, "middle": middle, "harmonies": harmonies}
 }
 
 async function saveMelody(notes, harmonies) {
