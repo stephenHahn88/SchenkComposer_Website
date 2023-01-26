@@ -41,6 +41,13 @@
           <b-nav-item @click="router.push({path: '/login'})">Login</b-nav-item>
           <b-nav-item @click="router.push({path: '/my-melodies'})">{{username}}'s Melodies</b-nav-item>
           <b-nav-item @click="router.push({path: '/flowchart'})">Flowchart</b-nav-item>
+          <b-nav-item-dropdown text="Authors" right>
+            <b-dropdown-item href="#">Stephen Hahn</b-dropdown-item>
+            <b-dropdown-item href="#">Rico Zhu</b-dropdown-item>
+            <b-dropdown-item href="#">Simon Mak</b-dropdown-item>
+            <b-dropdown-item target="_blank" rel="noopener noreferrer" href="https://users.cs.duke.edu/~cynthia/">Cynthia Rudin</b-dropdown-item>
+            <b-dropdown-item href="#">Yue Jiang</b-dropdown-item>
+          </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -73,6 +80,13 @@
           <b-collapse id="collapse-tutorial">
             <b-container class="p-5 black-background radius-30">
               <h1>Tutorial</h1>
+              <b-button
+                  v-b-toggle.collapse-tutorial
+                  variant="light"
+                  @click="tutorialOpen = false"
+                  class="m-1"
+                  style="width: 220px;"
+              >Hide Tutorial</b-button>
               <router-view
                   name="tutorial"
               />

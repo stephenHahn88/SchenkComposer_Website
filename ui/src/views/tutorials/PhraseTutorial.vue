@@ -7,6 +7,20 @@
         pills
         style="font-size: 32px"
     >
+      <b-tab title="Walkthrough">
+        <b-col class="text-center">
+          <iframe
+              width="840"
+              height="415"
+              src="https://www.youtube.com/embed/sJyL3vAk8Pg"
+              title="YouTube video player"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              style="border:none;"
+          >
+          </iframe>
+        </b-col>
+      </b-tab>
 <!--      WEBSITE-->
       <b-tab title="Website">
         <b-row style="overflow: auto">

@@ -12,7 +12,9 @@ import PhraseTutorial from "@/views/tutorials/PhraseTutorial.vue"
 import MeterAndHypermeter from "@/views/dagRhythm/MeterAndHypermeter.vue"
 import MeterTutorial from "@/views/tutorials/MeterTutorial.vue"
 import MiddlegroundHarmonicRhythm from "@/views/dagRhythm/MiddlegroundHarmonicRhythm.vue"
+import HarmonicRhythmTutorial from "@/views/tutorials/HarmonicRhythmTutorial.vue"
 import HarmonicProgression from "@/views/dagOther/HarmonicProgression.vue"
+import HarmonicProgressionTutorial from "@/views/tutorials/HarmonicProgressionTutorial.vue"
 import ForegroundMelody from "@/views/dagOther/ForegroundMelody.vue"
 import MyMelodies from "@/views/MyMelodies.vue"
 import MiddlegroundMelody from "@/views/dagOther/MiddlegroundMelody.vue"
@@ -60,11 +62,11 @@ export const router = new VueRouter({
     },
     {
       path: "/harmonic-rhythm",
-      component: MiddlegroundHarmonicRhythm
+      components: {default: MiddlegroundHarmonicRhythm, tutorial: HarmonicRhythmTutorial}
     },
     {
       path: "/harmonic-progression",
-      component: HarmonicProgression
+      components: {default: HarmonicProgression, tutorial: HarmonicProgressionTutorial}
     },
     {
       path: "/middleground-melody",

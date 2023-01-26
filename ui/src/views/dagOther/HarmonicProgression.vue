@@ -95,7 +95,10 @@
                 id="question-progression"
                 title="Harmonic Progression"
                 :text="[
-                    `hi`
+                    `The harmonic progression tells the model which harmonies to improvise over`,
+                    `Each section (a and b) is designated its own harmonic progression`,
+                    `Different genres follow different harmonic patterns, or even different harmonic languages`,
+                    `Here, each roman numeral specifies a harmony based on a scale degree. i.e. 'iii' is based on the third note of the major scale`
                 ]"
               ></QuestionHover>
             </b-col>
@@ -170,6 +173,11 @@
         </b-container>
       </b-col>
     </b-row>
+    <b-row class="mt-3">
+      <b-col>
+        <h2 style="color: red">{{status}}</h2>
+      </b-col>
+    </b-row>
 <!--    SAVE AND RETURN-->
     <b-row class="my-4 p-4" style="height: 140px;">
       <b-col>
@@ -236,6 +244,7 @@ for (let i = 0; i < Object.keys(harmonies.value).length; i++) {
 }
 
 let saveSuccess = ref("danger")
+let status = ref("")
 
 // Maximum of maxLen
 let max = computed(() => {
@@ -355,8 +364,23 @@ async function getPresetMatrix(preset) {
   redraw()
 }
 
+function _checkValidMatrix() {
+  for (let row of transitions) {
+    for (let t of row) {
+      if (isNaN(t) || parseFloat(t) < 0) {
+        return {status: "invalid"}
+      }
+    }
+  }
+  return {status: "valid"}
+}
+
 // save current matrix parameters
 async function saveMatrix() {
+  if (_checkValidMatrix().status === "invalid") {
+    status.value = "The transition matrix must only hold numbers greater than or equal to 0"
+    return {status: "invalid"}
+  }
   const requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
@@ -370,6 +394,7 @@ async function saveMatrix() {
   let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/matrix", requestOptions)
   response = await response.json()
   console.log(response)
+  return {status: "valid"}
 }
 
 function _harmonicSequencesToObject() {
@@ -380,8 +405,21 @@ function _harmonicSequencesToObject() {
   return progressions
 }
 
+function _checkValidProgression() {
+  for (let letter of ['a', 'b']) {
+    if (sequences.value[letter].sequenceReverse.length !== sequences.value[letter].maxLen) {
+      status.value = "Your harmonic progression is not full. Make sure both a and b sections are full of harmonies."
+      return {status: "invalid"}
+    }
+  }
+  return {status: "valid"}
+}
+
 // save current harmonic progression input
 async function saveProgression() {
+  if (_checkValidProgression().status === "invalid") {
+    return {status: "invalid"}
+  }
   let progressions = _harmonicSequencesToObject()
   const requestOptions = {
     method: "PUT",
@@ -391,17 +429,24 @@ async function saveProgression() {
   let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/harmonicProgression", requestOptions)
   response = await response.json()
   console.log(response)
+  return {status: "valid"}
 }
 
 async function saveAll() {
-  await saveMatrix()
-  await saveProgression()
+  let status = await saveMatrix()
+  if (status.status === "invalid") return
+  status = await saveProgression()
+  if (status.status === "invalid") return
   saveSuccess.value = "success"
   await pushRouter("/generate-melody")
 }
 
 // generate harmonic progressions from model
 async function handleGenerate(letter) {
+  if (_checkValidMatrix().status === "invalid") {
+    status.value = "The transition matrix must only hold numbers greater than or equal to 0"
+    return
+  }
   // gets phrase ends as object e.g. {'a': 'V', 'b': 'I', ...}
   let phraseEndsForCadences = _findPhraseEndHarmonies(phraseStructure.value, openHarmonies.value, closeHarmonies.value)
   let len = sequences.value[letter]["maxLen"]

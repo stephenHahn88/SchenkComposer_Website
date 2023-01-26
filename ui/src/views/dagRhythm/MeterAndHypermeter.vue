@@ -113,11 +113,16 @@
         </b-button>
       </b-col>
     </b-row>
+    <b-row class="mt-3">
+      <b-col>
+        <h2 style="color: red">{{status}}</h2>
+      </b-col>
+    </b-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import {defineEmits, inject, onMounted, ref, Ref} from 'vue'
+import {computed, defineEmits, inject, onMounted, ref, Ref} from 'vue'
 import { Phrase, PhraseUnit } from '@/views/dagOther/PhraseStructure.vue'
 import {pushRouter, textEmphasisColor} from "@/data"
 import QuestionHover from "@/components/QuestionHover.vue";
@@ -133,18 +138,23 @@ let phraseStructure: Ref<string[]> = ref([])
 let numerator = ref("4")
 let denominator = ref("4")
 
-let possibleNumerators = [4]//[2, 3, 4, 6, 9, 12]
+let possibleNumerators = [3, 4]//[2, 3, 4, 6, 9, 12]
 let possibleDenominators = [4]//[2, 4, 8]
+
+let defaultB = computed(() => {
+  return phraseStructure.value[1] === 'a' ? 4: 2
+})
 
 // Number of measures for each subphrase
 let hypermeterMeasures = ref({
   "a": 2,
-  "b": 2,
+  "b": defaultB,
   "c": "# measures",
   "d": "# measures"
 })
 
 let saveSuccess = ref("danger")
+let status = ref("")
 
 const emit = defineEmits(['meteranimate'])
 
@@ -189,7 +199,9 @@ function checkValidInput() {
   for (let letter of lettersInPhrase()) {
     if (hypermeterMeasures.value[letter] == "# measures" ||
         hypermeterMeasures.value[letter] == "" ||
-        isNaN(hypermeterMeasures.value[letter])
+        isNaN(hypermeterMeasures.value[letter]) ||
+        parseInt(hypermeterMeasures.value[letter]) > 8 ||
+        parseInt(hypermeterMeasures.value[letter]) < 1
     ) {
       return {status: "invalid"}
     }
@@ -199,7 +211,10 @@ function checkValidInput() {
 
 // Save current meter and hypermeter
 async function saveMeter() {
-  if (checkValidInput().status === "invalid") return
+  if (checkValidInput().status === "invalid") {
+    status.value = "All boxes must be filled with integers between 1 and 8."
+    return
+  }
   let requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },

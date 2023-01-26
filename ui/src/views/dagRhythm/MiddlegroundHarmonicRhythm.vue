@@ -4,7 +4,7 @@
       <h1>Harmonic Rhythm</h1>
     </b-row>
     <b-row class="mb-5">
-      <h2>Determine <span :style="`color: ${textEmphasisColor}`">when the harmony changes</span> in your melody. Be sure to <span :style="`color: ${textEmphasisColor}`" class="animate-color">fill in each tab above the music</span> (one for each subphrase)</h2>
+      <h2>Determine <span :style="`color: ${textEmphasisColor}`">when the harmony changes</span> in your melody by pressing the note buttons below. Be sure to <span :style="`color: ${textEmphasisColor}`" class="animate-color">fill in each letter tab (A and B) marked above the white panel</span></h2>
     </b-row>
     <b-tabs
         content-class="mt-3"
@@ -69,6 +69,11 @@
         >
           Save and Continue
         </b-button>
+      </b-col>
+    </b-row>
+    <b-row class="mt-3">
+      <b-col>
+        <h2 :style="saveSuccess.value === 'success' ? 'color: green': 'color: red'">{{status}}</h2>
       </b-col>
     </b-row>
   </div>
@@ -154,6 +159,7 @@ let hypermeter = ref({});
 let meter = ref('4/4');
 
 let saveSuccess = ref("danger")
+let status = ref("")
 
 onMounted(async () => {
   updateCurrPage("/harmonic-rhythm")
@@ -258,7 +264,10 @@ function checkValidInput() {
 
 // Save middleground rhythm to database
 async function saveAll() {
-  if (checkValidInput().status === "invalid") return
+  if (checkValidInput().status === "invalid") {
+    status.value = "Some measures are not filled. Make sure to check all tabs and scroll to the right if you have a long phrase."
+    return
+  }
   let requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
@@ -271,6 +280,7 @@ async function saveAll() {
 
   emit('mgrhythmanimate')
   saveSuccess.value = "success"
+  status.value = "Success!"
   await pushRouter("/harmonic-progression")
 }
 </script>

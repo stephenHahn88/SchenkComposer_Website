@@ -92,6 +92,11 @@
           </b-button>
         </b-col>
       </b-row>
+      <b-row class="mt-3">
+        <b-col>
+          <h2 style="color: red">{{status}}</h2>
+        </b-col>
+      </b-row>
     </b-container>
   </div>
 </template>
@@ -121,6 +126,7 @@ let letters = ['a', 'b', 'c', 'd']
 let phrase: Ref<Phrase> = ref([])
 
 let saveSuccess = ref("danger")
+let status = ref("")
 
 // Load phrase if already saved
 onMounted(async () => {
@@ -148,7 +154,10 @@ function erasePhrase() {
 
 // Save phrase to database
 async function savePhrase() {
-  if (phrase.value.length === 0) return
+  if (phrase.value.length === 0) {
+    status.value = "No value chosen. Please choose either sentence or period."
+    return
+  }
   const requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },

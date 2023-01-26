@@ -2,11 +2,16 @@
   <b-container>
     <b-row>
       <b-col>
-        <b-button
-          variant="info"
-          style="width: 100%"
-          @click="returnToCurrPage"
-        >Return to Melody</b-button>
+        <b-row class="mb-4">
+          <b-button
+              variant="info"
+              style="width: 100%; height: 100px; font-size: 32px"
+              @click="returnToCurrPage"
+          >Return to Melody</b-button>
+        </b-row>
+        <b-row>
+          <p style="color: white; font-size: 32px">This represents the overall flow that SchenkComposer takes when writing a melody. Details may be found in our paper: LINK COMING SOON</p>
+        </b-row>
       </b-col>
       <b-col>
         <SchenkComposerDAG></SchenkComposerDAG>
