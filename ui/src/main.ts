@@ -85,6 +85,9 @@ export const router = new VueRouter({
       component: MusicGeneration
     }
   ],
+  scrollBehavior() {
+    return {x: 0, y: 0}
+  }
 })
 
 Vue.config.productionTip = false
