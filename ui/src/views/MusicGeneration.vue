@@ -137,7 +137,7 @@ let instrument = ref()
 let emojis = {
   piano: '&#127929;',
   casio: '&#127899;',
-  saxophone: '&#127927;'
+  marimba: '&#128276;'
 }
 
 onMounted(() => {
