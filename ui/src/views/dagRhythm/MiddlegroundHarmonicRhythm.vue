@@ -4,22 +4,14 @@
       <h1>Harmonic Rhythm</h1>
     </b-row>
     <b-row class="mb-5">
-      <h2>Determine <span :style="`color: ${textEmphasisColor}`">when the harmony changes</span> in your melody by pressing the note buttons below. Be sure to <span :style="`color: ${textEmphasisColor}`" class="animate-color">fill in each letter tab (A and B) marked above the white panel</span></h2>
+      <h2>Determine <span :style="`color: ${textEmphasisColor}`">when the harmony changes</span> in your melody by pressing the note buttons below. Be sure to <span :style="`color: ${textEmphasisColor}`">fill in every measure</span></h2>
     </b-row>
-    <b-tabs
-        content-class="mt-3"
-        align="center"
-        pills
-        no-fade
-        style="font-size: 32px"
-    >
-      <b-tab
+      <b-row
           v-for="letter in ['a','b','c','d']"
-          :title="`<==${letter.toUpperCase()}==>`"
           v-if="hypermeter[letter] > 0"
       >
-
-        <b-row class="mb-3 mx-1 pb-3 pl-3 letter-group">
+        <h2 class="m-4">{{letter.toUpperCase()}}</h2>
+        <b-row class="mb-2 mx-1 pb-3 px-3 letter-group" style="width:100%">
           <b-button variant="warning" @click="backspace(letter)" class="m-2">
             &#8592
           </b-button>
@@ -43,15 +35,14 @@
                   class="p-0 m-0"
                   v-for="r in rhythm.split(' ')"
                   :src="`src/static/floatingNotes/${rhythmToSVGName[r]}.svg`" :alt="rhythm"
-                  style="width: 52px; filter: invert(100%)"
+                  style="width: 45px; filter: invert(100%)"
 
               >
             </b-button>
           </div>
         </b-row>
-      </b-tab>
-    </b-tabs>
-    <b-row>
+      </b-row>
+    <b-row class="mt-4">
       <b-col>
         <b-button
           @click="pushRouter('/meter-hypermeter')"
@@ -265,7 +256,7 @@ function checkValidInput() {
 // Save middleground rhythm to database
 async function saveAll() {
   if (checkValidInput().status === "invalid") {
-    status.value = "Some measures are not filled. Make sure to check all tabs and scroll to the right if you have a long phrase."
+    status.value = "Some measures are not filled. Make sure to check all panels and scroll to the right if you have a long phrase."
     return
   }
   let requestOptions = {
@@ -300,37 +291,5 @@ h1, h2 {
   border-radius: 10px;
 }
 
-
-/*ADAPTED FROM https://alvarotrigo.com/blog/css-text-animations/*/
-.animate-color {
-  text-transform: uppercase;
-  background-image: linear-gradient(
-      -225deg,
-      #c832ff 0%,
-      #c832ff 35%,
-      #ffffff 40%,
-      #ee11aa 50%,
-      #ffffff 60%,
-      #c832ff 65%,
-      #c832ff 100%
-  );
-  background-size: auto auto;
-  background-clip: border-box;
-  background-size: 200% auto;
-  color: #fff;
-  background-clip: text;
-  text-fill-color: transparent;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: textclip 1s linear infinite reverse;
-  display: inline-block;
-  /*font-size: 190px;*/
-}
-
-@keyframes textclip {
-  to {
-    background-position: 200% center;
-  }
-}
 
 </style>

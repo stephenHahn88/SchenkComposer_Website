@@ -114,7 +114,7 @@ const flute = new Tone.Sampler({
     urls: {
 		A4: "samples_flute_A4.mp3",
         C5: "samples_flute_C5.mp3",
-		E4: "samples_flute_E4.mp3",
+		// E4: "samples_flute_E4.mp3",
 	},
     release: 1,
 	baseUrl: "http://localhost:8090/src/static/samples/",
@@ -151,82 +151,117 @@ const marimba = new Tone.Sampler({
 }).toDestination();
 
 // Decrease volume switch
-const melodyVol = new Tone.Volume(-12).toDestination();
-const middleVol = new Tone.Volume(-30).toDestination();
-const harmonyVol = new Tone.Volume(-15).toDestination();
+// const melodyVol = new Tone.Volume(-12).toDestination();
+// const middleVol = new Tone.Volume(-40).toDestination();
+// const harmonyVol = new Tone.Volume(-12).toDestination();
+// const bassVol = new Tone.Volume(-12).toDestination();
 
-export function playNotesAndHarmony(notes: string[], middle: string[], harmonies: string[], instrument: string = "piano", tempo: number = 120) {
+export function playNotesAndHarmony(
+    melody: string[],
+    middle: string[],
+    harmonies: string[][],
+    bass: string[],
+    instrument: string = "piano",
+    tempo: number = 120,
+    selectedLayers: string[] = ["melody", "harmony", "bass"]
+) {
     Tone.loaded().then(() => {
+        let {melodySampler, middleSampler, harmonySampler, bassSampler} = _getInstrumentSamplers(instrument)
 
-        let sampler = piano
-        let middleSampler = piano
-        let harmonySampler = piano
-
-        switch(instrument) {
-            case "piano": {
-                sampler = piano;
-                middleSampler = piano;
-                harmonySampler = piano;
-                break;
-            }
-            case "casio": {
-                sampler = casio;
-                middleSampler = casio;
-                harmonySampler = casio;
-                break;
-            }
-            case "strings": {
-                sampler = violin;
-                middleSampler = violin;
-                harmonySampler = cello;
-                break;
-            }
-            case "sawtooth": {
-                sampler = saxophone;
-                middleSampler = guitar;
-                harmonySampler = casio;
-                break;
-            }
-            default: {
-                sampler = piano;
-                middleSampler = piano;
-                harmonySampler = piano;
-                break;
-            }
-        }
-
-        sampler.connect(melodyVol);
-        middleSampler.connect(middleVol);
-        harmonySampler.connect(harmonyVol);
+        // melodySampler.connect(melodyVol);
+        // middleSampler.connect(middleVol);
+        // harmonySampler.connect(harmonyVol);
+        // bassSampler.connect(bassVol)
 
         const now = Tone.now()
 
-        // PLACE NOTES
-        let curr = now
-        for (let note of notes) {
-            let noteQL = _triggerNotes(note, curr, tempo, sampler)
-            curr += noteQL
+        let curr;
+        // PLACE MELODY
+        if (selectedLayers.includes("melody")) {
+            curr = now
+            for (let note of melody) {
+                let noteQL = _triggerNotes(note, curr, tempo, melodySampler)
+                curr += noteQL
+            }
         }
 
         // PLACE ARPEGGIOS
-        curr = now
-        for (let mid of middle) {
-            let noteQL = _triggerNotes(mid, curr, tempo, middleSampler)
-            curr += noteQL
+        if (selectedLayers.includes("harmony")) {
+            curr = now
+            for (let mid of middle) {
+                let noteQL = _triggerNotes(mid, curr, tempo, middleSampler)
+                curr += noteQL
+            }
+        }
+
+        //PLACE BASS
+        if (selectedLayers.includes("bass")) {
+            curr = now
+            for (let b of bass) {
+                let noteQL = _triggerNotes(b, curr, tempo, bassSampler)
+                curr += noteQL
+            }
         }
 
         // PLACE HARMONIES
-        curr = now
-        for (let harmony of harmonies) {
-            let noteQL = 0;
-            for (let note of harmony) {
-                noteQL = _triggerNotes(note, curr, tempo, harmonySampler)
-            }
-            curr += noteQL
-        }
-
+        // curr = now
+        // for (let harmony of harmonies) {
+        //     let noteQL = 0;
+        //     for (let note of harmony) {
+        //         noteQL = _triggerNotes(note, curr, tempo, harmonySampler)
+        //     }
+        //     curr += noteQL
+        // }
     })
 }
+
+
+function _getInstrumentSamplers(instrument: string) {
+    let melodySampler;
+    let middleSampler;
+    let harmonySampler;
+    let bassSampler;
+
+    switch(instrument) {
+        case "piano": {
+            melodySampler = piano;
+            middleSampler = piano;
+            harmonySampler = piano;
+            bassSampler = piano
+            break;
+        }
+        case "casio": {
+            melodySampler = casio;
+            middleSampler = casio;
+            harmonySampler = casio;
+            bassSampler = casio;
+            break;
+        }
+        case "strings": {
+            melodySampler = cello;
+            middleSampler = cello;
+            harmonySampler = cello;
+            bassSampler = cello;
+            break;
+        }
+        case "saxophone": {
+            melodySampler = saxophone;
+            middleSampler = guitar;
+            harmonySampler = casio;
+            bassSampler = guitar;
+            break;
+        }
+        default: {
+            melodySampler = piano;
+            middleSampler = piano;
+            harmonySampler = piano;
+            bassSampler = piano;
+            break;
+        }
+    }
+    return {melodySampler, middleSampler, harmonySampler, bassSampler}
+}
+
 
 function _triggerNotes(note: string, curr: number, tempo: number, sampler: Tone.Sampler) {
     let noteName = _getNoteName(note)

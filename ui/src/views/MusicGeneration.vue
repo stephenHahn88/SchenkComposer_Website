@@ -51,17 +51,45 @@
           </b-row>
         </b-col>
       </b-row>
-      <b-row class="m-2 p-2">
-          <h3> Choose your instrument </h3>
-            <b-col class="col-2"> <b-button variant="btn" @click="_setInstrument(0);"> <span style="font-size:30px;"> &#127929; </span> </b-button> </b-col>
-            <b-col class="col-2"> <b-button variant="btn" @click="_setInstrument(1);"> <span style="font-size:30px;"> &#127899; </span> </b-button> </b-col>
-            <b-col class="col-2"> <b-button variant="btn" @click="_setInstrument(2);"> <span style="font-size:30px;"> &#127931; </span> </b-button> </b-col>
-            <b-col class="col-2"> <b-button variant="btn" @click="_setInstrument(3);"> <span style="font-size:30px;"> &#127927; </span> </b-button> </b-col>
+      <b-row class="mt-2 mx-2 p-2">
+        <h3>Choose your layers: </h3>
       </b-row>
-      <b-row class="m-1">
+      <b-row class="mb-2 mx-2 p-2 text-center">
+        <b-col>
+          <b-form-checkbox-group
+              v-model="selected"
+              :options="checkboxOptions"
+              value-field="item"
+              text-field="name"
+              size="lg"
+              switches
+              disabled-field="notEnabled"
+              style="color: white; font-size: 24px;"
+          ></b-form-checkbox-group>
+        </b-col>
+      </b-row>
+      <b-row class="mt-2 mx-2 p-2">
+          <h3> Choose your instrument </h3>
+      </b-row>
+      <b-row class="mb-4">
+          <b-col
+              class=""
+              v-for="(val, key, i) in emojis"
+          >
+            <b-button
+                style="width: 100%"
+                variant="btn"
+                @click="_setInstrument(key);"
+            > <span style="font-size:30px;" v-html="val"></span>
+            </b-button>
+          </b-col>
+      </b-row>
+      <b-row class="m-1 pt-2 text-center">
         <b-col class = "modal-container">
             <p style="color: black;">
-              Help us improve this website! We'd love to hear your feedback
+              <span class="animate-color">
+                Help us improve this website! We'd love to hear your feedback
+              </span>
               <a
                 target="_blank"
                 rel="noopener noreferrer"
@@ -89,6 +117,13 @@ let {currPage, updateCurrPage} = inject("currPage")
 let loading = ref(false)
 let melodySurvey = ref()
 
+let selected = ref(['melody', 'bass'])
+let checkboxOptions = ref([
+  {item: 'melody', name: "Melody"},
+  {item: 'harmony', name: "Harmony"},
+  {item: 'bass', name: "Bass"}
+])
+
 let options = ref([
   {text: "Phrase", variant: "dark"},
   {text: "Meter", variant: "dark"},
@@ -99,22 +134,18 @@ let options = ref([
 let tempo = ref(60)
 let instrument = ref()
 
+let emojis = {
+  piano: '&#127929;',
+  casio: '&#127899;',
+  saxophone: '&#127927;'
+}
+
 onMounted(() => {
   updateCurrPage("/generate-melody")
 })
 
-function _setInstrument(selected) {
-  if (selected === 0) {
-    instrument.value = "piano"
-  } else if (selected === 1) {
-    instrument.value = "casio"
-  } else if (selected === 2) {
-    instrument.value = "strings"
-  } else if (selected === 3) {
-    instrument.value = "sawtooth"
-  } else {
-    instrument.value = "piano"
-  }
+function _setInstrument(selected = "piano") {
+  instrument.value = selected
 }
 
 function _updateVariant(text, variant) {
@@ -131,10 +162,18 @@ async function generateMelody() {
   let mgr = await getMiddlegroundRhythm(ps)
   let hp = await getHarmonicProgression(mgr, ps)
 
-  let {notes, middle, harmonies} = await generateFromHarmony(ps, mgr, hp)
-  playNotesAndHarmony(notes, middle, harmonies, instrument.value, tempo.value)
+  let {notes, middle, harmony, bass} = await generateFromHarmony(ps, mgr, hp)
+  playNotesAndHarmony(
+      notes,
+      middle,
+      harmony,
+      bass,
+      instrument.value,
+      tempo.value,
+      selected.value
+  )
   loading.value = false
-  await saveMelody(notes, harmonies)
+  await saveMelody(notes, harmony)
   // Once the melody has been saved, open the melody survey
   melodySurvey.value.openSurvey()
 }
@@ -235,11 +274,14 @@ async function generateFromHarmony(ps, mgr, hp) {
   let notes = []
   let middle = []
   let harmonies = []
+  let bass = []
   for (let letter of phraseFlat) {
     // If phrase unit has already been generated, append more of the same
     if (Object.keys(storedPhraseUnits).includes(letter)) {
       notes = notes.concat(storedPhraseUnits[letter]["notes"])
       harmonies = harmonies.concat(storedPhraseUnits[letter]["harmonies"])
+      middle = middle.concat(storedPhraseUnits[letter]["middle"])
+      bass = bass.concat(storedPhraseUnits[letter]["bass"])
       continue
     }
     let options = {
@@ -259,13 +301,16 @@ async function generateFromHarmony(ps, mgr, hp) {
     notes = notes.concat(mel.notes)
     middle = middle.concat(mel.middle)
     harmonies = harmonies.concat(mel.harmony)
+    bass = bass.concat(mel.bass)
 
     // Store new notes and harmonies for repetitions
     storedPhraseUnits[letter] = {}
     storedPhraseUnits[letter]["notes"] = mel.notes
     storedPhraseUnits[letter]["harmonies"] = mel.harmony
+    storedPhraseUnits[letter]["middle"] = mel.middle
+    storedPhraseUnits[letter]["bass"] = mel.bass
   }
-  return {"notes": notes, "middle": middle, "harmonies": harmonies}
+  return {"notes": notes, "middle": middle, "harmonies": harmonies, "bass": bass}
 }
 
 async function saveMelody(notes, harmonies) {
@@ -341,6 +386,37 @@ option {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     transition: all 0.3s ease;
     font-family: Helvetica, Arial, sans-serif;
+}
+
+/*ADAPTED FROM https://alvarotrigo.com/blog/css-text-animations/*/
+.animate-color {
+  background-image: linear-gradient(
+      -225deg,
+      #c832ff 0%,
+      #c832ff 35%,
+      #ffffff 40%,
+      #ee11aa 50%,
+      #ffffff 60%,
+      #c832ff 65%,
+      #c832ff 100%
+  );
+  background-size: auto auto;
+  background-clip: border-box;
+  background-size: 200% auto;
+  color: #fff;
+  background-clip: text;
+  text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textclip 5s linear infinite reverse;
+  display: inline-block;
+  /*font-size: 190px;*/
+}
+
+@keyframes textclip {
+  to {
+    background-position: 200% center;
+  }
 }
 
 </style>
