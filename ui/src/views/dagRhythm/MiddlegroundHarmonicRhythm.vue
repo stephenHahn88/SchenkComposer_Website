@@ -18,7 +18,7 @@
           <div :id="`boo_${letter}`" style="overflow: auto;"></div>
           <div class="mt-3">
             <QuestionHover
-                id="question-rhythm-buttons"
+                :id="`question-rhythm-buttons-${letter}`"
                 title="Rhythmic Buttons"
                 :text="[
                         `The following buttons fill a measure of time`,
