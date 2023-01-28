@@ -97,7 +97,7 @@ const violin = new Tone.Sampler({
 		E5: "samples_violin_E5.mp3",
 	},
     release: 1,
-	baseUrl: "http://localhost:8090/src/static/samples/",
+	baseUrl: "http://localhost:8090/src/static/samples/" || "https://melody.cs.duke.edu:8000/src/static/samples/",
 }).toDestination();
 
 const cello = new Tone.Sampler({
@@ -107,7 +107,7 @@ const cello = new Tone.Sampler({
 		E4: "samples_cello_E4.mp3",
 	},
     release: 1,
-	baseUrl: "http://localhost:8090/src/static/samples/",
+	baseUrl: "http://localhost:8090/src/static/samples/" || "https://melody.cs.duke.edu:8000/src/static/samples/",
 }).toDestination();
 
 const flute = new Tone.Sampler({
@@ -117,7 +117,7 @@ const flute = new Tone.Sampler({
 		// E4: "samples_flute_E4.mp3",
 	},
     release: 1,
-	baseUrl: "http://localhost:8090/src/static/samples/",
+	baseUrl: "http://localhost:8090/src/static/samples/" || "https://melody.cs.duke.edu:8000/src/static/samples/",
 }).toDestination();
 
 const guitar = new Tone.Sampler({
@@ -127,7 +127,7 @@ const guitar = new Tone.Sampler({
         E2: "samples_guitar-electric_E2.mp3",
 	},
     release: 1,
-	baseUrl: "http://localhost:8090/src/static/samples/",
+	baseUrl: "http://localhost:8090/src/static/samples/" || "https://melody.cs.duke.edu:8000/src/static/samples/",
 }).toDestination();
 
 const saxophone = new Tone.Sampler({
@@ -137,7 +137,7 @@ const saxophone = new Tone.Sampler({
         A5: "samples_saxophone_A4.mp3",
 	},
     release: 1,
-	baseUrl: "http://localhost:8090/src/static/samples/",
+	baseUrl: "http://localhost:8090/src/static/samples/" || "https://melody.cs.duke.edu:8000/src/static/samples/",
 }).toDestination();
 
 const marimba = new Tone.Sampler({
@@ -147,7 +147,7 @@ const marimba = new Tone.Sampler({
         E4: "marimba_e4.wav",
 	},
     release: 1,
-	baseUrl: "http://localhost:8090/src/static/samples/",
+	baseUrl: "http://localhost:8090/src/static/samples/"  || "https://melody.cs.duke.edu:8000/src/static/samples/",
 }).toDestination();
 
 // Decrease volume switch
@@ -244,11 +244,11 @@ function _getInstrumentSamplers(instrument: string) {
             bassSampler = cello;
             break;
         }
-        case "saxophone": {
-            melodySampler = saxophone;
-            middleSampler = guitar;
-            harmonySampler = casio;
-            bassSampler = guitar;
+        case "marimba": {
+            melodySampler = marimba;
+            middleSampler = piano;
+            harmonySampler = piano;
+            bassSampler = piano;
             break;
         }
         default: {
