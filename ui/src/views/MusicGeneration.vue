@@ -38,6 +38,32 @@
           >Generate Melody</b-button>
         </b-col>
       </b-row>
+      <b-row class="m-2">
+        <b-col></b-col>
+        <b-col></b-col>
+        <b-col>
+          <b-button
+              class="mb-4 ml-4"
+              style="width: 100%"
+              variant="dark"
+              :disabled="downloadDisabled"
+              @click="generateMidi"
+          >
+            Download Last as Midi
+          </b-button>
+        </b-col>
+        <b-col>
+          <b-button
+              class="mb-4 ml-4"
+              style="width: 100%"
+              variant="dark"
+              :disabled="downloadDisabled"
+              @click="generateScore"
+          >
+            Download Last as XML
+          </b-button>
+        </b-col>
+      </b-row>
       <b-row class="m-2 p-2">
         <b-col>
           <b-row><h3>Tempo</h3></b-row>
@@ -140,7 +166,12 @@ let emojis = {
   marimba: '&#128276;'
 }
 
+let downloadDisabled = ref(true)
+let currNotes = ref([])
+let currHarmony = ref([])
+
 onMounted(() => {
+  downloadDisabled.value = true
   updateCurrPage("/generate-melody")
 })
 
@@ -162,18 +193,22 @@ async function generateMelody() {
   let mgr = await getMiddlegroundRhythm(ps)
   let hp = await getHarmonicProgression(mgr, ps)
 
-  let {notes, middle, harmony, bass} = await generateFromHarmony(ps, mgr, hp)
+  let {notes, middle, harmonies, bass} = await generateFromHarmony(ps, mgr, hp)
+  currNotes.value = notes
+  currHarmony.value = harmonies
+  downloadDisabled.value = false
+
   playNotesAndHarmony(
       notes,
       middle,
-      harmony,
+      harmonies,
       bass,
       instrument.value,
       tempo.value,
       selected.value
   )
   loading.value = false
-  await saveMelody(notes, harmony)
+  await saveMelody(notes, harmonies)
   // Once the melody has been saved, open the melody survey
   melodySurvey.value.openSurvey()
 }
@@ -312,6 +347,44 @@ async function generateFromHarmony(ps, mgr, hp) {
     storedPhraseUnits[letter]["bass"] = mel.bass
   }
   return {"notes": notes, "middle": middle, "harmonies": harmonies, "bass": bass}
+}
+
+async function generateMidi() {
+  let midiOptions = {
+    method: 'POST',
+    headers: {
+      'Accept': 'audio/midi',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      "notes": currNotes.value,
+      "harmony": currHarmony.value
+    })
+  }
+  let midi = await (await fetch("api/generate-midi", midiOptions)).blob()
+  let a = document.createElement("a")
+  a.href = window.URL.createObjectURL(midi)
+  a.download = `melody_${melodyId.value}`
+  a.click()
+}
+
+async function generateScore() {
+  let xmlOptions = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/xml',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      "notes": currNotes.value,
+      "harmony": currHarmony.value
+    })
+  }
+  let xml = await (await fetch("api/generate-xml", xmlOptions)).blob()
+  let a = document.createElement("a")
+  a.href = window.URL.createObjectURL(xml)
+  a.download = `melody_${melodyId.value}`
+  a.click()
 }
 
 async function saveMelody(notes, harmonies) {

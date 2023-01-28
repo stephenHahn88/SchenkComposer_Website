@@ -48,7 +48,11 @@
     <b-row class="m-3">
       <b-col>
         <ul>
-          <li>This is an interactive melody generator that guides you through a "top-down" composition style.</li>
+          <li>SchenkComposer is part of a research project conducted by Stephen Hahn, Rico Zhu, Simon Mak, Cynthia Rudin, and Yue Jiang.</li>
+          <li>We are working towards generalizable, interpretable, and flexible models for music generation</li>
+          <li>We would love to hear your feedback! Please fill out the survey linked on the "Generate Melody" page if you have time.</li>
+          <hr class="bg-light">
+          <li>This website is an interactive melody generator that guides you through a "top-down" composition style.</li>
           <li>You can track your progress by looking at the bubbles above.</li>
           <li>
             If you open the tutorial using the white button on the navbar (or just above here on the home page),

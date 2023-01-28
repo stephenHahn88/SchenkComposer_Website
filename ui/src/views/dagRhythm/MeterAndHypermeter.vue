@@ -31,14 +31,14 @@
             <b-col class="p-3">
               <b-row class="mb-1">
                 <b-col class="center-text">
-                  <b-dropdown :text="numerator" variant="dark" size="lg">
+                  <b-dropdown :text="numerator" variant="dark" size="lg" style="min-width: 100px; min-height: 100px;">
                     <b-dropdown-item v-for="num in possibleNumerators" v-on:click="numerator=num.toString()"> {{ num }} </b-dropdown-item>
                   </b-dropdown>
                 </b-col>
               </b-row>
               <b-row>
                 <b-col class="center-text">
-                  <b-dropdown :text="denominator" variant="dark" size="lg">
+                  <b-dropdown :text="denominator" variant="dark" size="lg" style="min-width: 100px; min-height: 100px;">
                     <b-dropdown-item v-for="num in possibleDenominators" v-on:click="denominator=num.toString()"> {{ num }} </b-dropdown-item>
                   </b-dropdown>
                 </b-col>

@@ -215,7 +215,15 @@ function _rowClickUpdateCurrPage(item: any) {
 }
 
 function playSelectedMelody() {
-  playNotesAndHarmony(currNotes.value, currHarmonies.value, currTempo.value)
+  playNotesAndHarmony(
+      currNotes.value,
+      [],
+      currHarmonies.value,
+      [],
+      "piano",
+      currTempo.value,
+      ["melody", "chords"]
+  )
 }
 
 // Retrieve melodies of current composer
