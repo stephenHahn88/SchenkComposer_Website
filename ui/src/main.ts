@@ -17,10 +17,12 @@ import HarmonicProgression from "@/views/dagOther/HarmonicProgression.vue"
 import HarmonicProgressionTutorial from "@/views/tutorials/HarmonicProgressionTutorial.vue"
 import ForegroundMelody from "@/views/dagOther/ForegroundMelody.vue"
 import MyMelodies from "@/views/MyMelodies.vue"
+import MyMelodiesTutorial from "@/views/tutorials/MyMelodiesTutorial.vue"
 import MiddlegroundMelody from "@/views/dagOther/MiddlegroundMelody.vue"
 import ForegroundRhythm from "@/views/dagRhythm/ForegroundRhythm.vue"
 import Flowchart from "@/views/Flowchart.vue"
 import MusicGeneration from "@/views/MusicGeneration.vue"
+import MusicGenerationTutorial from "@/views/tutorials/MusicGenerationTutorial.vue"
 
 import { BootstrapVue, BootstrapVueIcons } from "bootstrap-vue"
 
@@ -46,7 +48,7 @@ export const router = new VueRouter({
     },
     {
       path: "/my-melodies",
-      component: MyMelodies
+      components: {default: MyMelodies, tutorial: MyMelodiesTutorial}
     },
     {
       path: "/flowchart",
@@ -82,7 +84,7 @@ export const router = new VueRouter({
     },
     {
       path: "/generate-melody",
-      component: MusicGeneration
+      components: {default: MusicGeneration, tutorial: MusicGenerationTutorial}
     }
   ],
   scrollBehavior() {

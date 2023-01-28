@@ -1,5 +1,8 @@
 <template>
   <div>
+    <b-row>
+      <h1 style="color: white">{{username}}'s Melodies</h1>
+    </b-row>
     <b-row class="m-2">
       <b-button
         @click="pushRouter(currPage)"
@@ -54,6 +57,7 @@ import {computed, inject, onMounted, Ref, ref} from "vue";
 import {Melody} from '../../../server/data'
 import {playNotesAndHarmony, pushRouter} from "@/data";
 
+const {username, updateUsername}: any = inject("username")
 const {composerId, updateComposerId}: any = inject("composerId")
 const {melodyId, updateMelodyId}: any = inject("melodyId")
 const {currPage, updateCurrPage}: any = inject("currPage")
