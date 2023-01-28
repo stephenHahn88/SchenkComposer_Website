@@ -230,7 +230,7 @@ let {composerId, updateComposerId} = inject("composerId")
 let {melodyId, updateMelodyId} = inject("melodyId")
 let {currPage, updateCurrPage} = inject("currPage")
 
-let harmonies = ref(['I','ii','iii','IV','V','vi','vii'])
+let harmonies = ref(['I','ii','iii','IV','V','vi','viio6'])
 let openHarmonies = ref(['V'])
 let closeHarmonies = ref(['I'])
 let colors = ref(['green', 'navy', 'rgb(255, 130, 200)', 'orange', 'red', 'purple', 'black'])
@@ -289,7 +289,7 @@ let simulation;
 // Gather information for the length of harmonic progressions
 onMounted(async () => {
   updateCurrPage("/harmonic-progression")
-  harmonies.value = ['I','ii','iii','IV','V','vi','vii']
+  harmonies.value = ['I','ii','iii','IV','V','vi','viio6']
 
   mySVG = document.getElementById("mySVG");
   simulation = new ForceSimulation(mySVG);

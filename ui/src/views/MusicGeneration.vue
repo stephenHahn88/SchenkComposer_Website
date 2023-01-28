@@ -117,7 +117,7 @@ let {currPage, updateCurrPage} = inject("currPage")
 let loading = ref(false)
 let melodySurvey = ref()
 
-let selected = ref(['melody', 'bass'])
+let selected = ref(['melody', 'harmony', 'bass'])
 let checkboxOptions = ref([
   {item: 'melody', name: "Melody"},
   {item: 'harmony', name: "Harmony"},
@@ -292,7 +292,8 @@ async function generateFromHarmony(ps, mgr, hp) {
       },
       body: JSON.stringify({
         "mgRhythm": flattenMgRhythmLetter(mgr, letter),
-        "mgHarmony": hp[letter]
+        "mgHarmony": hp[letter],
+        "isCadential": letter === 'b'
       })
     }
     let mel = await (await fetch('api/generate-melody/from-harmony', options)).json()
