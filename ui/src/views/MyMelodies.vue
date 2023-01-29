@@ -235,6 +235,10 @@ function handleRowClick(item: any) {
 }
 
 function _rowClickUpdateCurrPage(item: any) {
+  if (item["notes"]) {
+    updateCurrPage("/generate-melody")
+    return
+  }
   if (item["mgRhythm"]) {
     updateCurrPage("/harmonic-progression")
     return

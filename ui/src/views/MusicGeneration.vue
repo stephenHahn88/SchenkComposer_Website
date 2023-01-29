@@ -31,11 +31,20 @@
         </b-col>
         <b-col>
           <b-button
-              variant="success"
+              variant="warning"
               class="m-4"
               @click="generateMelody();"
               style="width: 100%; font-size: 32px"
-          >Generate Melody</b-button>
+          >Generate New Melody</b-button>
+        </b-col>
+        <b-col>
+          <b-button
+              variant="success"
+              class="m-4"
+              @click="replay"
+              :disabled="replayDisabled"
+              style="width: 100%; font-size: 32px;"
+          >Replay Melody</b-button>
         </b-col>
       </b-row>
       <b-row class="m-2">
@@ -167,11 +176,28 @@ let emojis = {
 }
 
 let downloadDisabled = ref(true)
+let replayDisabled = ref(true)
 let currNotes = ref([])
+let currArps = ref([])
 let currHarmony = ref([])
+let currBass = ref([])
 
-onMounted(() => {
-  downloadDisabled.value = true
+onMounted(async () => {
+  let response = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/notes-harmonies-tempo")).json()
+  if (response.status !== 404) {
+    currNotes.value = response.melody
+    currArps.value = response.arps
+    currHarmony.value = response.harmonies
+    currBass.value = response.bass
+    instrument.value = response.instrument
+    selected.value = response.layers
+    replayDisabled.value = false
+    downloadDisabled.value = false
+  } else {
+    replayDisabled.value = true
+    downloadDisabled.value = true
+  }
+
   updateCurrPage("/generate-melody")
 })
 
@@ -187,15 +213,46 @@ function _updateVariant(text, variant) {
   }
 }
 
+async function replay() {
+  playNotesAndHarmony(
+      currNotes.value,
+      currArps.value,
+      currHarmony.value,
+      currBass.value,
+      instrument.value,
+      tempo.value,
+      selected.value
+  )
+  const requestOptions = {
+    method: "PUT",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      "notes": currNotes.value,
+      "harmonies": currHarmony.value,
+      "arps": currArps.value,
+      "bass": currBass.value,
+      "tempo": tempo.value,
+      "instrument": instrument.value,
+      "layers": selected.value
+    })
+  }
+  let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/notes-harmonies-tempo", requestOptions)
+  response = await response.json()
+  console.log(response)
+}
+
 async function generateMelody() {
   loading.value = true
+  replayDisabled.value = true
   let ps = await getPhraseStructure()
   let mgr = await getMiddlegroundRhythm(ps)
   let hp = await getHarmonicProgression(mgr, ps)
 
   let {notes, middle, harmonies, bass} = await generateFromHarmony(ps, mgr, hp)
   currNotes.value = notes
+  currArps.value = middle
   currHarmony.value = harmonies
+  currBass.value = bass
   downloadDisabled.value = false
 
   playNotesAndHarmony(
@@ -216,6 +273,7 @@ async function generateMelody() {
   )
   // Once the melody has been saved, open the melody survey
   melodySurvey.value.openSurvey()
+  replayDisabled.value = false
 }
 
 async function getPhraseStructure() {
