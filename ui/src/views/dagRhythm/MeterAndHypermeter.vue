@@ -141,14 +141,10 @@ let denominator = ref("4")
 let possibleNumerators = [3, 4]//[2, 3, 4, 6, 9, 12]
 let possibleDenominators = [4]//[2, 4, 8]
 
-let defaultB = computed(() => {
-  return phraseStructure.value[1] === 'a' ? 4: 2
-})
-
 // Number of measures for each subphrase
 let hypermeterMeasures = ref({
   "a": 2,
-  "b": defaultB,
+  "b": 2,
   "c": "# measures",
   "d": "# measures"
 })
@@ -169,6 +165,9 @@ async function getSavedInfo() {
   let json = await phrase.json()
   if (json.status == 404) return
   phraseStructure.value = json.result
+  if (phraseStructure.value[1] === 'a') {
+    hypermeterMeasures.value.b = 4
+  }
 
   let hypermeter = await (await fetch("/api/composer/"+encodeURIComponent(composerId.value)+"/melody/"+encodeURIComponent(melodyId.value)+"/hypermeter")).json()
   if (hypermeter.status !== 404) {
