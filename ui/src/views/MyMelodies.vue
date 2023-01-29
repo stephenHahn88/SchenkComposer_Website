@@ -148,38 +148,54 @@ const fields = [
       return harmonies.join(", ")
     }
   },
-  {
-    key: "mgMelody",
-    label: "Middleground Melody",
-    formatter: (mel: string[] | null) => {
-      if (mel === null) return
-      return mel.join(" ").replaceAll("/", "")
-    }
-  },
-  {
-    key: "fgRhythm",
-    label: "Foreground Rhythm",
-    formatter: (obj: {'a': string[][], 'b': string[][], 'c': string[][], 'd': string[][]} | null) => {
-      if (obj === null) return
-      return `
-        a: (${obj.a.join(" | ").replaceAll(",", " ")})
-        b: (${obj.b.join(" | ").replaceAll(",", " ")})
-        c: (${obj.c.join(" | ").replaceAll(",", " ")})
-        d: (${obj.d.join(" | ").replaceAll(",", " ")})
-      `
-    }
-  },
+  // {
+  //   key: "mgMelody",
+  //   label: "Middleground Melody",
+  //   formatter: (mel: string[] | null) => {
+  //     if (mel === null) return
+  //     return mel.join(" ").replaceAll("/", "")
+  //   }
+  // },
+  // {
+  //   key: "fgRhythm",
+  //   label: "Foreground Rhythm",
+  //   formatter: (obj: {'a': string[][], 'b': string[][], 'c': string[][], 'd': string[][]} | null) => {
+  //     if (obj === null) return
+  //     return `
+  //       a: (${obj.a.join(" | ").replaceAll(",", " ")})
+  //       b: (${obj.b.join(" | ").replaceAll(",", " ")})
+  //       c: (${obj.c.join(" | ").replaceAll(",", " ")})
+  //       d: (${obj.d.join(" | ").replaceAll(",", " ")})
+  //     `
+  //   }
+  // },
   {
     key: "notes",
     label: "Notes"
+  },
+  {
+    key: "arps",
+    label: "Arpeggios"
   },
   {
     key: "harmonies",
     label: "Harmonies"
   },
   {
+    key: "bass",
+    label: "Bass"
+  },
+  {
     key: "tempo",
     label: "Tempo"
+  },
+  {
+    key: "instrument",
+    label: "Instrument"
+  },
+  {
+    key: "layers",
+    label: "Layers"
   }
 ]
 
@@ -187,18 +203,34 @@ const fields = [
 let playMelodyDisabled = ref(true)
 let currNotes = ref([])
 let currHarmonies = ref([])
+let currArps = ref([])
+let currBass = ref([])
+let currInstrument = ref("piano")
+let currLayers = ref([])
 let currTempo = ref(0)
+
 
 function handleRowClick(item: any) {
   updateMelodyId(item["melodyId"])
   _rowClickUpdateCurrPage(item)
-  if (item["notes"] === undefined || item["harmonies"] === undefined || item["tempo"] === undefined) {
+  if (
+      item["notes"] === undefined ||
+      item["harmonies"] === undefined ||
+      item["tempo"] === undefined ||
+      item["arps"] === undefined ||
+      item["bass"] === undefined ||
+      item["layers"] === undefined
+  ) {
     playMelodyDisabled.value = true
     return
   }
   currNotes.value = item["notes"]
   currHarmonies.value = item["harmonies"]
   currTempo.value = item["tempo"]
+  currArps.value = item["arps"]
+  currBass.value = item["bass"]
+  currInstrument.value = item["instrument"]
+  currLayers.value = item["layers"]
   playMelodyDisabled.value = false
 }
 
@@ -221,12 +253,12 @@ function _rowClickUpdateCurrPage(item: any) {
 function playSelectedMelody() {
   playNotesAndHarmony(
       currNotes.value,
-      [],
+      currArps.value,
       currHarmonies.value,
-      [],
-      "piano",
+      currBass.value,
+      currInstrument.value,
       currTempo.value,
-      ["melody", "chords"]
+      currLayers.value
   )
 }
 

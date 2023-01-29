@@ -158,7 +158,7 @@ let options = ref([
   {text: "Harmonic Progression", variant: "dark"}
 ])
 let tempo = ref(60)
-let instrument = ref()
+let instrument = ref("piano")
 
 let emojis = {
   piano: '&#127929;',
@@ -208,7 +208,12 @@ async function generateMelody() {
       selected.value
   )
   loading.value = false
-  await saveMelody(notes, harmonies)
+  await saveMelody(
+      notes,
+      middle,
+      harmonies,
+      bass
+  )
   // Once the melody has been saved, open the melody survey
   melodySurvey.value.openSurvey()
 }
@@ -387,11 +392,36 @@ async function generateScore() {
   a.click()
 }
 
-async function saveMelody(notes, harmonies) {
+async function hasNotesHarmonyTempo() {
+  let response = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/notes-harmonies-tempo")).json()
+  return response.status === 200
+}
+
+
+async function saveMelody(notes, middle, harmonies, bass) {
+  if (await hasNotesHarmonyTempo()) {
+    let response = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/parameters")).json()
+    let highestJSON = await (await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/highestId")).json()
+    updateMelodyId((highestJSON["highest"] + 1).toString())
+    let copyOptions = {
+      method: "PUT",
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(response.result)
+    }
+    await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/parameters", copyOptions)
+  }
   const requestOptions = {
     method: "PUT",
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ "notes": notes, "harmonies": harmonies, "tempo": tempo.value })
+    body: JSON.stringify({
+      "notes": notes,
+      "harmonies": harmonies,
+      "arps": middle,
+      "bass": bass,
+      "tempo": tempo.value,
+      "instrument": instrument.value,
+      "layers": selected.value
+    })
   }
   let response = await fetch("/api/composer/" + encodeURIComponent(composerId.value) + "/melody/" + encodeURIComponent(melodyId.value) + "/notes-harmonies-tempo", requestOptions)
   response = await response.json()

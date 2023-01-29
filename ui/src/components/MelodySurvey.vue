@@ -33,7 +33,11 @@ async function saveMelodySurveyResponse(rating) {
     const requestOptions = {
         method: "PUT",
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "rating": rating, "notes": melody.notes, "harmonies": melody.harmonies })
+        body: JSON.stringify({
+          "rating": rating,
+          "melody": melody.melody,
+          "harmonies": melody.harmonies
+        })
     }
     let response = await fetch("/api/surveys", requestOptions)
 
