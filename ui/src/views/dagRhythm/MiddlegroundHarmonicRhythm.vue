@@ -6,6 +6,16 @@
     <b-row class="mb-5">
       <h2>Determine <span :style="`color: ${textEmphasisColor}`">when the harmony changes</span> in your melody by pressing the note buttons below. Be sure to <span :style="`color: ${textEmphasisColor}`">fill in every measure</span></h2>
     </b-row>
+    <b-row>
+      <b-col>
+        <b-button
+            style="width: 100%"
+            variant="success"
+            @click="generateMGRhythm"
+        >Generate All Automatically</b-button>
+      </b-col>
+      <b-col></b-col>
+    </b-row>
       <b-row
           v-for="letter in ['a','b','c','d']"
           v-if="hypermeter[letter] > 0"
@@ -145,7 +155,7 @@ let storedMeasures = {
   'd': []
 }
 
-let phrase
+let phrase;
 let hypermeter = ref({});
 let meter = ref('4/4');
 
@@ -158,6 +168,24 @@ onMounted(async () => {
   drawStaves()
   await getSavedRhythm()
 })
+
+async function generateMGRhythm() {
+  let requestOptions = {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      "timeSignature": meter.value,
+      "hypermeter": hypermeter.value,
+      "phraseStructure": phrase
+    })
+  }
+  let response = await (await fetch("/api/middleground-rhythm", requestOptions)).json()
+  for (let letter of ['a','b','c','d']) {
+    for (let rhythm of response.mgRhythm[letter]) {
+      placeNotes(rhythm, letter)
+    }
+  }
+}
 
 // Retrieves phrase, meter, and hypermeter
 async function getPhraseInfo() {
