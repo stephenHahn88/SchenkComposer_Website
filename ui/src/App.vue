@@ -53,10 +53,13 @@
     </b-navbar>
     <b-row class="mx-4 mt-5 p-3 black-background radius-30">
       <b-row>
-        <h1 class="mx-4">Track Your Progress</h1>
+        <h1 class="mx-4">Navigate & Track Your Progress</h1>
       </b-row>
       <b-row>
         <vue-step-progress-indicator
+            :is-reactive="true"
+            reactivity-type="backward"
+            @onStepChanged="onStepChanged"
             style="width: 100%"
             :steps="progressSteps"
             :active-step="currentStep"
@@ -139,6 +142,7 @@ provide("tutorialOpen", {tutorialOpen, updateTutorialOpen})
 
 
 let progressSteps = ref([
+    "Introduction",
     "Phrase Structure",
     "Meter & Hypermeter",
     "Harmonic Rhythm",
@@ -148,13 +152,25 @@ let progressSteps = ref([
 let currentStep = computed(() => {
   switch (currPage.value) {
     case "/": return 0;
-    case "/phrase-structure": return 0;
-    case "/meter-hypermeter": return 1;
-    case "/harmonic-rhythm": return 2;
-    case "/harmonic-progression": return 3;
-    case "/generate-melody": return 4;
+    case "/phrase-structure": return 1;
+    case "/meter-hypermeter": return 2;
+    case "/harmonic-rhythm": return 3;
+    case "/harmonic-progression": return 4;
+    case "/generate-melody": return 5;
   }
 })
+let stepNumToPath = {
+  0: "/",
+  1: "/phrase-structure",
+  2: "/meter-hypermeter",
+  3: "/harmonic-rhythm",
+  4: "/harmonic-progression",
+  5: "/generate-melody",
+}
+function onStepChanged(step) {
+  console.log(currentStep.value)
+  router.push(stepNumToPath[step])
+}
 let progressColors = {
   progress__bubble: {
     active: {
@@ -243,6 +259,7 @@ onMounted(async () => {
   link.href = "src/static/favicon/android-chrome-512x512.png"
   document.head.appendChild(link)
   await putMelody()
+  updateCurrPage("/")
 })
 
 async function putMelody() {
@@ -301,25 +318,29 @@ h1 {
 }
 
 .background {
-  position: relative;
+  background-color: #4f9ffc;
 }
 
-.background::before {
-  background-image: url("static/background_blue.jpg");
-  margin: 0;
-  content: "";
-  position: fixed;
-  left: 0;
-  right: 0;
-  z-index: -1;
+/*.background {*/
+/*  position: relative;*/
+/*}*/
 
-  display: block;
-  background-size:cover;
-  width: 100%;
-  height: 100%;
+/*.background::before {*/
+/*  background-image: url("static/background_blue.jpg");*/
+/*  margin: 0;*/
+/*  content: "";*/
+/*  position: fixed;*/
+/*  left: 0;*/
+/*  right: 0;*/
+/*  z-index: -1;*/
 
-  -webkit-filter: blur(5px);
-  -ms-filter: blur(5px);
-  filter: blur(5px);
-}
+/*  display: block;*/
+/*  background-size:cover;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+
+/*  -webkit-filter: blur(5px);*/
+/*  -ms-filter: blur(5px);*/
+/*  filter: blur(5px);*/
+/*}*/
 </style>

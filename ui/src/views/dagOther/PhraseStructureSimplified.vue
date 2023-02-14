@@ -69,7 +69,7 @@
       <b-row
           class="mb-5 mt-2 mx-1 p-2 white-background radius-5 small-border"
           style="height: 75px;">
-        <p>{{ phrase.join(" ") }}</p>
+        <p>{{ phrase.join(" ").replace("[HC]", "[Cadence]").replace("[AC]", "[Cadence]") }}</p>
       </b-row>
       <!--      GENERATE AND SAVE -->
       <b-row class="mb-5">
