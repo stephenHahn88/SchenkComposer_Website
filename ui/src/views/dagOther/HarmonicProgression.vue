@@ -590,7 +590,7 @@ function redraw() {
       let total = _.sum(distribution)
       let percent = _.round(_.round(
           parseFloat(transitions[from][to]) / total, 3
-      ) * 100, 1)
+      ) * 100)
       // add link with proper percentage and size
       links.push({
         source: harmonies.value[from],
