@@ -317,30 +317,30 @@ h1 {
   border-radius: 30px;
 }
 
+/*.background {*/
+/*  background-color: #4f9ffc;*/
+/*}*/
+
 .background {
-  background-color: #4f9ffc;
+  position: relative;
 }
 
-/*.background {*/
-/*  position: relative;*/
-/*}*/
+.background::before {
+  background-image: url("static/background_blue.jpg");
+  margin: 0;
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
 
-/*.background::before {*/
-/*  background-image: url("static/background_blue.jpg");*/
-/*  margin: 0;*/
-/*  content: "";*/
-/*  position: fixed;*/
-/*  left: 0;*/
-/*  right: 0;*/
-/*  z-index: -1;*/
+  display: block;
+  background-size:cover;
+  width: 100%;
+  height: 100%;
 
-/*  display: block;*/
-/*  background-size:cover;*/
-/*  width: 100%;*/
-/*  height: 100%;*/
-
-/*  -webkit-filter: blur(5px);*/
-/*  -ms-filter: blur(5px);*/
-/*  filter: blur(5px);*/
-/*}*/
+  -webkit-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
+}
 </style>
